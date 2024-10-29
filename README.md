@@ -17,13 +17,6 @@ Before running the application, make sure you have the [.NET 8.0 SDK](https://do
 ### Windows
 1. Simply run the `league-patch-collection.exe` file.
 
-## Usage
-
-Before running the application, make sure you have the [.NET 8.0 SDK](https://dotnet.microsoft.com/en-us/download) installed. If not, download and install it from the link.
-
-### Windows
-1. Simply run the `league-patch-collection.exe` file.
-
 ### macOS
 macOS can be pretty restrictive with apps outside of the App Store, so follow these steps to get the app running:
 
