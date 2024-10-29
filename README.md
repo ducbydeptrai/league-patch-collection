@@ -1,4 +1,4 @@
-# league-patch-collection
+# League Patch Collection - A QoL Tweaker for MacOS and Windows
 A small c# app for MacOS and Windows that modifies client config values for LCU backend and Riot Client to remove bloat and improve qol features such as: 
 * Disable vanguard enforcement and remove depenency from Riot Client.
 * Remove lor button.
