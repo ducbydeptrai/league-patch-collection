@@ -21,5 +21,3 @@ Addiontially you can fork the repo and add your own config flags.
 
 # Credit
 This app uses unproductives League Proxy lib forked to support MacOS. All I changed in that repo was RiotClient.cs to check for Mac file paths, you can track track this pull request here: https://github.com/User344/LeagueProxyLib/issues/1
-
-#lcu
