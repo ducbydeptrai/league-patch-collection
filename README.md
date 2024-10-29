@@ -10,14 +10,43 @@ A small c# app for MacOS and Windows that modifies client config values for LCU 
 
 *Addiontially, you can fork the repo and add your own config flags.*
 
-# Usage
-* Make sure you have net 8.0 SDK installed or it wont work. If not, you can get it here: https://dotnet.microsoft.com/en-us/download
-* On Windows just run **league-patch-collection.exe**
-* On MacOS, open terminal and cd to the folder you downloaded it to, then run commands in this order:
-1. `cd ~/Downloads`
-2. `chmod +x mac-league-patch-collection`
-3. Because Apple is fucking stupid and says everything is a virus, you have to disable gatekeeper with this command: `sudo spctl --master-disable`
-4. `./mac-league-patch-collection`
+## Usage
+
+Before running the application, make sure you have the [.NET 8.0 SDK](https://dotnet.microsoft.com/en-us/download) installed. If not, download and install it from the link.
+
+### Windows
+1. Simply run the `league-patch-collection.exe` file.
+
+## Usage
+
+Before running the application, make sure you have the [.NET 8.0 SDK](https://dotnet.microsoft.com/en-us/download) installed. If not, download and install it from the link.
+
+### Windows
+1. Simply run the `league-patch-collection.exe` file.
+
+### macOS
+macOS can be pretty restrictive with apps outside of the App Store, so follow these steps to get the app running:
+
+1. Open Terminal and navigate to the folder where you downloaded the app:
+    ```bash
+    cd ~/Downloads
+    ```
+2. Make the file executable:
+    ```bash
+    chmod +x mac-league-patch-collection
+    ```
+3. Because macOS treats anything not from the App Store like it's a virus (thanks, Gatekeeper), you need to disable Gatekeeper:
+    ```bash
+    sudo spctl --master-disable
+    ```
+4. Once Gatekeeper is disabled, you can run the app:
+    ```bash
+    ./mac-league-patch-collection
+    ```
+
+If you want, you can turn Gatekeeper back on with a simple command:
+```bash
+sudo spctl --master-enable
 
 # Credit
 This app uses unproductives League Proxy lib forked to support MacOS. All I changed in that repo was RiotClient.cs to check for Mac file paths, you can track track this pull request here: https://github.com/User344/LeagueProxyLib/issues/1
