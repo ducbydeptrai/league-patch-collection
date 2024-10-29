@@ -1,5 +1,5 @@
 # league-patch-collection
-A small c# app for MacOS and Windows that modified config values for LCU backend and Riot Client to remove bloat and improve qol features such as: 
+A small c# app for MacOS and Windows that modifies client config values for LCU backend and Riot Client to remove bloat and improve qol features such as: 
 * Disable vanguard enforcement and remove dependecny from Riot Client.
 * Remove lor button.
 * Restore classic honor system.
