@@ -40,6 +40,7 @@ macOS can be pretty restrictive with apps outside of the App Store, so follow th
 If you want, you can turn Gatekeeper back on with a simple command:
 ```bash
 sudo spctl --master-enable
+```
 
 # Credit
 This app uses unproductives League Proxy lib forked to support MacOS. All I changed in that repo was RiotClient.cs to check for Mac file paths, you can track track this pull request here: https://github.com/User344/LeagueProxyLib/issues/1
