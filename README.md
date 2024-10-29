@@ -6,9 +6,9 @@ A small c# app for MacOS and Windows that modifies client config values for LCU 
 * Remove promos and other crap from store.
 * Fix issue where ban reason doesnt show on some accounts (fixes infinite loading/unknown player bug).
 * Disables sentry and telemtry services.
-* Fixe home hubs loading issue.
+* Fixes home hubs loading issue.
 
-Addiontially you can fork the repo and add your own config flags.
+*Addiontially, you can fork the repo and add your own config flags.*
 
 # Usage
 * Make sure you have net 8.0 SDK installed or it wont work. If not, you can get it here: https://dotnet.microsoft.com/en-us/download
