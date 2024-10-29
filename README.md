@@ -41,6 +41,8 @@ If you want, you can turn Gatekeeper back on with a simple command:
 ```bash
 sudo spctl --master-enable
 ```
+## Credit
 
-# Credit
-This app uses unproductives League Proxy lib forked to support MacOS. All I changed in that repo was RiotClient.cs to check for Mac file paths, you can track track this pull request here: https://github.com/User344/LeagueProxyLib/issues/1
+This app utilizes [unproductive's League Proxy library](https://github.com/unproductive/LeagueProxyLib), which I forked to add support for macOS. The only modification made was in `RiotClient.cs`, where I adjusted file path checks for macOS compatibility.
+
+You can view and track the related pull request here: [LeagueProxyLib Pull Request #1](https://github.com/User344/LeagueProxyLib/issues/1).
