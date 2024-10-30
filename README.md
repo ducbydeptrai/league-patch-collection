@@ -47,11 +47,9 @@ This app utilizes [unproductive's LeagueProxyLib](https://github.com/user344/Lea
 
 You can view and track the related pull request here: [LeagueProxyLib Pull Request #1](https://github.com/User344/LeagueProxyLib/issues/1).
 
-## Love This? Check Out My Debloater Plugin!
+## See also
 
 If you enjoy this project, you might also like my [League Client Debloater](https://github.com/Cat1Bot/LeagueClientDebloater). It works well alongside this tool to provide an even cleaner and more optimized League Client experience by:
 
 - **Removing unnecessary bloat** from the League Client.
 - **Improving overall performance** and responsiveness.
-
-Feel free to explore both plugins for the ultimate League Client experience!
