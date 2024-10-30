@@ -58,11 +58,13 @@ class App
         CreateConfigValue("lol.client_settings.remedy.is_verbal_abuse_remedy_modal_enabled", false),
         CreateConfigValue("lol.client_settings.startup.should_show_progress_bar_text", false),
         CreateConfigValue("lol.client_settings.startup.should_wait_for_home_hubs", false),
-        CreateConfigValue("lol.client_settings.store.hidePurchaseModalQuantityControl", false),
+        CreateConfigValue("lol.client_settings.store.hidePurchaseModalQuantityControl", true),
         CreateConfigValue("lol.client_settings.vanguard.enabled", false),
         CreateConfigValue("lol.game_client_settings.app_config.singular_enabled", false),
         CreateConfigValue("lol.game_client_settings.low_memory_reporting_enabled", false),
         CreateConfigValue("lol.game_client_settings.missions.enabled", false),
+        CreateConfigValue("patcher.scd.service_enabled", false),
+        CreateConfigValue("lol.game_client_settings.cap_orders_metrics_enabled", false),
         CreateConfigValue("lol.game_client_settings.platform_stats_enabled", false),
         CreateConfigValue("rms.allow_bad_cert.enabled", true)
     };
@@ -112,7 +114,6 @@ class App
             SetConfig(configObject, "lol.client_settings.sentry_config", "isEnabled", false);
             SetConfig(configObject, "lol.client_settings.sentry_config", "sampleRate", 0);
             SetConfig(configObject, "lol.client_settings.sentry_config", "dsn", "");
-
             RemoveVanguardDependencies(configObject, "keystone.products.league_of_legends.patchlines.live");
             RemoveVanguardDependencies(configObject, "keystone.products.league_of_legends.patchlines.pbe");
             RemoveVanguardDependencies(configObject, "keystone.products.valorant.patchlines.live");
@@ -151,7 +152,6 @@ class App
             SetConfig(configObject, configValue.Item1, configValue.Item2);
         }
     }
-
 
     static void SetConfig(JsonNode? configObject, string key, bool value)
     {
