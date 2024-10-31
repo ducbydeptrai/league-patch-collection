@@ -6,12 +6,12 @@ using System.Text.Json.Nodes;
 class App
 {
     static (string, object)[] PublicConfigValues = {
-		("anticheat.vanguard.backgroundInstall", false),
+        ("anticheat.vanguard.backgroundInstall", false),
         ("anticheat.vanguard.enabled", false),
-		("keystone.client.feature_flags.restart_required.disabled", true),
-		("keystone.client.feature_flags.vanguardLaunch.disabled", true),
-		("lol.client_settings.vanguard.enabled", false),
-		("lol.client_settings.vanguard.url", ""),
+        ("keystone.client.feature_flags.restart_required.disabled", true),
+        ("keystone.client.feature_flags.vanguardLaunch.disabled", true),
+        ("lol.client_settings.vanguard.enabled", false),
+        ("lol.client_settings.vanguard.url", ""),
         ("keystone.age_restriction.enabled", false),
         ("keystone.client.feature_flags.lifecycle.backgroundRunning.enabled", false),
         ("keystone.client.feature_flags.arcane_event.enabled", false),
@@ -75,7 +75,7 @@ class App
 
     static (string, object)[] PlayerConfigValues = {
         ("chat.allow_bad_cert.enabled", true),
-		("chat.disable_chat_restriction_muted_system_message", true),
+        ("chat.disable_chat_restriction_muted_system_message", true),
         ("chat.force_filter.enabled", false),
         ("keystone.client.feature_flags.chrome_devtools.enabled", true),
         ("keystone.client.feature_flags.fist_animation.enabled", false),
