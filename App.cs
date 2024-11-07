@@ -1,4 +1,4 @@
-﻿using LeagueProxyLib;
+﻿﻿using LeagueProxyLib;
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -30,8 +30,12 @@ class App
         ("keystone.client.feature_flags.launch_on_computer_start.enabled", false),
         ("keystone.client.feature_flags.mfa_notification.enabled", false),
         ("keystone.client.feature_flags.open_telemetry_sender.enabled", false),
+        ("keystone.client.feature_flags.penaltyNotifications.enabled", false),
         ("keystone.client.feature_flags.pending_consent_modal.enabled", false),
         ("keystone.client.feature_flags.pending_forget_modal.enabled", false),
+        ("keystone.client.feature_flags.playerReportingMailboxIntegration.enabled", false),
+        ("keystone.client.feature_flags.playerReportingPasIntegration.enabled", false),
+        ("keystone.client.feature_flags.playerReportingReporterFeedback.enabled", false),
         ("keystone.client.feature_flags.privacyPolicy.enabled", false),
         ("keystone.client.feature_flags.product_update_scanner.enabled", false),
         ("keystone.client.feature_flags.qrcode_modal.enabled", false),
@@ -42,6 +46,8 @@ class App
         ("keystone.client.feature_flags.self_update_in_background.enabled", false),
         ("keystone.client.feature_flags.terminate_riot_client_on_product_launch.enabled", true),
         ("keystone.client.feature_flags.username_required_modal.enabled", false),
+        ("keystone.client_config.diagnostics_enabled", false),
+        ("games_library.special_events.enabled", false),
         ("keystone.riotgamesapi.telemetry.heartbeat_products", false),
         ("keystone.riotgamesapi.telemetry.heartbeat_voice_chat_metrics", false),
         ("keystone.riotgamesapi.telemetry.newrelic_events_v2_enabled", false),
@@ -78,11 +84,18 @@ class App
         ("chat.disable_chat_restriction_muted_system_message", true),
         ("chat.force_filter.enabled", false),
         ("keystone.client.feature_flags.chrome_devtools.enabled", true),
+        ("keystone.client.feature_flags.campaign-hub.enabled", false),
+        ("keystone.client.feature_flags.gaWarning.enabled", false),
+        ("keystone.client.feature_flags.playerReporting.enabled", false),
+        ("keystone.client.feature_flags.restriction.enabled", false),
         ("keystone.client.feature_flags.fist_animation.enabled", false),
         ("keystone.client.feature_flags.playerBehaviorToken.enabled", true),
         ("keystone.riotgamesapi.telemetry.endpoint.send_deprecated", false),
         ("keystone.riotgamesapi.telemetry.endpoint.send_failure", false),
         ("keystone.riotgamesapi.telemetry.endpoint.send_success", false),
+        ("keystone.client.feature_flags.tab_bar.enabled", false),
+        ("keystone.client.feature_flags.home_page_route.enabled", false),
+        ("keystone.client.feature_flags.nav_panel.enabled", false),
         ("keystone.telemetry.metrics_enabled", false),
         ("keystone.telemetry.newrelic_events_v2_enabled", false),
         ("keystone.telemetry.newrelic_metrics_v1_enabled", false),
