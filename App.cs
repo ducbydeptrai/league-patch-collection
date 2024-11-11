@@ -54,6 +54,7 @@ class App
         ("keystone.riotgamesapi.telemetry.newrelic_metrics_v1_enabled", false),
         ("keystone.riotgamesapi.telemetry.newrelic_schemaless_events_v2_enabled", false),
         ("keystone.riotgamesapi.telemetry.opentelemetry_events_enabled", false),
+        ("keystone.riotgamesapi.telemetry.opentelemetry_uri_events", ""),
         ("keystone.riotgamesapi.telemetry.singular_v1_enabled", false),
         ("keystone.rso-mobile-ui.accountCreationTosAgreement", false),
         ("keystone.telemetry.heartbeat_products", false),
