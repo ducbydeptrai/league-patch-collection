@@ -44,7 +44,6 @@ class App
         ("keystone.client.feature_flags.riot_id_required_modal.enabled", false),
         ("keystone.client.feature_flags.riot_mobile_special_event.enabled", false),
         ("keystone.client.feature_flags.self_update_in_background.enabled", false),
-        ("keystone.client.feature_flags.terminate_riot_client_on_product_launch.enabled", true),
         ("keystone.client.feature_flags.username_required_modal.enabled", false),
         ("keystone.client_config.diagnostics_enabled", false),
         ("games_library.special_events.enabled", false),
@@ -77,7 +76,9 @@ class App
         ("lol.game_client_settings.telemetry.standalone.long_frame_min_time", (object)99999),
         ("lol.game_client_settings.telemetry.standalone.nr_sample_rate", (object)0),
         ("lol.game_client_settings.telemetry.standalone.sample_rate", (object)0),
-        ("rms.allow_bad_cert.enabled", true)
+        ("riot.eula.agreementBaseURI", ""),
+        ("rms.allow_bad_cert.enabled", true),
+        ("rms.host", "")
     };
 
     static (string, object)[] PlayerConfigValues = {
@@ -105,7 +106,9 @@ class App
         ("lol.client_settings.player_behavior.display_v1_ban_notifications", true),
         ("lol.client_settings.player_behavior.use_reform_card_v2", false),
         ("lol.game_client_settings.logging.enable_http_public_logs", false),
-        ("lol.game_client_settings.logging.enable_rms_public_logs", false)
+        ("lol.game_client_settings.logging.enable_rms_public_logs", false),
+        ("rms.affinity.enabled", false),
+        ("rms.affinity_login.enabled", false)
     };
 
     public static async Task Main(string[] args)
