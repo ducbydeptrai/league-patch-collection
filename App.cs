@@ -76,9 +76,10 @@ class App
         ("lol.game_client_settings.telemetry.standalone.long_frame_min_time", (object)99999),
         ("lol.game_client_settings.telemetry.standalone.nr_sample_rate", (object)0),
         ("lol.game_client_settings.telemetry.standalone.sample_rate", (object)0),
-        ("riot.eula.agreementBaseURI", ""),
-        ("rms.allow_bad_cert.enabled", true),
-        ("rms.host", "")
+        ("riot.eula.agreementBaseURI", "")
+        //("rms.allow_bad_cert.enabled", true),
+        //("rms.host", "wss://unconfigured.edge.rms.si.riotgames.com"),
+        //("rms.port", (object)29150)
     };
 
     static (string, object)[] PlayerConfigValues = {
@@ -105,10 +106,7 @@ class App
         ("lol.client_settings.metrics.enabled", false),
         ("lol.client_settings.player_behavior.display_v1_ban_notifications", true),
         ("lol.client_settings.player_behavior.use_reform_card_v2", false),
-        ("lol.game_client_settings.logging.enable_http_public_logs", false),
-        ("lol.game_client_settings.logging.enable_rms_public_logs", false),
-        ("rms.affinity.enabled", false),
-        ("rms.affinity_login.enabled", false)
+        ("lol.game_client_settings.logging.enable_http_public_logs", false)
     };
 
     public static async Task Main(string[] args)
@@ -145,6 +143,7 @@ class App
 
             SetConfigValues(configObject, PlayerConfigValues);
 
+            //RMSPROXY(configObject);
             SetConfig(configObject, "lol.client_settings.deepLinks", "launchLorEnabled", false);
 
             return JsonSerializer.Serialize(configObject);
@@ -224,6 +223,18 @@ class App
                     break;
                 default:
                     throw new InvalidOperationException($"Unsupported type: {value.GetType()}");
+            }
+        }
+    }
+
+    static void RMSPROXY(JsonNode? configObject)
+    {
+        if (configObject?["rms.affinities"] is JsonObject affinities)
+        {
+            var keys = affinities.Select(entry => entry.Key).ToArray();
+            foreach (var key in keys)
+            {
+                affinities[key] = "wss://127.0.0.1";
             }
         }
     }
