@@ -8,7 +8,7 @@ A small c# app for MacOS and Windows that modifies client config values for LCU 
 * Fix issue where ban reason doesnt show on some accounts (fixes infinite loading/unknown player bug).
 * Disables sentry and telemtry services.
 * Fixes home hubs loading issue.
-* Disables RMS (Riot Messaging service) - this will delay account bans since the client wont know the session state has changed so you can keep playing until your JWT expires.
+* [coming soon] Disables RMS (Riot Messaging service) - this will delay account bans since the client wont know the session state has changed so you can keep playing until your JWT expires.
 
 *Addiontially, you can fork the repo and add your own config flags.*
 
