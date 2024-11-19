@@ -21,7 +21,6 @@ class App
         ("keystone.client.feature_flags.arcane_theme.enabled", false),
         ("keystone.client.feature_flags.autoPatch.disabled", true),
         ("keystone.client.feature_flags.background_mode_patching.enabled", false),
-        ("keystone.client.feature_flags.campaign-hub.enabled", false),
         ("keystone.client.feature_flags.cpu_memory_warning_report.enabled", false),
         ("keystone.client.feature_flags.dismissible_name_change_modal.enabled", true),
         ("keystone.client.feature_flags.eula.use_patch_downloader.enabled", false),
@@ -76,10 +75,8 @@ class App
         ("lol.game_client_settings.telemetry.standalone.long_frame_min_time", (object)99999),
         ("lol.game_client_settings.telemetry.standalone.nr_sample_rate", (object)0),
         ("lol.game_client_settings.telemetry.standalone.sample_rate", (object)0),
-        ("riot.eula.agreementBaseURI", "")
-        //("rms.allow_bad_cert.enabled", true),
-        //("rms.host", "wss://unconfigured.edge.rms.si.riotgames.com"),
-        //("rms.port", (object)29150)
+        ("riot.eula.agreementBaseURI", ""),
+        ("rms.allow_bad_cert.enabled", true)
     };
 
     static (string, object)[] PlayerConfigValues = {
@@ -88,17 +85,10 @@ class App
         ("chat.force_filter.enabled", false),
         ("keystone.client.feature_flags.chrome_devtools.enabled", true),
         ("keystone.client.feature_flags.campaign-hub.enabled", false),
-        ("keystone.client.feature_flags.gaWarning.enabled", false),
-        ("keystone.client.feature_flags.playerReporting.enabled", false),
-        ("keystone.client.feature_flags.restriction.enabled", false),
-        ("keystone.client.feature_flags.fist_animation.enabled", false),
-        ("keystone.client.feature_flags.playerBehaviorToken.enabled", true),
         ("keystone.riotgamesapi.telemetry.endpoint.send_deprecated", false),
         ("keystone.riotgamesapi.telemetry.endpoint.send_failure", false),
         ("keystone.riotgamesapi.telemetry.endpoint.send_success", false),
-        ("keystone.client.feature_flags.tab_bar.enabled", false),
         ("keystone.client.feature_flags.home_page_route.enabled", false),
-        ("keystone.client.feature_flags.nav_panel.enabled", false),
         ("keystone.telemetry.metrics_enabled", false),
         ("keystone.telemetry.newrelic_events_v2_enabled", false),
         ("keystone.telemetry.newrelic_metrics_v1_enabled", false),
@@ -143,7 +133,7 @@ class App
 
             SetConfigValues(configObject, PlayerConfigValues);
 
-            //RMSPROXY(configObject);
+            NoLoyalty(configObject);
             SetConfig(configObject, "lol.client_settings.deepLinks", "launchLorEnabled", false);
 
             return JsonSerializer.Serialize(configObject);
@@ -227,14 +217,16 @@ class App
         }
     }
 
-    static void RMSPROXY(JsonNode? configObject)
+    static void NoLoyalty(JsonNode? configObject)
     {
-        if (configObject?["rms.affinities"] is JsonObject affinities)
+        if (configObject?["keystone.loyalty.config"] is JsonObject loyaltyConfig)
         {
-            var keys = affinities.Select(entry => entry.Key).ToArray();
-            foreach (var key in keys)
+            foreach (var region in loyaltyConfig)
             {
-                affinities[key] = "wss://127.0.0.1";
+                if (region.Value is JsonObject regionConfig && regionConfig.ContainsKey("enabled"))
+                {
+                    regionConfig["enabled"] = false;
+                }
             }
         }
     }
