@@ -1,4 +1,4 @@
-﻿﻿using LeagueProxyLib;
+﻿using LeagueProxyLib;
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -116,6 +116,18 @@ class App
             SetConfig(configObject, "lol.client_settings.honor", "HonorSuggestionsEnabled", true);
             SetConfig(configObject, "lol.client_settings.honor", "HonorVisibilityEnabled", false);
             SetConfig(configObject, "lol.client_settings.honor", "SecondsToVote", 90);
+            SetConfig(configObject, "lol.client_settings.datadog_rum_config", "applicationID", "");
+            SetConfig(configObject, "lol.client_settings.datadog_rum_config", "clientToken", "");
+            SetConfig(configObject, "lol.client_settings.datadog_rum_config", "isEnabled", false);
+            SetConfig(configObject, "lol.client_settings.datadog_rum_config", "service", "");
+            SetConfig(configObject, "lol.client_settings.datadog_rum_config", "sessionReplaySampleRate", 0);
+            SetConfig(configObject, "lol.client_settings.datadog_rum_config", "sessionSampleRate", 0);
+            SetConfig(configObject, "lol.client_settings.datadog_rum_config", "site", "");
+            SetConfig(configObject, "lol.client_settings.datadog_rum_config", "telemetrySampleRate", 0);
+            SetConfig(configObject, "lol.client_settings.datadog_rum_config", "traceSampleRate", 0);
+            SetConfig(configObject, "lol.client_settings.datadog_rum_config", "trackLongTasks", false);
+            SetConfig(configObject, "lol.client_settings.datadog_rum_config", "trackResources", false);
+            SetConfig(configObject, "lol.client_settings.datadog_rum_config", "trackUserInteractions", false);
             SetConfig(configObject, "lol.client_settings.sentry_config", "isEnabled", false);
             SetConfig(configObject, "lol.client_settings.sentry_config", "sampleRate", 0);
             SetConfig(configObject, "lol.client_settings.sentry_config", "dsn", "");
@@ -267,7 +279,7 @@ class App
                 }
                 catch
                 {
-					
+
                 }
             }
         }
