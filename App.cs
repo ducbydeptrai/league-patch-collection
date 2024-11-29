@@ -11,6 +11,7 @@ class App
         ("keystone.client.feature_flags.restart_required.disabled", true),
         ("keystone.client.feature_flags.vanguardLaunch.disabled", true),
         ("lol.client_settings.vanguard.enabled", false),
+        ("lol.client_settings.vanguard.enabled_mac", false),
         ("lol.client_settings.vanguard.url", ""),
         ("keystone.age_restriction.enabled", false),
         ("keystone.client.feature_flags.lifecycle.backgroundRunning.enabled", false),
