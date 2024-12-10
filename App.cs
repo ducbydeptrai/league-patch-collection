@@ -1,5 +1,4 @@
 ﻿using LeagueProxyLib;
-using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -102,7 +101,6 @@ class App
 
     public static async Task Main(string[] args)
     {
-        KillRiotServices();
         var leagueProxy = new LeagueProxy();
 
         leagueProxy.Events.OnProcessConfigPublic += (string content) =>
@@ -111,12 +109,6 @@ class App
 
             SetConfigValues(configObject, PublicConfigValues);
 
-            SetConfig(configObject, "lol.client_settings.honor", "CeremonyV3Enabled", false);
-            SetConfig(configObject, "lol.client_settings.honor", "Enabled", true);
-            SetConfig(configObject, "lol.client_settings.honor", "HonorEndpointsV2Enabled", false);
-            SetConfig(configObject, "lol.client_settings.honor", "HonorSuggestionsEnabled", true);
-            SetConfig(configObject, "lol.client_settings.honor", "HonorVisibilityEnabled", false);
-            SetConfig(configObject, "lol.client_settings.honor", "SecondsToVote", 90);
             SetConfig(configObject, "lol.client_settings.datadog_rum_config", "applicationID", "");
             SetConfig(configObject, "lol.client_settings.datadog_rum_config", "clientToken", "");
             SetConfig(configObject, "lol.client_settings.datadog_rum_config", "isEnabled", false);
@@ -155,10 +147,16 @@ class App
         var process = leagueProxy.StartAndLaunchRCS(args);
         if (process is null)
         {
-            Console.WriteLine("Failed to create RCS process!");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Failed to start Riot Client. This may be due to a change on Riot's end. Please ensure you're using the latest version by checking https://github.com/Cat1Bot/league-patch-collection/releases. If the issue persists even with the latest version, contact c4t_bot on Discord for further assistance.");
+            Console.ResetColor();
             leagueProxy.Stop();
             return;
         }
+
+        await process.WaitForExitAsync();
+        leagueProxy.Stop();
+
 
         await process.WaitForExitAsync();
         leagueProxy.Stop();
@@ -260,27 +258,6 @@ class App
                     {
                         dependencies.Remove(vanguard);
                     }
-                }
-            }
-        }
-    }
-
-    static readonly string[] RiotServiceNames = { "Riot Client", "RiotClientServices", "LeagueClient", "League of Legends" };
-
-    static void KillRiotServices()
-    {
-        foreach (var serviceName in RiotServiceNames)
-        {
-            var processes = Process.GetProcessesByName(serviceName);
-            foreach (var process in processes)
-            {
-                try
-                {
-                    process.Kill();
-                }
-                catch
-                {
-
                 }
             }
         }
