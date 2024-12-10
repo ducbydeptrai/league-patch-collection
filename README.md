@@ -3,7 +3,6 @@ A small c# app for MacOS and Windows that modifies client config values for LCU 
 * Disable vanguard enforcement and remove depenency from Riot Client.
 * Removes Arcane crap from Riot Client.
 * Remove lor button.
-* Restore classic honor system.
 * Remove promos and other crap from store.
 * Fix issue where ban reason doesnt show on some accounts (fixes infinite loading/unknown player bug).
 * Disables sentry and telemtry services.
