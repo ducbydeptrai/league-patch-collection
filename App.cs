@@ -1,4 +1,4 @@
-﻿using LeagueProxyLib;
+﻿using LeaguePatchCollection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -46,6 +46,7 @@ class App
         ("keystone.client.feature_flags.username_required_modal.enabled", false),
         ("keystone.client_config.diagnostics_enabled", false),
         ("games_library.special_events.enabled", false),
+        //("keystone.player-affinity.playerAffinityServiceURL", "http://127.0.0.1:29150"),
         ("keystone.riotgamesapi.telemetry.heartbeat_products", false),
         ("keystone.riotgamesapi.telemetry.heartbeat_voice_chat_metrics", false),
         ("keystone.riotgamesapi.telemetry.newrelic_events_v2_enabled", false),
@@ -60,6 +61,7 @@ class App
         ("keystone.telemetry.singular_v1_enabled", false),
         ("lol.client_settings.clash.eosCelebrationEnabled", false),
         ("lol.client_settings.missions.upsell_opens_event_hub", false),
+        ("lol.client_settings.client_navigability.info_hub_disabled", true),
         ("lol.client_settings.paw.enableRPTopUp", false),
         ("lol.client_settings.remedy.is_verbal_abuse_remedy_modal_enabled", false),
         ("lol.client_settings.startup.should_show_progress_bar_text", false),
@@ -93,6 +95,7 @@ class App
         ("keystone.telemetry.newrelic_events_v2_enabled", false),
         ("keystone.telemetry.newrelic_metrics_v1_enabled", false),
         ("keystone.telemetry.newrelic_schemaless_events_v2_enabled", false),
+        //("lol.client_settings.league_edge.url", "http://127.0.0.1:29151"),
         ("lol.client_settings.metrics.enabled", false),
         ("lol.client_settings.player_behavior.display_v1_ban_notifications", true),
         ("lol.client_settings.player_behavior.use_reform_card_v2", false),
@@ -109,6 +112,12 @@ class App
 
             SetConfigValues(configObject, PublicConfigValues);
 
+            SetConfig(configObject, "lol.client_settings.honor", "CeremonyV3Enabled", false);
+            SetConfig(configObject, "lol.client_settings.honor", "Enabled", true);
+            SetConfig(configObject, "lol.client_settings.honor", "HonorEndpointsV2Enabled", false);
+            SetConfig(configObject, "lol.client_settings.honor", "HonorSuggestionsEnabled", true);
+            SetConfig(configObject, "lol.client_settings.honor", "HonorVisibilityEnabled", true);
+            SetConfig(configObject, "lol.client_settings.honor", "SecondsToVote", 90);
             SetConfig(configObject, "lol.client_settings.datadog_rum_config", "applicationID", "");
             SetConfig(configObject, "lol.client_settings.datadog_rum_config", "clientToken", "");
             SetConfig(configObject, "lol.client_settings.datadog_rum_config", "isEnabled", false);
@@ -144,6 +153,13 @@ class App
             return JsonSerializer.Serialize(configObject);
         };
 
+        leagueProxy.Events.OnProcessLedge += (string content) =>
+        {
+            var configObject = JsonSerializer.Deserialize<JsonNode>(content);
+
+            return JsonSerializer.Serialize(configObject);
+        };
+
         var process = leagueProxy.StartAndLaunchRCS(args);
         if (process is null)
         {
@@ -153,10 +169,6 @@ class App
             leagueProxy.Stop();
             return;
         }
-
-        await process.WaitForExitAsync();
-        leagueProxy.Stop();
-
 
         await process.WaitForExitAsync();
         leagueProxy.Stop();
@@ -241,6 +253,7 @@ class App
             }
         }
     }
+
 
     static void RemoveVanguardDependencies(JsonNode configObject, string path)
     {
