@@ -1,17 +1,24 @@
-﻿using LeaguePatchCollection;
+﻿using EmbedIO;
+using LeaguePatchCollection;
+using System;
+using System.IO.Compression;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
 class App
 {
-    static (string, object)[] PublicConfigValues = {
+    static (string, object)[] VanguardConfigFlags = {
         ("anticheat.vanguard.backgroundInstall", false),
         ("anticheat.vanguard.enabled", false),
         ("keystone.client.feature_flags.restart_required.disabled", true),
         ("keystone.client.feature_flags.vanguardLaunch.disabled", true),
         ("lol.client_settings.vanguard.enabled", false),
         ("lol.client_settings.vanguard.enabled_mac", false),
-        ("lol.client_settings.vanguard.url", ""),
+        ("lol.client_settings.vanguard.url", "")
+    };
+
+    static (string, object)[] OptimizeClientConfigPublic = {
         ("keystone.age_restriction.enabled", false),
         ("keystone.client.feature_flags.lifecycle.backgroundRunning.enabled", false),
         ("keystone.client.feature_flags.arcane_event.enabled", false),
@@ -47,6 +54,7 @@ class App
         ("keystone.client_config.diagnostics_enabled", false),
         ("games_library.special_events.enabled", false),
         //("keystone.player-affinity.playerAffinityServiceURL", "http://127.0.0.1:29150"),
+        ("keystone.telemetry.heartbeat_custom_metrics", false),
         ("keystone.riotgamesapi.telemetry.heartbeat_products", false),
         ("keystone.riotgamesapi.telemetry.heartbeat_voice_chat_metrics", false),
         ("keystone.riotgamesapi.telemetry.newrelic_events_v2_enabled", false),
@@ -58,6 +66,8 @@ class App
         ("keystone.rso-mobile-ui.accountCreationTosAgreement", false),
         ("keystone.telemetry.heartbeat_products", false),
         ("keystone.telemetry.heartbeat_voice_chat_metrics", false),
+        ("keystone.telemetry.send_error_telemetry_metrics", false),
+        ("keystone.telemetry.send_product_session_start_metrics", false),
         ("keystone.telemetry.singular_v1_enabled", false),
         ("lol.client_settings.clash.eosCelebrationEnabled", false),
         ("lol.client_settings.missions.upsell_opens_event_hub", false),
@@ -81,7 +91,7 @@ class App
         ("rms.allow_bad_cert.enabled", true)
     };
 
-    static (string, object)[] PlayerConfigValues = {
+    static (string, object)[] OptimizeClientConfigPlayer = {
         ("chat.allow_bad_cert.enabled", true),
         ("chat.disable_chat_restriction_muted_system_message", true),
         ("chat.force_filter.enabled", false),
@@ -99,65 +109,60 @@ class App
         ("lol.client_settings.metrics.enabled", false),
         ("lol.client_settings.player_behavior.display_v1_ban_notifications", true),
         ("lol.client_settings.player_behavior.use_reform_card_v2", false),
-        ("lol.game_client_settings.logging.enable_http_public_logs", false)
+        ("lol.game_client_settings.logging.enable_http_public_logs", false),
+        ("lol.game_client_settings.logging.enable_rms_public_logs", false)
     };
 
     public static async Task Main(string[] args)
     {
         var leagueProxy = new LeagueProxy();
 
-        leagueProxy.Events.OnProcessConfigPublic += (string content) =>
+        leagueProxy.Events.OnProcessConfigPublic += (string content, IHttpRequest request) =>
         {
             var configObject = JsonSerializer.Deserialize<JsonNode>(content);
 
-            SetConfigValues(configObject, PublicConfigValues);
-
-            SetConfig(configObject, "lol.client_settings.honor", "CeremonyV3Enabled", false);
-            SetConfig(configObject, "lol.client_settings.honor", "Enabled", true);
-            SetConfig(configObject, "lol.client_settings.honor", "HonorEndpointsV2Enabled", false);
-            SetConfig(configObject, "lol.client_settings.honor", "HonorSuggestionsEnabled", true);
-            SetConfig(configObject, "lol.client_settings.honor", "HonorVisibilityEnabled", true);
-            SetConfig(configObject, "lol.client_settings.honor", "SecondsToVote", 90);
-            SetConfig(configObject, "lol.client_settings.datadog_rum_config", "applicationID", "");
-            SetConfig(configObject, "lol.client_settings.datadog_rum_config", "clientToken", "");
-            SetConfig(configObject, "lol.client_settings.datadog_rum_config", "isEnabled", false);
-            SetConfig(configObject, "lol.client_settings.datadog_rum_config", "service", "");
-            SetConfig(configObject, "lol.client_settings.datadog_rum_config", "sessionReplaySampleRate", 0);
-            SetConfig(configObject, "lol.client_settings.datadog_rum_config", "sessionSampleRate", 0);
-            SetConfig(configObject, "lol.client_settings.datadog_rum_config", "site", "");
-            SetConfig(configObject, "lol.client_settings.datadog_rum_config", "telemetrySampleRate", 0);
-            SetConfig(configObject, "lol.client_settings.datadog_rum_config", "traceSampleRate", 0);
-            SetConfig(configObject, "lol.client_settings.datadog_rum_config", "trackLongTasks", false);
-            SetConfig(configObject, "lol.client_settings.datadog_rum_config", "trackResources", false);
-            SetConfig(configObject, "lol.client_settings.datadog_rum_config", "trackUserInteractions", false);
-            SetConfig(configObject, "lol.client_settings.sentry_config", "isEnabled", false);
-            SetConfig(configObject, "lol.client_settings.sentry_config", "sampleRate", 0);
-            SetConfig(configObject, "lol.client_settings.sentry_config", "dsn", "");
-
-            RemoveVanguardDependencies(configObject, "keystone.products.league_of_legends.patchlines.live");
-            RemoveVanguardDependencies(configObject, "keystone.products.league_of_legends.patchlines.pbe");
-            RemoveVanguardDependencies(configObject, "keystone.products.valorant.patchlines.live");
+            DisableVanguard(configObject);
+            LegacyHonor(configObject);
+            OptimizePublicConfig(configObject);
 
             return JsonSerializer.Serialize(configObject);
         };
 
-        leagueProxy.Events.OnProcessConfigPlayer += (string content) =>
+        leagueProxy.Events.OnProcessConfigPlayer += (string content, IHttpRequest request) =>
         {
             var configObject = JsonSerializer.Deserialize<JsonNode>(content);
 
-            SetConfigValues(configObject, PlayerConfigValues);
-
-            NoLoyalty(configObject);
-            SetConfig(configObject, "lol.client_settings.deepLinks", "launchLorEnabled", false);
+            OptimizePlayerConfig(configObject);
 
             return JsonSerializer.Serialize(configObject);
         };
 
-        leagueProxy.Events.OnProcessLedge += (string content) =>
+        leagueProxy.Events.OnProcessLedge += (string content, IHttpRequest request) =>
         {
-            var configObject = JsonSerializer.Deserialize<JsonNode>(content);
 
-            return JsonSerializer.Serialize(configObject);
+            if (request.Url.LocalPath == "/leaverbuster-ledge/restrictionInfo")
+            {
+                Console.WriteLine("Processing request to /leaverbuster-ledge/restrictionInfo");
+
+                var configObject = JsonSerializer.Deserialize<JsonNode>(content);
+
+                if (configObject["rankedRestrictionEntryDto"] != null)
+                {
+                    configObject["rankedRestrictionEntryDto"]["rankedRestrictionAckNeeded"] = false;
+                }
+
+                content = JsonSerializer.Serialize(configObject);
+
+                Console.WriteLine("Modified content: " + content);
+            }
+
+            if (request.Url.LocalPath == "/sipt/v1/sipt/token")
+            {
+                Console.WriteLine("Processing request to sipt");
+                Console.WriteLine(content);
+            }
+
+            return content;
         };
 
         var process = leagueProxy.StartAndLaunchRCS(args);
@@ -173,6 +178,17 @@ class App
         await process.WaitForExitAsync();
         leagueProxy.Stop();
     }
+    private static void SetEmptyArrayForConfig(JsonNode? configObject, string configKey)
+    {
+        if (configObject?[configKey] is JsonArray)
+        {
+            configObject[configKey] = new JsonArray();  // Set to empty array
+        }
+        else if (configObject?[configKey] is JsonObject jsonObject)
+        {
+            jsonObject[configKey] = new JsonArray(); 
+        }
+    }
 
     static void SetConfig(JsonNode? configObject, string parentKey, string childKey, bool value)
     {
@@ -183,7 +199,6 @@ class App
             parentNode[childKey] = value;
         }
     }
-
     private static void SetConfigValues(JsonNode? configObject, (string, object)[] configValues)
     {
         foreach (var (key, value) in configValues)
@@ -191,7 +206,6 @@ class App
             SetConfig(configObject, key, value);
         }
     }
-
     private static void SetConfig(JsonNode? configObject, string key, object value)
     {
         if (configObject?[key] is not null)
@@ -215,7 +229,6 @@ class App
             }
         }
     }
-
     private static void SetConfig(JsonNode? configObject, string parentKey, string childKey, object value)
     {
         if (configObject?[parentKey] is JsonNode parentNode)
@@ -239,7 +252,51 @@ class App
             }
         }
     }
+    public static void DisableVanguard(JsonNode? configObject)
+    {
+        SetConfigValues(configObject, VanguardConfigFlags);
+        RemoveVanguardDependencies(configObject, "keystone.products.league_of_legends.patchlines.live");
+        RemoveVanguardDependencies(configObject, "keystone.products.league_of_legends.patchlines.pbe");
+        RemoveVanguardDependencies(configObject, "keystone.products.valorant.patchlines.live");
+    }
+    public static void LegacyHonor(JsonNode? configObject)
+    {
+        SetConfig(configObject, "lol.client_settings.honor", "CeremonyV3Enabled", false);
+        SetConfig(configObject, "lol.client_settings.honor", "Enabled", true);
+        SetConfig(configObject, "lol.client_settings.honor", "HonorEndpointsV2Enabled", false);
+        SetConfig(configObject, "lol.client_settings.honor", "HonorSuggestionsEnabled", true);
+        SetConfig(configObject, "lol.client_settings.honor", "HonorVisibilityEnabled", true);
+        SetConfig(configObject, "lol.client_settings.honor", "SecondsToVote", 90);
+    }
+    public static void OptimizePublicConfig(JsonNode? configObject)
+    {
+        SetConfigValues(configObject, OptimizeClientConfigPublic);
 
+        SetConfig(configObject, "lol.client_settings.datadog_rum_config", "applicationID", "");
+        SetConfig(configObject, "lol.client_settings.datadog_rum_config", "clientToken", "");
+        SetConfig(configObject, "lol.client_settings.datadog_rum_config", "isEnabled", false);
+        SetConfig(configObject, "lol.client_settings.datadog_rum_config", "service", "");
+        SetConfig(configObject, "lol.client_settings.datadog_rum_config", "sessionReplaySampleRate", 0);
+        SetConfig(configObject, "lol.client_settings.datadog_rum_config", "sessionSampleRate", 0);
+        SetConfig(configObject, "lol.client_settings.datadog_rum_config", "site", "");
+        SetConfig(configObject, "lol.client_settings.datadog_rum_config", "telemetrySampleRate", 0);
+        SetConfig(configObject, "lol.client_settings.datadog_rum_config", "traceSampleRate", 0);
+        SetConfig(configObject, "lol.client_settings.datadog_rum_config", "trackLongTasks", false);
+        SetConfig(configObject, "lol.client_settings.datadog_rum_config", "trackResources", false);
+        SetConfig(configObject, "lol.client_settings.datadog_rum_config", "trackUserInteractions", false);
+        SetConfig(configObject, "lol.client_settings.sentry_config", "isEnabled", false);
+        SetConfig(configObject, "lol.client_settings.sentry_config", "sampleRate", 0);
+        SetConfig(configObject, "lol.client_settings.sentry_config", "dsn", "");
+    }
+    public static void OptimizePlayerConfig(JsonNode? configObject)
+    {
+        SetConfigValues(configObject, OptimizeClientConfigPlayer);
+        NoLoyalty(configObject);
+        SetConfig(configObject, "lol.client_settings.deepLinks", "launchLorEnabled", false);
+        SetEmptyArrayForConfig(configObject, "chat.xmpp_stanza_response_telemetry_allowed_codes");
+        SetEmptyArrayForConfig(configObject, "chat.xmpp_stanza_response_telemetry_allowed_iqids");
+
+    }
     static void NoLoyalty(JsonNode? configObject)
     {
         if (configObject?["keystone.loyalty.config"] is JsonObject loyaltyConfig)
@@ -253,8 +310,6 @@ class App
             }
         }
     }
-
-
     static void RemoveVanguardDependencies(JsonNode configObject, string path)
     {
         var productNode = configObject?[path];

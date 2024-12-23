@@ -1,17 +1,23 @@
 ﻿using System.Text;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Net.Http.Headers;
 using EmbedIO;
 using EmbedIO.Routing;
 using EmbedIO.WebApi;
 using System.Diagnostics;
 using EmbedIO.Utilities;
+using System.Text.Json.Nodes;
+using System.Text.Json;
+using Swan.Logging;
+using System.Net;
+using System.IO.Compression;
 
 namespace LeaguePatchCollection;
 
 public sealed class LeagueProxyEvents
 {
-    public delegate string ProcessBasicEndpoint(string content);
+    public delegate string ProcessBasicEndpoint(string content, IHttpRequest request);
 
     public event ProcessBasicEndpoint? OnProcessConfigPublic;
     public event ProcessBasicEndpoint? OnProcessConfigPlayer;
@@ -35,14 +41,14 @@ public sealed class LeagueProxyEvents
         OnProcessLedge = null;
     }
 
-    private string InvokeProcessBasicEndpoint(ProcessBasicEndpoint? @event, string content)
+    private string InvokeProcessBasicEndpoint(ProcessBasicEndpoint? @event, string content, IHttpRequest? request)
     {
         if (@event is null)
             return content;
 
         foreach (var i in @event.GetInvocationList())
         {
-            var result = i.DynamicInvoke(content);
+            var result = i.DynamicInvoke(content, request); // Pass 'content' and 'request'
             if (result is not string resultString)
                 throw new Exception("Return value of an event is not string!");
 
@@ -52,15 +58,14 @@ public sealed class LeagueProxyEvents
         return content;
     }
 
-    internal string InvokeProcessConfigPublic(string content) => InvokeProcessBasicEndpoint(OnProcessConfigPublic, content);
-    internal string InvokeProcessConfigPlayer(string content) => InvokeProcessBasicEndpoint(OnProcessConfigPlayer, content);
-    internal string InvokeProcessLedge(string content) => InvokeProcessBasicEndpoint(OnProcessLedge, content);
-
+    internal string InvokeProcessConfigPublic(string content, IHttpRequest request) => InvokeProcessBasicEndpoint(OnProcessConfigPublic, content, request);
+    internal string InvokeProcessConfigPlayer(string content, IHttpRequest request) => InvokeProcessBasicEndpoint(OnProcessConfigPlayer, content, request);
+    internal string InvokeProcessLedge(string content, IHttpRequest request) => InvokeProcessBasicEndpoint(OnProcessLedge, content, request);
 }
 
 internal sealed class ConfigController : WebApiController
 {
-    private static HttpClient _Client = new HttpClient();
+    private static HttpClient _Client = new(new HttpClientHandler { UseCookies = false });
     private const string BASE_URL = "https://clientconfig.rpg.riotgames.com";
 
     private static LeagueProxyEvents _Events => LeagueProxyEvents.Instance;
@@ -71,7 +76,7 @@ internal sealed class ConfigController : WebApiController
         var response = await ClientConfig(HttpContext.Request);
         var content = await response.Content.ReadAsStringAsync();
 
-        content = _Events.InvokeProcessConfigPublic(content);
+        content = _Events.InvokeProcessConfigPublic(content, HttpContext.Request);
 
         await SendResponse(response, content);
     }
@@ -82,7 +87,7 @@ internal sealed class ConfigController : WebApiController
         var response = await ClientConfig(HttpContext.Request);
         var content = await response.Content.ReadAsStringAsync();
 
-        content = _Events.InvokeProcessConfigPlayer(content);
+        content = _Events.InvokeProcessConfigPlayer(content, HttpContext.Request);
 
         await SendResponse(response, content);
     }
@@ -92,13 +97,26 @@ internal sealed class ConfigController : WebApiController
         var url = BASE_URL + request.RawUrl;
 
         using var message = new HttpRequestMessage(HttpMethod.Get, url);
-        message.Headers.TryAddWithoutValidation("User-Agent", request.Headers["user-agent"]);
+
+        message.Headers.TryAddWithoutValidation("user-agent", request.Headers["user-agent"]);
+        //message.Headers.TryAddWithoutValidation("Accept-Encoding", "gzip");
 
         if (request.Headers["x-riot-entitlements-jwt"] is not null)
             message.Headers.TryAddWithoutValidation("X-Riot-Entitlements-JWT", request.Headers["x-riot-entitlements-jwt"]);
 
         if (request.Headers["authorization"] is not null)
             message.Headers.TryAddWithoutValidation("Authorization", request.Headers["authorization"]);
+
+        if (request.Headers["x-riot-rso-identity-jwt"] is not null)
+            message.Headers.TryAddWithoutValidation("X-Riot-RSO-Identity-JWT", request.Headers["x-riot-rso-identity-jwt"]);
+
+        if (request.Headers["baggage"] is not null)
+            message.Headers.TryAddWithoutValidation("baggage", request.Headers["baggage"]);
+
+        if (request.Headers["traceparent"] is not null)
+            message.Headers.TryAddWithoutValidation("traceparent", request.Headers["traceparent"]);
+
+        message.Headers.TryAddWithoutValidation("Accept", "application/json");
 
         return await _Client.SendAsync(message);
     }
@@ -119,7 +137,7 @@ internal sealed class ConfigController : WebApiController
 
 internal sealed class LedgeController : WebApiController
 {
-    private static HttpClient _Client = new HttpClient();
+    private static HttpClient _Client = new(new HttpClientHandler { UseCookies = false });
     private const string LEDGE_URL = "https://na-red.lol.sgp.pvp.net";
 
     private static LeagueProxyEvents _Events => LeagueProxyEvents.Instance;
@@ -127,10 +145,16 @@ internal sealed class LedgeController : WebApiController
     [Route(HttpVerbs.Get, "/", true)]
     public async Task GetLedge()
     {
+
+        if (HttpContext.Request.Url.LocalPath == "/leagues-ledge/v2/notifications")
+        {
+            return;
+        }
+
         var response = await GetLedge(HttpContext.Request);
         var content = await response.Content.ReadAsStringAsync();
 
-        content = _Events.InvokeProcessLedge(content);
+        content = _Events.InvokeProcessLedge(content, HttpContext.Request);
 
         await SendResponse(response, content);
     }
@@ -138,36 +162,90 @@ internal sealed class LedgeController : WebApiController
     [Route(HttpVerbs.Post, "/", true)]
     public async Task PostLedge()
     {
-        var response = await PostLedge(HttpContext.Request);
+        string requestBody;
+        using (var reader = new StreamReader(HttpContext.OpenRequestStream()))
+        {
+            requestBody = await reader.ReadToEndAsync();
+        }
+
+        var response = await PostLedge(HttpContext.Request, requestBody);
         var content = await response.Content.ReadAsStringAsync();
 
-        content = _Events.InvokeProcessLedge(content);
+        content = _Events.InvokeProcessLedge(content, HttpContext.Request);
 
         await SendResponse(response, content);
     }
-    private async Task<HttpResponseMessage> PostLedge(IHttpRequest request)
+
+    [Route(HttpVerbs.Put, "/", true)]
+    public async Task PutLedge()
+    {
+        string requestBody;
+        using (var reader = new StreamReader(HttpContext.OpenRequestStream()))
+        {
+            requestBody = await reader.ReadToEndAsync();
+        }
+
+        var response = await PutLedge(HttpContext.Request, requestBody);
+        var content = await response.Content.ReadAsStringAsync();
+
+        content = _Events.InvokeProcessLedge(content, HttpContext.Request);
+
+        await SendResponse(response, content);
+    }
+
+    private async Task<HttpResponseMessage> PutLedge(IHttpRequest request, string body)
+    {
+        var url = LEDGE_URL + request.RawUrl;
+
+        using var message = new HttpRequestMessage(HttpMethod.Put, url);
+
+        message.Headers.TryAddWithoutValidation("user-agent", request.Headers["user-agent"]);
+
+        if (request.Headers["content-encoding"] is not null)
+            message.Headers.TryAddWithoutValidation("Content-Encoding", request.Headers["content-encoding"]);
+
+        if (request.Headers["content-type"] is not null)
+            message.Content = new StringContent(body, Encoding.UTF8, request.Headers["content-type"]);
+
+        if (request.Headers["authorization"] is not null)
+            message.Headers.TryAddWithoutValidation("Authorization", request.Headers["authorization"]);
+
+        message.Headers.TryAddWithoutValidation("Accept", "application/json");
+
+        if (!string.IsNullOrEmpty(body))
+            message.Content = new StringContent(body, Encoding.UTF8, "application/json");
+
+        if (request.Headers["content-length"] is not null)
+        {
+            if (long.TryParse(request.Headers["content-length"], out var contentLength))
+                message.Content.Headers.ContentLength = contentLength;
+        }
+
+        return await _Client.SendAsync(message);
+    }
+
+    private async Task<HttpResponseMessage> PostLedge(IHttpRequest request, string body)
     {
         var url = LEDGE_URL + request.RawUrl;
 
         using var message = new HttpRequestMessage(HttpMethod.Post, url);
 
-        message.Headers.TryAddWithoutValidation("User-Agent", request.Headers["user-agent"]);
-        message.Headers.TryAddWithoutValidation("Accept", "application/json");
-
-        if (request.Headers["x-riot-entitlements-jwt"] is not null)
-            message.Headers.TryAddWithoutValidation("X-Riot-Entitlements-JWT", request.Headers["x-riot-entitlements-jwt"]);
+        message.Headers.TryAddWithoutValidation("user-agent", request.Headers["user-agent"]);
 
         if (request.Headers["authorization"] is not null)
             message.Headers.TryAddWithoutValidation("Authorization", request.Headers["authorization"]);
 
-        if (request.Headers.ContainsKey("Content-Length"))
+        if (request.Headers["content-type"] is not null)
         {
-            message.Headers.TryAddWithoutValidation("Content-Length", request.Headers["Content-Length"]);
+            message.Content = new StringContent(body, null, request.Headers["content-type"]);
         }
 
-        if (request.Headers.ContainsKey("payload"))
+        message.Headers.TryAddWithoutValidation("Accept", "application/json");
+
+        if (request.Headers["content-length"] is not null)
         {
-            message.Headers.TryAddWithoutValidation("payload", request.Headers["payload"]);
+            if (long.TryParse(request.Headers["content-length"], out var contentLength))
+                message.Content.Headers.ContentLength = contentLength;
         }
 
         return await _Client.SendAsync(message);
@@ -179,28 +257,30 @@ internal sealed class LedgeController : WebApiController
 
         using var message = new HttpRequestMessage(HttpMethod.Get, url);
 
-        message.Headers.TryAddWithoutValidation("User-Agent", request.Headers["user-agent"]);
-        message.Headers.TryAddWithoutValidation("Accept", "application/json");
-
-        if (request.Headers["x-riot-entitlements-jwt"] is not null)
-            message.Headers.TryAddWithoutValidation("X-Riot-Entitlements-JWT", request.Headers["x-riot-entitlements-jwt"]);
+        message.Headers.TryAddWithoutValidation("Accept-Encoding", "deflate, gzip, zstd");
+        message.Headers.TryAddWithoutValidation("user-agent", request.Headers["user-agent"]);
 
         if (request.Headers["authorization"] is not null)
             message.Headers.TryAddWithoutValidation("Authorization", request.Headers["authorization"]);
+
+        message.Headers.TryAddWithoutValidation("Accept", "application/json");
 
         return await _Client.SendAsync(message);
     }
 
     private async Task SendResponse(HttpResponseMessage response, string content)
     {
-        var responseBuffer = Encoding.UTF8.GetBytes(content);
-
         HttpContext.Response.SendChunked = false;
         HttpContext.Response.ContentType = "application/json";
-        HttpContext.Response.ContentLength64 = responseBuffer.Length;
+        HttpContext.Response.ContentLength64 = response.Content.Headers.ContentLength ?? 0;
         HttpContext.Response.StatusCode = (int)response.StatusCode;
 
-        await HttpContext.Response.OutputStream.WriteAsync(responseBuffer, 0, responseBuffer.Length);
+        if (response.Content.Headers.ContentEncoding.Contains("gzip"))
+        {
+            HttpContext.Response.Headers.Add("Content-Encoding", "gzip");
+        }
+
+        await response.Content.CopyToAsync(HttpContext.Response.OutputStream);
         HttpContext.Response.OutputStream.Close();
     }
 }
@@ -234,6 +314,7 @@ internal sealed class ProxyServer<T> where T : WebApiController, new()
         return _WebServer.RunAsync(cancellationToken);
     }
 }
+
 public class LeagueProxy
 {
     private ProxyServer<ConfigController> _ConfigServer;
@@ -290,6 +371,7 @@ public class LeagueProxy
 
         TerminateRiotServices();
 
+        Logger.UnregisterLogger<ConsoleLogger>();
         _ServerCTS = new CancellationTokenSource();
 
         _ConfigServer.Start(_ServerCTS.Token);

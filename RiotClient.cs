@@ -17,7 +17,7 @@ internal sealed class RiotClient
         if (path is null)
             return null;
 
-        IEnumerable<string> allArgs = [$"--client-config-url={configServerUrl}", "--launch-product=league_of_legends", "--launch-patchline=live", .. args ?? []];
+        IEnumerable<string> allArgs = [$"--client-config-url={configServerUrl}", "--launch-product=league_of_legends", .. args ?? []];
 
         return Process.Start(path, allArgs);
     }
