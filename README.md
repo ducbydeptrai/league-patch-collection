@@ -2,9 +2,8 @@
 A small c# app for MacOS and Windows that modifies client config values for LCU backend and Riot Client to remove bloat and improve qol features such as: 
 * Disable vanguard enforcement and remove depenency from Riot Client.
 * Removes Arcane crap from Riot Client.
-* Remove lor button.
+* Remove lor button and info hub.
 * Remove promos and other crap from store.
-* disables info hub.
 * Fix issue where ban reason doesnt show on some accounts (fixes infinite loading/unknown player bug).
 * Disables sentry and telemtry services.
 * Fixes home hubs loading issue.
