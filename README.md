@@ -42,12 +42,6 @@ If you want, you can turn Gatekeeper back on with a simple command:
 ```bash
 sudo spctl --master-enable
 ```
-## Credit
-
-This app utilizes [unproductive's LeagueProxyLib](https://github.com/user344/LeagueProxyLib), which I forked to add support for macOS. The only modification made was in `RiotClient.cs`, where I adjusted file path checks for macOS compatibility.
-
-You can view and track the related pull request here: [LeagueProxyLib Pull Request #1](https://github.com/User344/LeagueProxyLib/issues/1).
-
 ## See also
 
 If you enjoy this project, you might also like my [League Client Debloater](https://github.com/Cat1Bot/LeagueClientDebloater). It works well alongside this tool to provide an even cleaner and more optimized League Client experience by:
