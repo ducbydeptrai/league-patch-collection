@@ -1,10 +1,14 @@
 ﻿using EmbedIO;
-using LeaguePatchCollection;
 using System;
 using System.IO.Compression;
+using System.Net;
+using System.Net.Security;
+using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+
+namespace LeaguePatchCollection;
 
 class App
 {
@@ -91,8 +95,11 @@ class App
         ("rms.allow_bad_cert.enabled", true)
     };
 
-    static (string, object)[] OptimizeClientConfigPlayer = {
+    static (string, object)[] ClientConfigPlayer = {
         ("chat.allow_bad_cert.enabled", true),
+        ("chat.host", "127.0.0.1"),
+        ("chat.port", (object)29152),
+        ("chat.use_tls.enabled", false),
         ("chat.disable_chat_restriction_muted_system_message", true),
         ("chat.force_filter.enabled", false),
         ("keystone.client.feature_flags.chrome_devtools.enabled", true),
@@ -105,7 +112,7 @@ class App
         ("keystone.telemetry.newrelic_events_v2_enabled", false),
         ("keystone.telemetry.newrelic_metrics_v1_enabled", false),
         ("keystone.telemetry.newrelic_schemaless_events_v2_enabled", false),
-        //("lol.client_settings.league_edge.url", "http://127.0.0.1:29151"),
+        ("lol.client_settings.league_edge.url", "http://127.0.0.1:29151"),
         ("lol.client_settings.metrics.enabled", false),
         ("lol.client_settings.player_behavior.display_v1_ban_notifications", true),
         ("lol.client_settings.player_behavior.use_reform_card_v2", false),
@@ -115,15 +122,50 @@ class App
 
     public static async Task Main(string[] args)
     {
+        bool disableVanguard = args.Contains("--novgk");
+        bool legacyhonor = args.Contains("--legacyhonor");
+
+
         var leagueProxy = new LeagueProxy();
+
+        if (!disableVanguard)
+        {
+            Console.ForegroundColor = ConsoleColor.White; // Orange-like color
+            Console.WriteLine("Start this app with --novgk to disable Vanguard enforcement.");
+            Console.ResetColor();
+        }
+        else
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Vanguard enforcement is disabled.");
+            Console.ResetColor();
+        }
+        if (!legacyhonor)
+        {
+            Console.ForegroundColor = ConsoleColor.White; // Orange-like color
+            Console.WriteLine("Start this app with --legacyhonor use old honor system before patch 14.19.");
+            Console.ResetColor();
+        }
+        else
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Using Legacy Honor system pre-patch 14.9");
+            Console.ResetColor();
+        }
 
         leagueProxy.Events.OnProcessConfigPublic += (string content, IHttpRequest request) =>
         {
             var configObject = JsonSerializer.Deserialize<JsonNode>(content);
 
-            DisableVanguard(configObject);
-            LegacyHonor(configObject);
-            OptimizePublicConfig(configObject);
+            if (disableVanguard)
+            {
+                DisableVanguard(configObject);
+            }
+            if (legacyhonor)
+            {
+                LegacyHonor(configObject);
+            }
+            PublicConfig(configObject);
 
             return JsonSerializer.Serialize(configObject);
         };
@@ -132,7 +174,14 @@ class App
         {
             var configObject = JsonSerializer.Deserialize<JsonNode>(content);
 
-            OptimizePlayerConfig(configObject);
+            var leagueEdgeUrlNode = configObject?["lol.client_settings.league_edge.url"];
+            if (leagueEdgeUrlNode == null)
+            {
+                return content;
+            }
+            SharedLeagueEdgeUrl.Set(leagueEdgeUrlNode.ToString());
+
+            PlayerConfig(configObject);
 
             return JsonSerializer.Serialize(configObject);
         };
@@ -142,7 +191,6 @@ class App
 
             if (request.Url.LocalPath == "/leaverbuster-ledge/restrictionInfo")
             {
-                Console.WriteLine("Processing request to /leaverbuster-ledge/restrictionInfo");
 
                 var configObject = JsonSerializer.Deserialize<JsonNode>(content);
 
@@ -154,12 +202,6 @@ class App
                 content = JsonSerializer.Serialize(configObject);
 
                 Console.WriteLine("Modified content: " + content);
-            }
-
-            if (request.Url.LocalPath == "/sipt/v1/sipt/token")
-            {
-                Console.WriteLine("Processing request to sipt");
-                Console.WriteLine(content);
             }
 
             return content;
@@ -175,9 +217,13 @@ class App
             return;
         }
 
+        var proxy = new XMPPProxy();
+        _ = proxy.RunAsync();
+
         await process.WaitForExitAsync();
         leagueProxy.Stop();
     }
+
     private static void SetEmptyArrayForConfig(JsonNode? configObject, string configKey)
     {
         if (configObject?[configKey] is JsonArray)
@@ -268,7 +314,7 @@ class App
         SetConfig(configObject, "lol.client_settings.honor", "HonorVisibilityEnabled", true);
         SetConfig(configObject, "lol.client_settings.honor", "SecondsToVote", 90);
     }
-    public static void OptimizePublicConfig(JsonNode? configObject)
+    public static void PublicConfig(JsonNode? configObject)
     {
         SetConfigValues(configObject, OptimizeClientConfigPublic);
 
@@ -288,15 +334,43 @@ class App
         SetConfig(configObject, "lol.client_settings.sentry_config", "sampleRate", 0);
         SetConfig(configObject, "lol.client_settings.sentry_config", "dsn", "");
     }
-    public static void OptimizePlayerConfig(JsonNode? configObject)
+    public static void PlayerConfig(JsonNode? configObject)
     {
-        SetConfigValues(configObject, OptimizeClientConfigPlayer);
+        SetConfigValues(configObject, ClientConfigPlayer);
+        chatAffinity(configObject);
         NoLoyalty(configObject);
         SetConfig(configObject, "lol.client_settings.deepLinks", "launchLorEnabled", false);
         SetEmptyArrayForConfig(configObject, "chat.xmpp_stanza_response_telemetry_allowed_codes");
         SetEmptyArrayForConfig(configObject, "chat.xmpp_stanza_response_telemetry_allowed_iqids");
-
     }
+
+    public static class SharedLeagueEdgeUrl
+    {
+        public static string? _leagueEdgeUrl;
+
+        public static string? Get()
+        {
+            return _leagueEdgeUrl;
+        }
+
+        public static void Set(string url)
+        {
+            _leagueEdgeUrl = url;
+        }
+    }
+
+    static void chatAffinity(JsonNode? configObject)
+    {
+        if (configObject?["chat.affinities"] is JsonObject affinities)
+        {
+            var keys = affinities.Select(entry => entry.Key).ToArray();
+            foreach (var key in keys)
+            {
+                affinities[key] = "127.0.0.1";
+            }
+        }
+    }
+
     static void NoLoyalty(JsonNode? configObject)
     {
         if (configObject?["keystone.loyalty.config"] is JsonObject loyaltyConfig)

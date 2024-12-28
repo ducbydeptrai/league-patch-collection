@@ -138,14 +138,14 @@ internal sealed class ConfigController : WebApiController
 internal sealed class LedgeController : WebApiController
 {
     private static HttpClient _Client = new(new HttpClientHandler { UseCookies = false });
-    private const string LEDGE_URL = "https://na-red.lol.sgp.pvp.net";
+
+    private static string LEDGE_URL => EnsureLedgeUrlIsSet();
 
     private static LeagueProxyEvents _Events => LeagueProxyEvents.Instance;
 
     [Route(HttpVerbs.Get, "/", true)]
     public async Task GetLedge()
     {
-
         if (HttpContext.Request.Url.LocalPath == "/leagues-ledge/v2/notifications")
         {
             return;
@@ -193,6 +193,20 @@ internal sealed class LedgeController : WebApiController
         await SendResponse(response, content);
     }
 
+    private static string EnsureLedgeUrlIsSet()
+    {
+        var ledgeUrl = App.SharedLeagueEdgeUrl.Get();
+
+        if (string.IsNullOrEmpty(ledgeUrl))
+        {
+            // Handle the case where LEDGE_URL is not set or is empty.
+            // You can log an error, throw an exception, or provide a fallback URL.
+            throw new InvalidOperationException("Ledge URL is not set.");
+        }
+
+        return ledgeUrl;
+    }
+
     private async Task<HttpResponseMessage> PutLedge(IHttpRequest request, string body)
     {
         var url = LEDGE_URL + request.RawUrl;
@@ -223,7 +237,6 @@ internal sealed class LedgeController : WebApiController
 
         return await _Client.SendAsync(message);
     }
-
     private async Task<HttpResponseMessage> PostLedge(IHttpRequest request, string body)
     {
         var url = LEDGE_URL + request.RawUrl;
@@ -238,6 +251,11 @@ internal sealed class LedgeController : WebApiController
         if (request.Headers["content-type"] is not null)
         {
             message.Content = new StringContent(body, null, request.Headers["content-type"]);
+        }
+
+        if (request.Headers["content-encoding"] is not null)
+        {
+            message.Content = new StringContent(body, null, request.Headers["content-encoding"]);
         }
 
         message.Headers.TryAddWithoutValidation("Accept", "application/json");
@@ -257,7 +275,9 @@ internal sealed class LedgeController : WebApiController
 
         using var message = new HttpRequestMessage(HttpMethod.Get, url);
 
-        message.Headers.TryAddWithoutValidation("Accept-Encoding", "deflate, gzip, zstd");
+        if (request.Headers["accept-encoding"] is not null)
+            message.Headers.TryAddWithoutValidation("Accept-Encoding", request.Headers["accept-encoding"]);
+
         message.Headers.TryAddWithoutValidation("user-agent", request.Headers["user-agent"]);
 
         if (request.Headers["authorization"] is not null)
@@ -284,6 +304,7 @@ internal sealed class LedgeController : WebApiController
         HttpContext.Response.OutputStream.Close();
     }
 }
+
 
 internal sealed class ProxyServer<T> where T : WebApiController, new()
 {
@@ -345,22 +366,25 @@ public class LeagueProxy
                 foreach (var process in processes)
                 {
                     process.Kill();
-                    process.WaitForExit();
-                    Console.ForegroundColor = ConsoleColor.Blue;
+                    Console.ForegroundColor = ConsoleColor.Cyan;
                     Console.WriteLine($"Stopping {processName}...");
+                    Console.ResetColor();
+                    process.WaitForExit();
+                    Console.ForegroundColor = ConsoleColor.DarkCyan;
+                    Console.WriteLine($"Sucessfully stopped {processName}");
                     Console.ResetColor();
                 }
             }
             catch (Exception ex)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Error terminating {processName}, Please contact c4t_bot on Discord if this issue persists.");
+                Console.WriteLine($"Error stopping {processName}, Please contact c4t_bot on Discord if this issue persists.");
                 Console.ResetColor();
             }
         }
 
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine("Riot processes terminated, restarting now to apply patches.");
+        Console.ForegroundColor = ConsoleColor.DarkGreen;
+        Console.WriteLine("Starting now with quality improvements.");
         Console.ResetColor();
     }
 
@@ -376,11 +400,11 @@ public class LeagueProxy
 
         _ConfigServer.Start(_ServerCTS.Token);
         configServerUrl = _ConfigServer.Url;
-        Console.WriteLine($"Config Server running at: {_ConfigServer.Url}");
+        //Console.WriteLine($"Config Server running at: {_ConfigServer.Url}");
 
         _LedgeServer.Start(_ServerCTS.Token);
         ledgeServerUrl = _LedgeServer.Url;
-        Console.WriteLine($"Ledge Server running at: {_LedgeServer.Url}");
+        //Console.WriteLine($"Ledge Server running at: {_LedgeServer.Url}");
     }
 
     public void Stop()
