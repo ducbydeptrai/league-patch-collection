@@ -1,6 +1,6 @@
 # League Patch Collection - A Quality-of-Life Tweaker for macOS and Windows
 
-**League Patch Collection** is a lightweight C# application designed for macOS and Windows to enhance your League of Legends experience. This tool introduces several quality-of-life features and optimizations for a smoother and less intrusive gaming experience.
+**League Patch Collection** is a lightweight C# application designed for macOS and Windows to enhance your League of Legends experience. This tool introduces several quality-of-life features and optimizations League Client experience.
 
 ## Features
 
