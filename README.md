@@ -74,9 +74,6 @@ If you want, you can turn Gatekeeper back on with a simple command:
 ```bash
 sudo spctl --master-enable
 ```
-## See also
+## Pull requests needed
 
-If you enjoy this project, you might also like my [League Client Debloater](https://github.com/Cat1Bot/LeagueClientDebloater). It works well alongside this tool to provide an even cleaner and more optimized League Client experience by:
-
-- **Removing unnecessary bloat** from the League Client.
-- **Improving overall performance** and responsiveness.
+Pull requests are always welcome. Also, if anyone knows a library or easy way to decode Riot's rtmp (they use action message format) please contact me **c4t_bot** on Discord. I cannot find any c# libraries for decoding AMF0, AMF3 which is needed to proxy RTMP for lobby revealer. For reference here is a [good article](https://web-xbaank.vercel.app/blog/Reversing-engineering-lol) that describes how a lobby revealer works.
