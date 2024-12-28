@@ -17,7 +17,7 @@ By default, this app provides the following enhancements:
 You can enhance the functionality further by using command-line arguments when running the app. Here's how to use them:
 
 ### Arguments
-- `--novgk`:  Prevents Vanguard enforcement/VAN Errors and stops `vgc.exe` from initializing, which can be useful if you want to use blacklisted tools like Kbot Ext without getting banned. **Note**: This is not a Vanguard bypass; you can fully stop Vanguard by running `sc stop vgk` in command prompt or uninstalling Vanguard but you will still be kicked from matches if Vanguard is required to play by Riot’s backend.
+- `--novgk`:  Disables Vanguard enforcement/VAN Errors and stops `vgc.exe` from initializing, which can be useful if you want to use blacklisted tools like Kbot Ext without getting banned. **Note**: This is not a Vanguard bypass; you can fully stop Vanguard by running `sc stop vgk` in command prompt or uninstalling Vanguard but you will still be kicked from matches if Vanguard is required to play by Riot’s backend.
 - `--legacyhonor`: Reverts the honor system to its pre-patch 14.9 state, removing the option to honor enemies.
 - `--appearoffline`: Masks your chat status to appear offline to your friends list. *(Note: While the League client may still show you as online, your status will appear offline to others — this is a client-side visual bug.)*
 
