@@ -1,16 +1,24 @@
-# League Patch Collection - A QoL Tweaker for MacOS and Windows
-A small c# app for MacOS and Windows that modifies client config values for LCU backend and Riot Client to remove bloat and improve qol features such as: 
-* Disable vanguard enforcement and remove depenency from Riot Client.
-* Restore classic honor system.
-* Removes Arcane crap from Riot Client.
-* Remove lor button and info hub.
-* Remove promos and other crap from store.
-* Fix issue where ban reason doesnt show on some accounts (fixes infinite loading/unknown player bug).
-* Disables sentry and telemtry services.
-* Fixes home hubs loading issue.
-* [coming soon] lobby revealer
+# League Patch Collection - A Quality-of-Life Tweaker for macOS and Windows
 
-*Addiontially, you can fork the repo and add your own config flags.*
+**League Patch Collection** is a lightweight C# application designed for macOS and Windows to enhance your League of Legends experience. This tool introduces several quality-of-life features and optimizations for a smoother and less intrusive gaming experience.
+
+## Features
+
+By default, this app provides the following enhancements:
+- **Removal of Bloatware**: Removes the Legends of Runeterra (LoR) button and Info Hub.
+- **Streamlined Interface**: Eliminates promotions and other unnecessary clutter from the client.
+- **Ban Reason Fix**: Resolves issues where the ban reason doesn't display on certain accounts, fixing the infinite loading/unknown player bug.
+- **Enhanced Privacy**: Disables all tracking and telemetry services, including Sentry, to reduce tracking and prevent unnecessary background activity.
+- **Home Hub Fix**: Fixes home hubs taking longer than usual to load issue.
+- **[Coming Soon] Lobby Revealer**: A feature to reveal names in champ select.
+
+## Command-Line Arguments
+
+Enhance functionality further by using the following command-line arguments:
+
+- `--novgk`: Disables Vanguard anti-cheat enforcement, making the Riot Client believe that League of Legends/Valorant does not require it. Also prevents vgc.exe from initializing.
+- `--legacyhonor`: Reverts the honor system to its pre-patch 14.9 state, removing the option to honor enemies.
+- `--appearoffline`: Masks your chat status to appear offline to your friends list. *(Note: While the League client may still show you as online, your status will appear offline to others — this is a client-side visual bug.)*
 
 ## Usage
 
