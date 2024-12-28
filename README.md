@@ -35,16 +35,20 @@ You can use a shortcut to easily run the app with arguments:
 #### macOS:
 1. Open Terminal.
 2. Navigate to the folder where the app is located:
-```bash
-cd ~/Downloads
-    '''
+    ```bash
+    cd ~/Downloads
+    ```
+3.Run the app with the desired argument. For example:
+    ```bash
+    ./mac-league-patch-collection --appearoffline
+    ```
 
 ## Installation and Usage
 
 Before running the application, make sure you have the [.NET 8.0 SDK](https://dotnet.microsoft.com/en-us/download) installed. If not, download and install it from the link.
 
 ### Windows
-1. Simply run the `league-patch-collection.exe` file.
+Run the league-patch-collection.exe file directly, or use the shortcut method (as described above) to apply arguments
 
 ### macOS
 macOS can be pretty restrictive with apps outside of the App Store, so follow these steps to get the app running:
