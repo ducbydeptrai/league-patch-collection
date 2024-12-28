@@ -17,7 +17,8 @@ By default, this app provides the following enhancements:
 You can enhance the functionality further by using command-line arguments when running the app. Here's how to use them:
 
 ### Arguments
-- `--novgk`: Disables Vanguard anti-cheat enforcement, making the Riot Client believe that League of Legends/Valorant does not require it. Also prevents vgc.exe from initializing.
+- `--novgk`: Modifies the Riot Client and League Client configurations to make them believe that Vanguard is not required for League of Legends/Valorant. (League Only) This prevents Vanguard enforcement and stops `vgc.exe` from initializing, which can be useful if you want to use blacklisted tools like Kbot Ext without getting banned.
+**Note**: This is not a Vanguard bypass; you will still be kicked from matches if Vanguard is required to play by Riot’s backend.
 - `--legacyhonor`: Reverts the honor system to its pre-patch 14.9 state, removing the option to honor enemies.
 - `--appearoffline`: Masks your chat status to appear offline to your friends list. *(Note: While the League client may still show you as online, your status will appear offline to others — this is a client-side visual bug.)*
 
