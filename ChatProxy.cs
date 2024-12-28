@@ -36,13 +36,18 @@ public class XMPPProxy
         {
             using (var networkStream = client.GetStream())
             {
-                var xmppTarget = "na2.chat.si.riotgames.com";
-                using (var tcpClient = new TcpClient(xmppTarget, XMPPPort))
+                var chatHost = SharedChatHost.Get();
+                if (string.IsNullOrEmpty(chatHost))
+                {
+                    Console.WriteLine("[XMPP] No valid chat.host found, continuing without setting it.");
+                }
+
+                using (var tcpClient = new TcpClient(chatHost ?? throw new InvalidOperationException("chat.host is null or empty"), XMPPPort))
                 using (var sslStream = new SslStream(tcpClient.GetStream(), false, ValidateServerCertificate))
                 {
                     var sslOptions = new SslClientAuthenticationOptions
                     {
-                        TargetHost = xmppTarget,
+                        TargetHost = chatHost,
                         EnabledSslProtocols = SslProtocols.Tls12
                     };
 

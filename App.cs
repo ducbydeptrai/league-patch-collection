@@ -94,12 +94,14 @@ class App
         ("riot.eula.agreementBaseURI", ""),
         ("rms.allow_bad_cert.enabled", true)
     };
-
-    static (string, object)[] ClientConfigPlayer = {
+    static (string, object)[] ChatConfigKeys = {
         ("chat.allow_bad_cert.enabled", true),
         ("chat.host", "127.0.0.1"),
         ("chat.port", (object)29152),
         ("chat.use_tls.enabled", false),
+    };
+
+    static (string, object)[] ClientConfigPlayer = {
         ("chat.disable_chat_restriction_muted_system_message", true),
         ("chat.force_filter.enabled", false),
         ("keystone.client.feature_flags.chrome_devtools.enabled", true),
@@ -112,7 +114,7 @@ class App
         ("keystone.telemetry.newrelic_events_v2_enabled", false),
         ("keystone.telemetry.newrelic_metrics_v1_enabled", false),
         ("keystone.telemetry.newrelic_schemaless_events_v2_enabled", false),
-        ("lol.client_settings.league_edge.url", "http://127.0.0.1:29151"),
+        //("lol.client_settings.league_edge.url", "http://127.0.0.1:29151"),
         ("lol.client_settings.metrics.enabled", false),
         ("lol.client_settings.player_behavior.display_v1_ban_notifications", true),
         ("lol.client_settings.player_behavior.use_reform_card_v2", false),
@@ -124,7 +126,7 @@ class App
     {
         bool disableVanguard = args.Contains("--novgk");
         bool legacyhonor = args.Contains("--legacyhonor");
-
+        bool appearoffline = args.Contains("--appearoffline");
 
         var leagueProxy = new LeagueProxy();
 
@@ -152,6 +154,18 @@ class App
             Console.WriteLine("Using Legacy Honor system pre-patch 14.9");
             Console.ResetColor();
         }
+        if (!appearoffline)
+        {
+            Console.ForegroundColor = ConsoleColor.White; // Orange-like color
+            Console.WriteLine("Start this app with --appearoffline to show as offline to your friends list.");
+            Console.ResetColor();
+        }
+        else
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Despite what the League Client is showing you are appearing offline to your friends list and they cannot invite you to lobby");
+            Console.ResetColor();
+        }
 
         leagueProxy.Events.OnProcessConfigPublic += (string content, IHttpRequest request) =>
         {
@@ -174,12 +188,25 @@ class App
         {
             var configObject = JsonSerializer.Deserialize<JsonNode>(content);
 
+
             var leagueEdgeUrlNode = configObject?["lol.client_settings.league_edge.url"];
-            if (leagueEdgeUrlNode == null)
+            if (leagueEdgeUrlNode != null)
             {
-                return content;
+                //Console.WriteLine($"Original league_edge.url: {leagueEdgeUrlNode.ToString()}");
+                SharedLeagueEdgeUrl.Set(leagueEdgeUrlNode.ToString());
             }
-            SharedLeagueEdgeUrl.Set(leagueEdgeUrlNode.ToString());
+
+            var chatHostNode = configObject?["chat.host"];
+            if (chatHostNode != null)
+            {
+                //Console.WriteLine($"Original chat.host: {chatHostNode.ToString()}");
+                SharedChatHost.Set(chatHostNode.ToString());
+            }
+
+            if (appearoffline)
+            {
+                PlayerChatConfig(configObject);
+            }
 
             PlayerConfig(configObject);
 
@@ -337,11 +364,16 @@ class App
     public static void PlayerConfig(JsonNode? configObject)
     {
         SetConfigValues(configObject, ClientConfigPlayer);
-        chatAffinity(configObject);
         NoLoyalty(configObject);
         SetConfig(configObject, "lol.client_settings.deepLinks", "launchLorEnabled", false);
         SetEmptyArrayForConfig(configObject, "chat.xmpp_stanza_response_telemetry_allowed_codes");
         SetEmptyArrayForConfig(configObject, "chat.xmpp_stanza_response_telemetry_allowed_iqids");
+    }
+
+    public static void PlayerChatConfig(JsonNode? configObject)
+    {
+        SetConfigValues(configObject, ChatConfigKeys);
+        chatAffinity(configObject);
     }
 
     public static class SharedLeagueEdgeUrl
@@ -356,6 +388,35 @@ class App
         public static void Set(string url)
         {
             _leagueEdgeUrl = url;
+        }
+    }
+    public static class SharedChatHost
+    {
+        public static string? _chatHost;
+
+        public static string? Get()
+        {
+            return _chatHost;
+        }
+
+        public static void Set(string host)
+        {
+            _chatHost = host;
+        }
+    }
+
+    public static class SharedChatHostUrl
+    {
+        public static string? _chatHostUrl;
+
+        public static string? Get()
+        {
+            return _chatHostUrl;
+        }
+
+        public static void Set(string url)
+        {
+            _chatHostUrl = url;
         }
     }
 
