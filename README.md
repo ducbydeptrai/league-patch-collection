@@ -38,7 +38,7 @@ You can use a shortcut to easily run the app with arguments:
     ```bash
     cd ~/Downloads
     ```
-3.Run the app with the desired argument. For example:
+3. Run the app with the desired argument. For example:
     ```bash
     ./mac-league-patch-collection --appearoffline
     ```
