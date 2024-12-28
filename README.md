@@ -14,13 +14,32 @@ By default, this app provides the following enhancements:
 
 ## Command-Line Arguments
 
-Enhance functionality further by using the following command-line arguments:
+You can enhance the functionality further by using command-line arguments when running the app. Here's how to use them:
 
+### Arguments
 - `--novgk`: Disables Vanguard anti-cheat enforcement, making the Riot Client believe that League of Legends/Valorant does not require it. Also prevents vgc.exe from initializing.
 - `--legacyhonor`: Reverts the honor system to its pre-patch 14.9 state, removing the option to honor enemies.
 - `--appearoffline`: Masks your chat status to appear offline to your friends list. *(Note: While the League client may still show you as online, your status will appear offline to others — this is a client-side visual bug.)*
 
-## Usage
+### Running with Arguments
+
+#### Windows:
+You can use a shortcut to easily run the app with arguments:
+
+1. Right-click the `league-patch-collection.exe` file and select **Create Shortcut**.
+2. Right-click the newly created shortcut and select **Properties**.
+3. In the **Target** field, add the desired argument(s) at the end. For example: "C:\Path\To\league-patch-collection.exe" --novgk --legacyhonor
+4. Click **OK** to save the changes.
+5. Use this shortcut to run the app with your specified arguments.
+
+#### macOS:
+1. Open Terminal.
+2. Navigate to the folder where the app is located:
+```bash
+cd ~/Downloads
+    '''
+
+## Installation and Usage
 
 Before running the application, make sure you have the [.NET 8.0 SDK](https://dotnet.microsoft.com/en-us/download) installed. If not, download and install it from the link.
 
