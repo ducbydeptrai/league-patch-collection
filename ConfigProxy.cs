@@ -150,24 +150,26 @@ class App
         if (!usevgk)
         {
             Console.ForegroundColor = ConsoleColor.DarkCyan;
-            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine("=========================================");
             Console.ResetColor();
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("Vanguard bypass is active. If you havent already you may uninstall vgk");
+            Console.WriteLine("Vanguard bypass is active. You can now use Kbot or other blacklisted apps without risk of being banned. If you havent already, uninstall vgk");
             Console.ResetColor();
-            Console.ForegroundColor = ConsoleColor.DarkCyan;
-            Console.WriteLine("Vanguard is known to be invasive, running at a kernel level,");
-            Console.WriteLine("collecting data and sending it back to Riot HQ.");
-            Console.WriteLine("There's evidence of performance issues and even system instability.");
-            Console.WriteLine("If you don't care about privacy/security or morals, despite these concerns,");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine("IMPORTANT");
+            Console.WriteLine("To avoid getting kicked in game (Vanguard Event), use Kbot or other tool to clear logs every 1-3 games and sign back in.");
+            Console.WriteLine("Doing this will reset your limit on the backend for how many games the server lets you play without Vanguard.");
+            Console.WriteLine("Rinse and Repeat!");
             Console.ResetColor();
+            Console.WriteLine("--------------------------------------------");
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("launch this app with --usevgk to NOT use the Vanguard bypass.");
             Console.ResetColor();
             Console.ForegroundColor = ConsoleColor.DarkCyan;
-            Console.WriteLine("There are still other features in this app like showing offline,");
+            Console.WriteLine("There are other features in this app like showing offline,");
             Console.WriteLine("using the old honor system, and bloatware removal that you'll benefit from.");
-            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine("=========================================");
             Console.ResetColor();
         }
         else if (usevgk)
