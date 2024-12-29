@@ -11,7 +11,7 @@ By default, this app provides the following enhancements:
 - :white_check_mark: **Ban Reason Fix**: Resolves issues where the ban reason doesn't display on certain accounts, fixing the infinite loading/unknown player bug.
 - :white_check_mark: **Enhanced Privacy**: Disables all tracking and telemetry services, including Sentry, to reduce tracking and prevent unnecessary background activity.
 - :white_check_mark: **Home Hub Fix**: Fixes home hubs taking longer than usual to load issue.
-- :yellow_circle: **[Coming Soon] Lobby Revealer**: A feature to reveal names in champ select.
+- :information_source: **[Coming Soon] Lobby Revealer**: A feature to reveal names in champ select.
 
 ## Command-Line Arguments
 
