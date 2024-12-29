@@ -16,23 +16,33 @@ namespace LeaguePatchCollection
 
             IEnumerable<string> allArgs = [$"--client-config-url={configServerUrl}", "--launch-product=league_of_legends", "--launch-patchline=live", .. args ?? []];
 
-            var processStartInfo = new ProcessStartInfo
+            if (OperatingSystem.IsMacOS())
             {
-                FileName = path,
-                Arguments = string.Join(" ", allArgs),
-                RedirectStandardOutput = true,  // Redirecting standard output
-                RedirectStandardError = true,   // Redirecting standard error
-            };
+                var processStartInfo = new ProcessStartInfo
+                {
+                    FileName = path,
+                    Arguments = string.Join(" ", allArgs),
+                    UseShellExecute = false,        // MacOS requires this to be false
+                    RedirectStandardOutput = false, // Do not redirect standard output
+                    RedirectStandardError = false,  // Do not redirect standard error
+                    CreateNoWindow = true            // Suppress the console window
+                };
 
-            var process = Process.Start(processStartInfo);
+                var process = Process.Start(processStartInfo);
 
-            if (process != null)
-            {
-                process.OutputDataReceived += (sender, e) => {  };
-                process.ErrorDataReceived += (sender, e) => {  };
+                if (process != null)
+                {
+                    // Optionally handle output or errors if needed
+                    process.OutputDataReceived += (sender, e) => { /* Handle output if necessary */ };
+                    process.ErrorDataReceived += (sender, e) => { /* Handle errors if necessary */ };
+                }
+
+                return process;
             }
-
-            return process;
+            else
+            {
+                return Process.Start(path, allArgs); // Windows-specific behavior remains unchanged
+            }
         }
 
         private string? GetPath()
