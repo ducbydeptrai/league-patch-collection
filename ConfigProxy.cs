@@ -21,7 +21,6 @@ class App
         ("lol.client_settings.vanguard.enabled_mac", false),
         ("lol.client_settings.vanguard.url", "")
     };
-
     static (string, object)[] OptimizeClientConfigPublic = {
         ("keystone.age_restriction.enabled", false),
         ("keystone.client.feature_flags.lifecycle.backgroundRunning.enabled", false),
@@ -100,7 +99,6 @@ class App
         ("chat.port", (object)29152),
         ("chat.use_tls.enabled", false),
     };
-
     static (string, object)[] ClientConfigPlayer = {
         ("chat.disable_chat_restriction_muted_system_message", true),
         ("chat.force_filter.enabled", false),
@@ -132,19 +130,19 @@ class App
 
         if (!disableVanguard)
         {
-            Console.ForegroundColor = ConsoleColor.White; // Orange-like color
+            Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("Start this app with --novgk to disable Vanguard enforcement.");
             Console.ResetColor();
         }
         else
         {
-            Console.ForegroundColor = ConsoleColor.Green;
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
             Console.WriteLine("Vanguard enforcement is disabled.");
             Console.ResetColor();
         }
         if (!legacyhonor)
         {
-            Console.ForegroundColor = ConsoleColor.White; // Orange-like color
+            Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("Start this app with --legacyhonor use old honor system before patch 14.19.");
             Console.ResetColor();
         }
@@ -156,13 +154,13 @@ class App
         }
         if (!appearoffline)
         {
-            Console.ForegroundColor = ConsoleColor.White; // Orange-like color
+            Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("Start this app with --appearoffline to show as offline to your friends list.");
             Console.ResetColor();
         }
         else
         {
-            Console.ForegroundColor = ConsoleColor.Green;
+            Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("Despite what the League Client is showing you are appearing offline to your friends list and they cannot invite you to lobby");
             Console.ResetColor();
         }
@@ -232,7 +230,7 @@ class App
             return content;
         };
 
-        var process = leagueProxy.StartAndLaunchRCS(args);
+        var process = leagueProxy.StartAndLaunchRCS();
         if (process is null)
         {
             Console.ForegroundColor = ConsoleColor.Red;
@@ -242,10 +240,12 @@ class App
             return;
         }
 
-        var proxy = new XMPPProxy();
-        _ = proxy.RunAsync();
+        var ChatProxy = new XMPPProxy();
+        var RtmpProxy = new RTMPProxy();
 
-        await process.WaitForExitAsync();
+        var proxyTasks = Task.WhenAll(ChatProxy.RunAsync(), RtmpProxy.RunAsync());
+
+        await Task.WhenAny(process.WaitForExitAsync(), proxyTasks);
         leagueProxy.Stop();
     }
 

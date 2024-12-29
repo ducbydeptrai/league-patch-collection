@@ -21,7 +21,7 @@ namespace LeaguePatchCollection
         {
             var listener = new TcpListener(IPAddress.Any, Port);
             listener.Start();
-            Console.WriteLine($"[XMPP] Proxy listening on port {Port}");
+            Console.WriteLine($"[XMPP] Waiting for client on port {Port}...");
 
             while (true)
             {
@@ -41,7 +41,7 @@ namespace LeaguePatchCollection
                 var chatHost = SharedChatHost.Get();
                 if (string.IsNullOrEmpty(chatHost))
                 {
-                    Console.WriteLine("[XMPP] No valid chat.host found. Disconnecting client.");
+                    Console.WriteLine("[XMPP] No valid chat host found. Disconnecting client.");
                     return;
                 }
 
