@@ -5,7 +5,7 @@
 ## Features
 
 By default, this app provides the following enhancements:
-- **Vanguard Bypass**: Enjoy full functionality of the League Client and play matches without the need for Vanguard, safeguarding your privacy. To opt out of this feature, simply run the app with the --usevgk argument.
+- **Vanguard Bypass**: Access full functionality of the League Client and use Kbot without risk of being banned. You may also play matches without getting kicked (Vanguard Event), ensuring your privacy remains protected. To disable this feature, run the app with the --usevgk argument.
 - **Removal of Bloatware**: Removes the Legends of Runeterra (LoR) button and Info Hub.
 - **Streamlined Interface**: Eliminates promotions and other unnecessary clutter from the client.
 - **Ban Reason Fix**: Resolves issues where the ban reason doesn't display on certain accounts, fixing the infinite loading/unknown player bug.
