@@ -1,17 +1,17 @@
-# League Patch Collection – Vanguard Bypass & QOL Optimizer for League Client
+# League Patch Collection – Vanguard Disabler & QOL Optimizer for League Client
 
 **League Patch Collection** is a lightweight C# application designed for macOS and Windows to enhance your League of Legends experience. This tool introduces several quality-of-life features and optimizations League Client experience. See command line arguments additional options.
 
 ## Features
 
 By default, this app provides the following enhancements:
-- **Vanguard Bypass**: Access full functionality of the League Client and use Kbot without risk of being banned. You may also play matches without getting kicked (Vanguard Event), ensuring your privacy remains protected. To disable this feature, run the app with the --usevgk argument.
-- **Removal of Bloatware**: Removes the Legends of Runeterra (LoR) button and Info Hub.
-- **Streamlined Interface**: Eliminates promotions and other unnecessary clutter from the client.
-- **Ban Reason Fix**: Resolves issues where the ban reason doesn't display on certain accounts, fixing the infinite loading/unknown player bug.
-- **Enhanced Privacy**: Disables all tracking and telemetry services, including Sentry, to reduce tracking and prevent unnecessary background activity.
-- **Home Hub Fix**: Fixes home hubs taking longer than usual to load issue.
-- **[Coming Soon] Lobby Revealer**: A feature to reveal names in champ select.
+:white_check_mark: - **Vanguard Bypass**: Access full functionality of the League Client and use Kbot without risk of being banned. You may also play matches without getting kicked (Vanguard Event), ensuring your privacy remains protected. To disable this feature, run the app with the --usevgk argument.
+:white_check_mark: - **Removal of Bloatware**: Removes the Legends of Runeterra (LoR) button and Info Hub.
+:white_check_mark: - **Streamlined Interface**: Eliminates promotions and other unnecessary clutter from the client.
+:white_check_mark: - **Ban Reason Fix**: Resolves issues where the ban reason doesn't display on certain accounts, fixing the infinite loading/unknown player bug.
+:white_check_mark: - **Enhanced Privacy**: Disables all tracking and telemetry services, including Sentry, to reduce tracking and prevent unnecessary background activity.
+:white_check_mark: - **Home Hub Fix**: Fixes home hubs taking longer than usual to load issue.
+:yellow_circle: - **[Coming Soon] Lobby Revealer**: A feature to reveal names in champ select.
 
 ## Command-Line Arguments
 
@@ -29,7 +29,7 @@ You can use a shortcut to easily run the app with arguments:
 
 1. Right-click the `league-patch-collection.exe` file and select **Create Shortcut**.
 2. Right-click the newly created shortcut and select **Properties**.
-3. In the **Target** field, add the desired argument(s) at the end. For example: "C:\Path\To\league-patch-collection.exe" --novgk --legacyhonor
+3. In the **Target** field, add the desired argument(s) at the end. For example: "C:\Path\To\league-patch-collection.exe" --usevgk --legacyhonor
 4. Click **OK** to save the changes.
 5. Use this shortcut to run the app with your specified arguments.
 
