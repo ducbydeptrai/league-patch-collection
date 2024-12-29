@@ -122,46 +122,91 @@ class App
 
     public static async Task Main(string[] args)
     {
-        bool disableVanguard = args.Contains("--novgk");
+        Console.ForegroundColor = ConsoleColor.Magenta;
+        Console.WriteLine("=========================================");
+        Console.WriteLine("  Welcome to League Patch Collection");
+        Console.WriteLine("    Made with <3 by Cat Bot");
+        Console.WriteLine("=========================================");
+        Console.ResetColor();
+
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine("Important: IF YOU PAID FOR THIS, YOU GOT SCAMMED!");
+        Console.ResetColor();
+
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine("--------------------------------------------");
+        Console.WriteLine("Contact me:");
+        Console.WriteLine(" Discord : c4t_bot");
+        Console.WriteLine(" Reddit  : u/catbot4");
+        Console.WriteLine("--------------------------------------------");
+        Console.ResetColor();
+
+        bool usevgk = args.Contains("--usevgk");
         bool legacyhonor = args.Contains("--legacyhonor");
         bool appearoffline = args.Contains("--appearoffline");
 
         var leagueProxy = new LeagueProxy();
 
-        if (!disableVanguard)
+        if (!usevgk)
         {
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("Start this app with --novgk to disable Vanguard enforcement.");
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.WriteLine("--------------------------------------------");
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("Vanguard bypass is active. If you havent already you may uninstall vgk");
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.WriteLine("Vanguard is known to be invasive, running at a kernel level,");
+            Console.WriteLine("collecting data and sending it back to Riot HQ.");
+            Console.WriteLine("There's evidence of performance issues and even system instability.");
+            Console.WriteLine("If you don't care about privacy/security or morals, despite these concerns,");
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("launch this app with --usevgk to NOT use the Vanguard bypass.");
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.WriteLine("There are still other features in this app like showing offline,");
+            Console.WriteLine("using the old honor system, and bloatware removal that you'll benefit from.");
+            Console.WriteLine("--------------------------------------------");
             Console.ResetColor();
         }
-        else
+        else if (usevgk)
         {
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.WriteLine("Vanguard enforcement is disabled.");
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine("Vanguard enforcement is enabled. Just remember: privacy is a myth.");
+            Console.WriteLine("Looks like you’ve volunteered to be spied on. Hope they enjoy your data!");
+            Console.WriteLine("---------------------------------------");
             Console.ResetColor();
         }
         if (!legacyhonor)
         {
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("Start this app with --legacyhonor use old honor system before patch 14.19.");
+            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine("Use --legacyhonor to opt out of the cringe new honor system introduced in patch 14.9.");
             Console.ResetColor();
         }
         else
         {
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Using Legacy Honor system pre-patch 14.9");
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine("Congratulations! You’ve kept your sanity and opted out of honoring enemies.");
+            Console.WriteLine("--------------------------------------------");
             Console.ResetColor();
         }
         if (!appearoffline)
         {
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("Start this app with --appearoffline to show as offline to your friends list.");
+            Console.WriteLine("Use --appearoffline to appear offline to your friends list.");
+            Console.WriteLine("--------------------------------------------");
             Console.ResetColor();
         }
         else
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("Despite what the League Client is showing you are appearing offline to your friends list and they cannot invite you to lobby");
+            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine("Despite what the League Client shows, you appear offline to your friends list, and they can't invite you to a lobby. However, you can still invite them.");
+            Console.WriteLine("--------------------------------------------");
             Console.ResetColor();
         }
 
@@ -169,7 +214,7 @@ class App
         {
             var configObject = JsonSerializer.Deserialize<JsonNode>(content);
 
-            if (disableVanguard)
+            if (!usevgk)
             {
                 DisableVanguard(configObject);
             }
