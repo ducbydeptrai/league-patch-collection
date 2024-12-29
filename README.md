@@ -1,10 +1,11 @@
-# League Patch Collection - A Vanguard disabler and QOL optimizer for League Client. Works on Windows and macOS 
+# League Patch Collection – Vanguard Bypass & QOL Optimizer for League Client
 
 **League Patch Collection** is a lightweight C# application designed for macOS and Windows to enhance your League of Legends experience. This tool introduces several quality-of-life features and optimizations League Client experience. See command line arguments for best options.
 
 ## Features
 
 By default, this app provides the following enhancements:
+- **Vanguard Bypass**: Enjoy full functionality of the League Client and play matches without the need for Vanguard, safeguarding your privacy. To opt out of this feature, simply run the app with the --usevgk argument.
 - **Removal of Bloatware**: Removes the Legends of Runeterra (LoR) button and Info Hub.
 - **Streamlined Interface**: Eliminates promotions and other unnecessary clutter from the client.
 - **Ban Reason Fix**: Resolves issues where the ban reason doesn't display on certain accounts, fixing the infinite loading/unknown player bug.
