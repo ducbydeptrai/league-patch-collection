@@ -1,6 +1,6 @@
 # League Patch Collection – Vanguard Bypass & QOL Optimizer for League Client
 
-**League Patch Collection** is a lightweight C# application designed for macOS and Windows to enhance your League of Legends experience. This tool introduces several quality-of-life features and optimizations League Client experience. See command line arguments for best options.
+**League Patch Collection** is a lightweight C# application designed for macOS and Windows to enhance your League of Legends experience. This tool introduces several quality-of-life features and optimizations League Client experience. See command line arguments additional options.
 
 ## Features
 
