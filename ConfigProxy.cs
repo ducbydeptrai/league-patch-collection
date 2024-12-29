@@ -137,7 +137,7 @@ class App
         Console.WriteLine("--------------------------------------------");
         Console.WriteLine("Contact me:");
         Console.WriteLine(" Discord : c4t_bot");
-        Console.WriteLine(" Reddit  : u/catbot4");
+        Console.WriteLine(" Reddit  : u/Cat_Bot4");
         Console.WriteLine("--------------------------------------------");
         Console.ResetColor();
 
