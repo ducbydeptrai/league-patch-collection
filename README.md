@@ -6,12 +6,12 @@
 
 By default, this app provides the following enhancements:
 - :white_check_mark: **Vanguard Bypass**: Access full functionality of the League Client and use Kbot without risk of being banned. You may also play matches without getting kicked (Vanguard Event), ensuring your privacy remains protected. To disable this feature, run the app with the --usevgk argument.
-- **Removal of Bloatware**: Removes the Legends of Runeterra (LoR) button and Info Hub.
-- **Streamlined Interface**: Eliminates promotions and other unnecessary clutter from the client.
-- **Ban Reason Fix**: Resolves issues where the ban reason doesn't display on certain accounts, fixing the infinite loading/unknown player bug.
-- **Enhanced Privacy**: Disables all tracking and telemetry services, including Sentry, to reduce tracking and prevent unnecessary background activity.
-- **Home Hub Fix**: Fixes home hubs taking longer than usual to load issue.
-- **[Coming Soon] Lobby Revealer**: A feature to reveal names in champ select.
+- :white_check_mark: **Removal of Bloatware**: Removes the Legends of Runeterra (LoR) button and Info Hub.
+- :white_check_mark: **Streamlined Interface**: Eliminates promotions and other unnecessary clutter from the client.
+- :white_check_mark: **Ban Reason Fix**: Resolves issues where the ban reason doesn't display on certain accounts, fixing the infinite loading/unknown player bug.
+- :white_check_mark: **Enhanced Privacy**: Disables all tracking and telemetry services, including Sentry, to reduce tracking and prevent unnecessary background activity.
+- :white_check_mark: **Home Hub Fix**: Fixes home hubs taking longer than usual to load issue.
+- :yellow_circle: **[Coming Soon] Lobby Revealer**: A feature to reveal names in champ select.
 
 ## Command-Line Arguments
 
