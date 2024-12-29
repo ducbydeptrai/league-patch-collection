@@ -22,8 +22,6 @@ namespace LeaguePatchCollection
                 Arguments = string.Join(" ", allArgs),
                 RedirectStandardOutput = true,  // Redirecting standard output
                 RedirectStandardError = true,   // Redirecting standard error
-                UseShellExecute = false,        // Disable shell execution (default behavior)
-                CreateNoWindow = true           // Do not create a new window
             };
 
             var process = Process.Start(processStartInfo);
