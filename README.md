@@ -1,4 +1,4 @@
-# League Patch Collection - A Quality-of-Life and Vanguard disabler for Windows and macOS 
+# League Patch Collection - A Vanguard disabler and QOL optimizer for League Client. Works on Windows and macOS 
 
 **League Patch Collection** is a lightweight C# application designed for macOS and Windows to enhance your League of Legends experience. This tool introduces several quality-of-life features and optimizations League Client experience. See command line arguments for best options.
 
