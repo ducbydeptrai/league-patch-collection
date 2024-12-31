@@ -363,10 +363,10 @@ class App
     public static void PublicConfig(JsonNode? configObject)
     {
         SetConfigValues(configObject, OptimizeClientConfigPublic);
-        AppendLauncherArgumentsWin(configObject, "keystone.products.league_of_legends.patchlines.live");
-        AppendLauncherArgumentsWin(configObject, "keystone.products.league_of_legends.patchlines.pbe");
-        AppendLauncherArgumentsMac(configObject, "keystone.products.league_of_legends.patchlines.live");
-        AppendLauncherArgumentsMac(configObject, "keystone.products.league_of_legends.patchlines.pbe");
+        //AppendLauncherArgumentsWin(configObject, "keystone.products.league_of_legends.patchlines.live");
+        //AppendLauncherArgumentsWin(configObject, "keystone.products.league_of_legends.patchlines.pbe");
+        //AppendLauncherArgumentsMac(configObject, "keystone.products.league_of_legends.patchlines.live");
+        //AppendLauncherArgumentsMac(configObject, "keystone.products.league_of_legends.patchlines.pbe");
         SetConfig(configObject, "lol.client_settings.datadog_rum_config", "applicationID", "");
         SetConfig(configObject, "lol.client_settings.datadog_rum_config", "clientToken", "");
         SetConfig(configObject, "lol.client_settings.datadog_rum_config", "isEnabled", false);
