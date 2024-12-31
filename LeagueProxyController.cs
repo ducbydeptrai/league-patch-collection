@@ -12,6 +12,7 @@ using System.Text.Json;
 using Swan.Logging;
 using System.Net;
 using System.IO.Compression;
+using static LeaguePatchCollection.SystemYamlLive;
 
 namespace LeaguePatchCollection;
 
@@ -199,8 +200,6 @@ internal sealed class LedgeController : WebApiController
 
         if (string.IsNullOrEmpty(ledgeUrl))
         {
-            // Handle the case where LEDGE_URL is not set or is empty.
-            // You can log an error, throw an exception, or provide a fallback URL.
             throw new InvalidOperationException("Ledge URL is not set.");
         }
 
@@ -394,17 +393,16 @@ public class LeagueProxy
             throw new Exception("Proxy servers are already running!");
 
         TerminateRiotServices();
+        LoadProductInstallPath();
 
         Logger.UnregisterLogger<ConsoleLogger>();
         _ServerCTS = new CancellationTokenSource();
 
         _ConfigServer.Start(_ServerCTS.Token);
         configServerUrl = _ConfigServer.Url;
-        //Console.WriteLine($"Config Server running at: {_ConfigServer.Url}");
 
         _LedgeServer.Start(_ServerCTS.Token);
         ledgeServerUrl = _LedgeServer.Url;
-        //Console.WriteLine($"Ledge Server running at: {_LedgeServer.Url}");
     }
 
     public void Stop()

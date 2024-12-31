@@ -1,12 +1,7 @@
 ﻿using EmbedIO;
-using System;
-using System.IO.Compression;
-using System.Net;
-using System.Net.Security;
-using System.Net.Sockets;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+
 
 namespace LeaguePatchCollection;
 
@@ -93,13 +88,12 @@ class App
         ("riot.eula.agreementBaseURI", ""),
         ("rms.allow_bad_cert.enabled", true)
     };
-    static (string, object)[] ChatConfigKeys = {
+
+    static (string, object)[] ClientConfigPlayer = {
         ("chat.allow_bad_cert.enabled", true),
         ("chat.host", "127.0.0.1"),
         ("chat.port", (object)29152),
         ("chat.use_tls.enabled", false),
-    };
-    static (string, object)[] ClientConfigPlayer = {
         ("chat.disable_chat_restriction_muted_system_message", true),
         ("chat.force_filter.enabled", false),
         ("keystone.client.feature_flags.chrome_devtools.enabled", true),
@@ -143,7 +137,6 @@ class App
 
         bool usevgk = args.Contains("--usevgk");
         bool legacyhonor = args.Contains("--legacyhonor");
-        bool appearoffline = args.Contains("--appearoffline");
 
         var leagueProxy = new LeagueProxy();
 
@@ -186,6 +179,7 @@ class App
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("--------------------------------------------");
             Console.WriteLine("Use --legacyhonor to opt out of the cringe new honor system introduced in patch 14.9.");
+            Console.WriteLine("--------------------------------------------");
             Console.ResetColor();
         }
         else
@@ -193,21 +187,6 @@ class App
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("--------------------------------------------");
             Console.WriteLine("Congratulations! You’ve kept your sanity and opted out of honoring enemies.");
-            Console.WriteLine("--------------------------------------------");
-            Console.ResetColor();
-        }
-        if (!appearoffline)
-        {
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("Use --appearoffline to appear offline to your friends list.");
-            Console.WriteLine("--------------------------------------------");
-            Console.ResetColor();
-        }
-        else
-        {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("--------------------------------------------");
-            Console.WriteLine("Despite what the League Client shows, you appear offline to your friends list, and they can't invite you to a lobby. However, you can still invite them.");
             Console.WriteLine("--------------------------------------------");
             Console.ResetColor();
         }
@@ -244,11 +223,6 @@ class App
             if (chatHostNode != null)
             {
                 SharedChatHost.Set(chatHostNode.ToString());
-            }
-
-            if (appearoffline)
-            {
-                PlayerChatConfig(configObject);
             }
 
             PlayerConfig(configObject);
@@ -389,7 +363,10 @@ class App
     public static void PublicConfig(JsonNode? configObject)
     {
         SetConfigValues(configObject, OptimizeClientConfigPublic);
-
+        AppendLauncherArgumentsWin(configObject, "keystone.products.league_of_legends.patchlines.live");
+        AppendLauncherArgumentsWin(configObject, "keystone.products.league_of_legends.patchlines.pbe");
+        AppendLauncherArgumentsMac(configObject, "keystone.products.league_of_legends.patchlines.live");
+        AppendLauncherArgumentsMac(configObject, "keystone.products.league_of_legends.patchlines.pbe");
         SetConfig(configObject, "lol.client_settings.datadog_rum_config", "applicationID", "");
         SetConfig(configObject, "lol.client_settings.datadog_rum_config", "clientToken", "");
         SetConfig(configObject, "lol.client_settings.datadog_rum_config", "isEnabled", false);
@@ -409,17 +386,13 @@ class App
     public static void PlayerConfig(JsonNode? configObject)
     {
         SetConfigValues(configObject, ClientConfigPlayer);
+        chatAffinity(configObject);
         NoLoyalty(configObject);
         SetConfig(configObject, "lol.client_settings.deepLinks", "launchLorEnabled", false);
         SetEmptyArrayForConfig(configObject, "chat.xmpp_stanza_response_telemetry_allowed_codes");
         SetEmptyArrayForConfig(configObject, "chat.xmpp_stanza_response_telemetry_allowed_iqids");
     }
 
-    public static void PlayerChatConfig(JsonNode? configObject)
-    {
-        SetConfigValues(configObject, ChatConfigKeys);
-        chatAffinity(configObject);
-    }
 
     public static class SharedLeagueEdgeUrl
     {
@@ -490,6 +463,47 @@ class App
             }
         }
     }
+
+    static void AppendLauncherArgumentsWin(JsonNode configObject, string patchline)
+    {
+        var productNode = configObject?[patchline];
+        if (productNode is not null)
+        {
+            var configs = productNode["platforms"]?["win"]?["configurations"]?.AsArray();
+            if (configs != null)
+            {
+                foreach (var config in configs)
+                {
+                    var launcherArray = config["launcher"]?["arguments"]?.AsArray();
+                    if (launcherArray is not null)
+                    {
+                        launcherArray.Add("--system-yaml-override=\"Config/system.yaml\"");
+                    }
+                }
+            }
+        }
+    }
+
+    static void AppendLauncherArgumentsMac(JsonNode configObject, string patchline)
+    {
+        var productNode = configObject?[patchline];
+        if (productNode is not null)
+        {
+            var configs = productNode["platforms"]?["mac"]?["configurations"]?.AsArray();
+            if (configs != null)
+            {
+                foreach (var config in configs)
+                {
+                    var launcherArray = config["launcher"]?["arguments"]?.AsArray();
+                    if (launcherArray is not null)
+                    {
+                        launcherArray.Add("--system-yaml-override=\"Config/system.yaml\"");
+                    }
+                }
+            }
+        }
+    }
+
     static void RemoveVanguardDependencies(JsonNode configObject, string path)
     {
         var productNode = configObject?[path];

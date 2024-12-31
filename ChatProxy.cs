@@ -14,11 +14,15 @@ namespace LeaguePatchCollection
 {
     public class XMPPProxy
     {
+        
         private const int Port = 29152; // Local server listening port (insecure)
         private const int XMPPPort = 5223; // Real XMPP server secure port
+        private static bool enableOffline = false;
 
         public async Task RunAsync()
         {
+            _ = Task.Run(() => HandleConsoleInput());
+
             var listener = new TcpListener(IPAddress.Any, Port);
             listener.Start();
             Console.WriteLine($"[XMPP] Waiting for client on port {Port}...");
@@ -74,7 +78,6 @@ namespace LeaguePatchCollection
             }
         }
 
-
         private async Task ForwardDataAsync(Stream source, Stream destination, string direction)
         {
             var buffer = new byte[8192];
@@ -86,7 +89,7 @@ namespace LeaguePatchCollection
                 {
                     var message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
-                    if (direction == "Client -> XMPP Server")
+                    if (direction == "Client -> XMPP Server" && enableOffline)
                     {
                         message = Regex.Replace(message, @"<show>chat</show>", "<show>offline</show>");
                         message = Regex.Replace(message, @"<st>chat</st>", "<st>offline</st>");
@@ -113,8 +116,43 @@ namespace LeaguePatchCollection
                 return true;
             }
 
-            Console.WriteLine($"[XMPP] Certificate error: {sslPolicyErrors}");
             return true; // Allow self-signed certificates
+        }
+
+        private static void HandleConsoleInput()
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine("[XMPP] Type 0 to activate offline and 1 to disable it. NOTE: there is about a 1 minute delay on the backend when updating status");
+            Console.WriteLine("--------------------------------------------");
+            Console.ResetColor();
+
+            while (true)
+            {
+                var input = Console.ReadLine();
+                if (input == "0")
+                {
+                    enableOffline = true;
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine("--------------------------------------------");
+                    Console.WriteLine("[XMPP] Offline mode activated. Despite what League client may be showing, you are appearing offline and your friends cannot invite you, however, you can still invite them");
+                    Console.WriteLine("--------------------------------------------");
+                    Console.ResetColor();
+                }
+                else if (input == "1")
+                {
+                    enableOffline = false;
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine("--------------------------------------------");
+                    Console.WriteLine("[XMPP] Online mode activated.");
+                    Console.WriteLine("--------------------------------------------");
+                    Console.ResetColor();
+                }
+                else
+                {
+                    Console.WriteLine("[XMPP] Invalid input. Type 0 to activate offline mode or 1 to disable it.");
+                }
+            }
         }
     }
 }
