@@ -15,8 +15,8 @@ namespace LeaguePatchCollection
     public class XMPPProxy
     {
         
-        private const int Port = 29152; // Local server listening port (insecure)
-        private const int XMPPPort = 5223; // Real XMPP server secure port
+        private const int Port = 29152;
+        private const int XMPPPort = 5223; 
         private static bool enableOffline = false;
 
         public async Task RunAsync()
@@ -93,6 +93,8 @@ namespace LeaguePatchCollection
                     {
                         message = Regex.Replace(message, @"<show>chat</show>", "<show>offline</show>");
                         message = Regex.Replace(message, @"<st>chat</st>", "<st>offline</st>");
+                        message = Regex.Replace(message, @"<show>away</show>", "<show>offline</show>");
+                        message = Regex.Replace(message, @"<st>away</st>", "<st>offline</st>");
                         message = Regex.Replace(message, "<league_of_legends>.*?</league_of_legends>", string.Empty);
                         message = Regex.Replace(message, "<valorant>.*?</valorant>", string.Empty);
                         message = Regex.Replace(message, "<bacon>.*?</bacon>", string.Empty);
