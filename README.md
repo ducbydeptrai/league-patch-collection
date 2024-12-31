@@ -41,7 +41,7 @@ You can use a shortcut to easily run the app with arguments:
     ```
 3. Run the app with the desired argument. For example:
     ```bash
-    ./mac-league-patch-collection --appearoffline
+    ./mac-league-patch-collection --legacyhonor
     ```
 
 ## Installation and Usage
