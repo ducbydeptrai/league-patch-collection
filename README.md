@@ -21,7 +21,6 @@ You can enhance the functionality further by using command-line arguments when r
 ### Arguments
 - `--usevgk`:  Disables vanguard bypass feature.
 - `--legacyhonor`: Reverts the honor system to its pre-patch 14.9 state, removing the option to honor enemies.
-- `--appearoffline`: Masks your chat status to appear offline to your friends list. *(Note: While the League client may still show you as online, your status will appear offline to others — this is a client-side visual bug.)*
 
 ### Running with Arguments
 
