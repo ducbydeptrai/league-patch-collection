@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -8,16 +8,15 @@
     <Nullable>enable</Nullable>
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>false</SelfContained>
-    <Version>4.3.0</Version>
-    <VersionPrefix>4.3.0</VersionPrefix>
+    <Version>4.3.6</Version>
+    <VersionPrefix>4.3.6</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="EmbedIO" Version="3.5.2" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
     <PackageReference Include="Unosquare.Swan.Lite" Version="3.1.0" />
+    <PackageReference Include="YamlDotNet" Version="16.3.0" />
   </ItemGroup>
 
 </Project>
-
-
