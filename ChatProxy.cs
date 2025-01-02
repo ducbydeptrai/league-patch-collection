@@ -14,9 +14,9 @@ namespace LeaguePatchCollection
 {
     public class XMPPProxy
     {
-        
-        private const int Port = 29152;
-        private const int XMPPPort = 5223; 
+
+        private const int Port = 29153;
+        private const int XMPPPort = 5223;
         private static bool enableOffline = false;
 
         public async Task RunAsync()

@@ -118,7 +118,7 @@ namespace LeaguePatchCollection
                 string yamlContent = File.ReadAllText(configFilePath);
 
                 yamlContent = Regex.Replace(yamlContent, @"(?<=lcds_host\s*:\s*)\S+", "\"127.0.0.1\"");
-                yamlContent = Regex.Replace(yamlContent, @"(?<=lcds_port\s*:\s*)\d+", "29153");
+                yamlContent = Regex.Replace(yamlContent, @"(?<=lcds_port\s*:\s*)\d+", "29154");
                 yamlContent = Regex.Replace(yamlContent, @"(?<=use_tls\s*:\s*)\btrue\b|\bfalse\b", "false");
 
                 File.WriteAllText(configFilePath, yamlContent);

@@ -1,7 +1,8 @@
 ﻿using EmbedIO;
+using System.Net.Http;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-
 
 namespace LeaguePatchCollection;
 
@@ -51,7 +52,7 @@ class App
         ("keystone.client.feature_flags.username_required_modal.enabled", false),
         ("keystone.client_config.diagnostics_enabled", false),
         ("games_library.special_events.enabled", false),
-        //("keystone.player-affinity.playerAffinityServiceURL", "http://127.0.0.1:29150"),
+        ("keystone.player-affinity.playerAffinityServiceURL", "http://127.0.0.1:29151"),
         ("keystone.telemetry.heartbeat_custom_metrics", false),
         ("keystone.riotgamesapi.telemetry.heartbeat_products", false),
         ("keystone.riotgamesapi.telemetry.heartbeat_voice_chat_metrics", false),
@@ -92,7 +93,7 @@ class App
     static (string, object)[] ClientConfigPlayer = {
         ("chat.allow_bad_cert.enabled", true),
         ("chat.host", "127.0.0.1"),
-        ("chat.port", (object)29152),
+        ("chat.port", (object)29153),
         ("chat.use_tls.enabled", false),
         ("chat.disable_chat_restriction_muted_system_message", true),
         ("chat.force_filter.enabled", false),
@@ -106,7 +107,7 @@ class App
         ("keystone.telemetry.newrelic_events_v2_enabled", false),
         ("keystone.telemetry.newrelic_metrics_v1_enabled", false),
         ("keystone.telemetry.newrelic_schemaless_events_v2_enabled", false),
-        //("lol.client_settings.league_edge.url", "http://127.0.0.1:29151"),
+        //("lol.client_settings.league_edge.url", "http://127.0.0.1:29152"),
         ("lol.client_settings.metrics.enabled", false),
         ("lol.client_settings.player_behavior.display_v1_ban_notifications", true),
         ("lol.client_settings.player_behavior.use_reform_card_v2", false),
@@ -195,6 +196,12 @@ class App
         {
             var configObject = JsonSerializer.Deserialize<JsonNode>(content);
 
+            var GeopassUrlNode = configObject?["keystone.player-affinity.playerAffinityServiceURL"];
+            if (GeopassUrlNode != null)
+            {
+                SharedGeopassUrl.Set(GeopassUrlNode.ToString());
+            }
+
             if (!usevgk)
             {
                 DisableVanguard(configObject);
@@ -212,23 +219,44 @@ class App
         {
             var configObject = JsonSerializer.Deserialize<JsonNode>(content);
 
+            var userRegion = GeopassHandler.GetUserRegion();
+            //Console.WriteLine($"User Region Retrieved: {userRegion ?? "Unavailable"}");
 
-            var leagueEdgeUrlNode = configObject?["lol.client_settings.league_edge.url"];
-            if (leagueEdgeUrlNode != null)
+            var chatAffinitiesNode = configObject?["chat.affinities"];
+            if (chatAffinitiesNode != null && chatAffinitiesNode is JsonObject chatAffinities)
             {
-                SharedLeagueEdgeUrl.Set(leagueEdgeUrlNode.ToString());
-            }
-
-            var chatHostNode = configObject?["chat.host"];
-            if (chatHostNode != null)
-            {
-                SharedChatHost.Set(chatHostNode.ToString());
+                if (!string.IsNullOrEmpty(userRegion) && chatAffinities[userRegion] is JsonNode tempChatHost)
+                {
+                    SharedChatHost.Set(tempChatHost.ToString());
+                    //Console.WriteLine($"Matched Chat Affinity for Region '{userRegion}': {tempChatHost}");
+                }
+                else
+                {
+                    var chatHostNode = configObject?["chat.host"];
+                    if (chatHostNode != null)
+                    {
+                        SharedChatHost.Set(chatHostNode.ToString());
+                    }
+                }
             }
 
             PlayerConfig(configObject);
 
             return JsonSerializer.Serialize(configObject);
         };
+
+
+
+        leagueProxy.Events.OnProcessGeopass += (string content, IHttpRequest request) =>
+        {
+            if (request.Url.LocalPath == "/pas/v1/service/chat")
+            {
+                GeopassHandler.DecodeAndStoreUserRegion(content); // Pass the content to the handler
+            }
+            return content; // Ensure to return the content as is
+        };
+
+
 
         leagueProxy.Events.OnProcessLedge += (string content, IHttpRequest request) =>
         {
@@ -393,6 +421,20 @@ class App
         SetEmptyArrayForConfig(configObject, "chat.xmpp_stanza_response_telemetry_allowed_iqids");
     }
 
+    public static class SharedGeopassUrl
+    {
+        public static string? _GeopassUrl;
+
+        public static string? Get()
+        {
+            return _GeopassUrl;
+        }
+
+        public static void Set(string url)
+        {
+            _GeopassUrl = url;
+        }
+    }
 
     public static class SharedLeagueEdgeUrl
     {
@@ -408,6 +450,52 @@ class App
             _leagueEdgeUrl = url;
         }
     }
+
+    public static class GeopassHandler
+    {
+        private static string _userRegion;
+
+        public static void DecodeAndStoreUserRegion(string content)
+        {
+            _userRegion = JwtDecoder.DecodeAndGetRegion(content);
+        }
+
+        public static string GetUserRegion()
+        {
+            return _userRegion;
+        }
+    }
+
+    public class JwtDecoder
+    {
+        private static string _storedRegion;
+
+        public static string DecodeAndGetRegion(string jwtToken)
+        {
+            try
+            {
+
+                var pasJwtContent = jwtToken.Split('.')[1];
+                var validBase64 = pasJwtContent.PadRight((pasJwtContent.Length / 4 * 4) + (pasJwtContent.Length % 4 == 0 ? 0 : 4), '=');
+                var pasJwtString = Encoding.UTF8.GetString(Convert.FromBase64String(validBase64));
+                var pasJwtJson = JsonSerializer.Deserialize<JsonNode>(pasJwtString);
+                _storedRegion = pasJwtJson?["affinity"]?.GetValue<string>();
+
+                return _storedRegion ?? throw new Exception("JWT payload is malformed or missing 'affinity'.");
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public static string GetStoredRegion()
+        {
+            return _storedRegion;
+        }
+    }
+
+
     public static class SharedChatHost
     {
         public static string? _chatHost;
@@ -420,21 +508,6 @@ class App
         public static void Set(string host)
         {
             _chatHost = host;
-        }
-    }
-
-    public static class SharedChatHostUrl
-    {
-        public static string? _chatHostUrl;
-
-        public static string? Get()
-        {
-            return _chatHostUrl;
-        }
-
-        public static void Set(string url)
-        {
-            _chatHostUrl = url;
         }
     }
 
