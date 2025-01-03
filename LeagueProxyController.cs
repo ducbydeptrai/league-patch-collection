@@ -69,7 +69,7 @@ public sealed class LeagueProxyEvents
 
 internal sealed class ConfigController : WebApiController
 {
-    private static HttpClient _Client = new(new HttpClientHandler { UseCookies = false });
+    private static HttpClient _Client = new(new HttpClientHandler { UseCookies = false, UseProxy = false, Proxy = null });
     private const string BASE_URL = "https://clientconfig.rpg.riotgames.com";
 
     private static LeagueProxyEvents _Events => LeagueProxyEvents.Instance;
@@ -144,10 +144,9 @@ internal sealed class ConfigController : WebApiController
         HttpContext.Response.OutputStream.Close();
     }
 }
-
 internal sealed class LedgeController : WebApiController
 {
-    private static HttpClient _Client = new(new HttpClientHandler { UseCookies = false });
+private static HttpClient _Client = new(new HttpClientHandler { UseCookies = false, UseProxy = false, Proxy = null });
 
     private static string LEDGE_URL => EnsureLedgeUrlIsSet();
 
@@ -325,10 +324,9 @@ internal sealed class LedgeController : WebApiController
         HttpContext.Response.OutputStream.Close();
     }
 }
-
 internal sealed class GeopassController : WebApiController
 {
-    private static HttpClient _Client = new(new HttpClientHandler { UseCookies = false });
+    private static HttpClient _Client = new(new HttpClientHandler { UseCookies = false, UseProxy = false, Proxy = null });
 
     private static string GEOPASS_URL => EnsureGeopassUrlIsSet();
 
