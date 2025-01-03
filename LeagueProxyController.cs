@@ -133,6 +133,13 @@ internal sealed class ConfigController : WebApiController
         HttpContext.Response.ContentLength64 = responseBuffer.Length;
         HttpContext.Response.StatusCode = (int)response.StatusCode;
 
+        if (response.StatusCode == HttpStatusCode.Forbidden)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Client config request Cloudflare blocked (403), please open issue on GitHub or contact c4t_bot on Discord");
+            Console.ResetColor();
+        }
+
         await HttpContext.Response.OutputStream.WriteAsync(responseBuffer, 0, responseBuffer.Length);
         HttpContext.Response.OutputStream.Close();
     }
@@ -451,6 +458,13 @@ internal sealed class GeopassController : WebApiController
         if (response.Content.Headers.ContentEncoding.Contains("gzip"))
         {
             HttpContext.Response.Headers.Add("Content-Encoding", "gzip");
+        }
+
+        if (response.StatusCode == HttpStatusCode.Forbidden)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Geopass request Cloudflare blocked (403), please open issue on GitHub or contact c4t_bot on Discord");
+            Console.ResetColor();
         }
 
         await response.Content.CopyToAsync(HttpContext.Response.OutputStream);
