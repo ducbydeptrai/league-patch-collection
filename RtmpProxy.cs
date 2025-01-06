@@ -22,7 +22,7 @@ public class RTMPProxy
         _cancellationTokenSource = new CancellationTokenSource();
         var listener = new TcpListener(IPAddress.Any, Port);
         listener.Start();
-        Console.WriteLine($"[RTMP] Waiting for client on port {Port}...");
+        Console.WriteLine($"[RTMP] Proxy is not implemented/available yet...");
 
         try
         {
