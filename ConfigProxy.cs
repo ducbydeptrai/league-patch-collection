@@ -85,7 +85,7 @@ class App
             Console.ResetColor();
         }
 
-        leagueProxy.Events.OnProcessConfigPublic += (string content, IHttpRequest request) =>
+        leagueProxy.Events.OnClientConfigPublic += (string content, IHttpRequest request) =>
         {
             var configObject = JsonSerializer.Deserialize<JsonNode>(content);
 
@@ -174,6 +174,8 @@ class App
             SetKey(configObject, "lol.game_client_settings.telemetry.standalone.nr_sample_rate", 0);
             SetKey(configObject, "lol.game_client_settings.telemetry.standalone.sample_rate", 0);
             SetKey(configObject, "riot.eula.agreementBaseURI", "");
+            SetKey(configObject, "rms.host", "ws://127.0.0.1");
+            SetKey(configObject, "rms.port", 29155);
             SetKey(configObject, "rms.allow_bad_cert.enabled", true);
 
             SetNestedKeys(configObject, "lol.client_settings.datadog_rum_config", "applicationID", "");
@@ -200,7 +202,7 @@ class App
             return JsonSerializer.Serialize(configObject);
         };
 
-        leagueProxy.Events.OnProcessConfigPlayer += (string content, IHttpRequest request) =>
+        leagueProxy.Events.OnClientConfigPlayer += (string content, IHttpRequest request) =>
         {
             var configObject = JsonSerializer.Deserialize<JsonNode>(content);
 
@@ -222,12 +224,42 @@ class App
                 }
             }
 
-            if (configObject["chat.affinities"] is JsonObject affinities)
+            var userRegionRms = GeopassHandlerRms.GetUserRegionRms();
+            var RmsAffinitiesNode = configObject?["rms.affinities"];
+            if (RmsAffinitiesNode != null && RmsAffinitiesNode is JsonObject rmsAffinities)
+            {
+                if (!string.IsNullOrEmpty(userRegionRms) && rmsAffinities[userRegionRms] is JsonNode tempRmsHost)
+                {
+                    SharedRmsHost.Set(tempRmsHost.ToString()); // Use the derived RMS host.
+                }
+                else
+                {
+                    SharedRmsHost.Set("wss://unconfigured.edge.rms.si.riotgames.com");
+                }
+            }
+
+
+            var leagueEdgeUrlNode = configObject?["lol.client_settings.league_edge.url"];
+            if (leagueEdgeUrlNode != null)
+            {
+                SharedLeagueEdgeUrl.Set(leagueEdgeUrlNode.ToString());
+            }
+
+            if (configObject?["chat.affinities"] is JsonObject affinities)
             {
                 var keys = affinities.Select(entry => entry.Key).ToArray();
                 foreach (var key in keys)
                 {
                     affinities[key] = "127.0.0.1";
+                }
+            }
+
+            if (configObject?["rms.affinities"] is JsonObject RmsAffinities)
+            {
+                var keys = RmsAffinities.Select(entry => entry.Key).ToArray();
+                foreach (var key in keys)
+                {
+                    RmsAffinities[key] = "ws://127.0.0.1";
                 }
             }
 
@@ -258,7 +290,7 @@ class App
             SetKey(configObject, "keystone.telemetry.newrelic_events_v2_enabled", false);
             SetKey(configObject, "keystone.telemetry.newrelic_metrics_v1_enabled", false);
             SetKey(configObject, "keystone.telemetry.newrelic_schemaless_events_v2_enabled", false);
-            //SetKey(configObject, "lol.client_settings.league_edge.url", "http://127.0.0.1:29152");
+            SetKey(configObject, "lol.client_settings.league_edge.url", "http://127.0.0.1:29152");
             SetKey(configObject, "lol.client_settings.metrics.enabled", false);
             SetKey(configObject, "lol.client_settings.player_behavior.display_v1_ban_notifications", true);
             SetKey(configObject, "lol.game_client_settings.logging.enable_http_public_logs", false);
@@ -272,31 +304,30 @@ class App
             return JsonSerializer.Serialize(configObject);
         };
 
-        leagueProxy.Events.OnProcessGeopass += (string content, IHttpRequest request) =>
+        leagueProxy.Events.OnClientGeopass += (string content, IHttpRequest request) =>
         {
             if (request.Url.LocalPath == "/pas/v1/service/chat")
             {
                 GeopassHandler.DecodeAndStoreUserRegion(content); // Pass the content to the handler
             }
+            if (request.Url.LocalPath == "/pas/v1/service/rms")
+            {
+                GeopassHandlerRms.DecodeAndStoreUserRegionRms(content); // Pass the content to the handler
+            }
             return content;
         };
 
-        leagueProxy.Events.OnProcessLedge += (string content, IHttpRequest request) =>
+        leagueProxy.Events.OnClientLedge += (string content, IHttpRequest request) =>
         {
 
             if (request.Url.LocalPath == "/leaverbuster-ledge/restrictionInfo")
             {
-
                 var configObject = JsonSerializer.Deserialize<JsonNode>(content);
 
-                if (configObject["rankedRestrictionEntryDto"] != null)
-                {
-                    configObject["rankedRestrictionEntryDto"]["rankedRestrictionAckNeeded"] = false;
-                }
-
+                SetNestedKeys(configObject, "rankedRestrictionEntryDto", "rankedRestrictionAckNeeded", false);
+                SetNestedKeys(configObject, "leaverBusterEntryDto", "preLockoutAckNeeded", false);
+                SetNestedKeys(configObject, "leaverBusterEntryDto", "onLockoutAckNeeded", false);
                 content = JsonSerializer.Serialize(configObject);
-
-                Console.WriteLine("Modified content: " + content);
             }
 
             return content;
@@ -314,8 +345,9 @@ class App
 
         var ChatProxy = new XMPPProxy();
         var RtmpProxy = new RTMPProxy();
+        var RmsProxy = new RMSProxy();
 
-        var proxyTasks = Task.WhenAll(ChatProxy.RunAsync(), RtmpProxy.RunAsync());
+        var proxyTasks = Task.WhenAll(ChatProxy.RunAsync(), RtmpProxy.RunAsync(), RmsProxy.RunAsync());
 
         await Task.WhenAny(process.WaitForExitAsync(), proxyTasks);
         leagueProxy.Stop();
@@ -445,6 +477,20 @@ class App
             return _userRegion;
         }
     }
+    public static class GeopassHandlerRms
+    {
+        private static string _userRegionRms;
+
+        public static void DecodeAndStoreUserRegionRms(string content)
+        {
+            _userRegionRms = JwtDecoderRms.DecodeAndGetRegionRms(content);
+        }
+
+        public static string GetUserRegionRms()
+        {
+            return _userRegionRms;
+        }
+    }
     public class JwtDecoder
     {
         private static string _storedRegion;
@@ -473,6 +519,34 @@ class App
             return _storedRegion;
         }
     }
+    public class JwtDecoderRms
+    {
+        private static string _storedRegionRms;
+
+        public static string DecodeAndGetRegionRms(string jwtToken)
+        {
+            try
+            {
+
+                var pasJwtContent = jwtToken.Split('.')[1];
+                var validBase64 = pasJwtContent.PadRight((pasJwtContent.Length / 4 * 4) + (pasJwtContent.Length % 4 == 0 ? 0 : 4), '=');
+                var pasJwtString = Encoding.UTF8.GetString(Convert.FromBase64String(validBase64));
+                var pasJwtJson = JsonSerializer.Deserialize<JsonNode>(pasJwtString);
+                _storedRegionRms = pasJwtJson?["affinity"]?.GetValue<string>();
+
+                return _storedRegionRms ?? throw new Exception("JWT payload is malformed or missing 'affinity'.");
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public static string GetStoredRegionRms()
+        {
+            return _storedRegionRms;
+        }
+    }
     public static class SharedChatHost
     {
         public static string? _chatHost;
@@ -487,6 +561,22 @@ class App
             _chatHost = host;
         }
     }
+
+    public static class SharedRmsHost
+    {
+        public static string? _RmsHost;
+
+        public static string? Get()
+        {
+            return _RmsHost;
+        }
+
+        public static void Set(string host)
+        {
+            _RmsHost = host;
+        }
+    }
+
     static void AppendLauncherArgumentsWin(JsonNode configObject, string patchline)
     {
         var productNode = configObject?[patchline];

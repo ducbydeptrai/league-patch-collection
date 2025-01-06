@@ -8,8 +8,8 @@
     <Nullable>enable</Nullable>
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>false</SelfContained>
-    <Version>4.4.0</Version>
-    <VersionPrefix>4.4.0</VersionPrefix>
+    <Version>4.3.4</Version>
+    <VersionPrefix>4.3.4</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>

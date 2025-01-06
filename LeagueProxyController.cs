@@ -13,6 +13,10 @@ using Swan.Logging;
 using System.Net;
 using System.IO.Compression;
 using static LeaguePatchCollection.SystemYamlLive;
+using static System.Net.Mime.MediaTypeNames;
+using Swan.Formatters;
+using System.Net.WebSockets;
+using EmbedIO.WebSockets;
 
 namespace LeaguePatchCollection;
 
@@ -20,10 +24,10 @@ public sealed class LeagueProxyEvents
 {
     public delegate string ProcessBasicEndpoint(string content, IHttpRequest request);
 
-    public event ProcessBasicEndpoint? OnProcessConfigPublic;
-    public event ProcessBasicEndpoint? OnProcessConfigPlayer;
-    public event ProcessBasicEndpoint? OnProcessGeopass;
-    public event ProcessBasicEndpoint? OnProcessLedge;
+    public event ProcessBasicEndpoint? OnClientConfigPublic;
+    public event ProcessBasicEndpoint? OnClientConfigPlayer;
+    public event ProcessBasicEndpoint? OnClientGeopass;
+    public event ProcessBasicEndpoint? OnClientLedge;
 
     private static LeagueProxyEvents? _Instance = null;
 
@@ -38,10 +42,10 @@ public sealed class LeagueProxyEvents
 
     private LeagueProxyEvents()
     {
-        OnProcessConfigPublic = null;
-        OnProcessConfigPlayer = null;
-        OnProcessGeopass = null;
-        OnProcessLedge = null;
+        OnClientConfigPublic = null;
+        OnClientConfigPlayer = null;
+        OnClientGeopass = null;
+        OnClientLedge = null;
     }
 
     private string InvokeProcessBasicEndpoint(ProcessBasicEndpoint? @event, string content, IHttpRequest? request)
@@ -61,10 +65,10 @@ public sealed class LeagueProxyEvents
         return content;
     }
 
-    internal string InvokeProcessConfigPublic(string content, IHttpRequest request) => InvokeProcessBasicEndpoint(OnProcessConfigPublic, content, request);
-    internal string InvokeProcessConfigPlayer(string content, IHttpRequest request) => InvokeProcessBasicEndpoint(OnProcessConfigPlayer, content, request);
-    internal string InvokeProcessGeopass(string content, IHttpRequest request) => InvokeProcessBasicEndpoint(OnProcessGeopass, content, request);
-    internal string InvokeProcessLedge(string content, IHttpRequest request) => InvokeProcessBasicEndpoint(OnProcessLedge, content, request);
+    internal string InvokeClientConfigPublic(string content, IHttpRequest request) => InvokeProcessBasicEndpoint(OnClientConfigPublic, content, request);
+    internal string InvokeClientConfigPlayer(string content, IHttpRequest request) => InvokeProcessBasicEndpoint(OnClientConfigPlayer, content, request);
+    internal string InvokeClientGeopass(string content, IHttpRequest request) => InvokeProcessBasicEndpoint(OnClientGeopass, content, request);
+    internal string InvokeClientLedge(string content, IHttpRequest request) => InvokeProcessBasicEndpoint(OnClientLedge, content, request);
 }
 
 internal sealed class ConfigController : WebApiController
@@ -80,7 +84,7 @@ internal sealed class ConfigController : WebApiController
         var response = await ClientConfig(HttpContext.Request);
         var content = await response.Content.ReadAsStringAsync();
 
-        content = _Events.InvokeProcessConfigPublic(content, HttpContext.Request);
+        content = _Events.InvokeClientConfigPublic(content, HttpContext.Request);
 
         await SendResponse(response, content);
     }
@@ -91,7 +95,7 @@ internal sealed class ConfigController : WebApiController
         var response = await ClientConfig(HttpContext.Request);
         var content = await response.Content.ReadAsStringAsync();
 
-        content = _Events.InvokeProcessConfigPlayer(content, HttpContext.Request);
+        content = _Events.InvokeClientConfigPlayer(content, HttpContext.Request);
 
         await SendResponse(response, content);
     }
@@ -101,6 +105,9 @@ internal sealed class ConfigController : WebApiController
         var url = BASE_URL + request.RawUrl;
 
         using var message = new HttpRequestMessage(HttpMethod.Get, url);
+
+        if (request.Headers["accept-encoding"] is not null)
+            message.Headers.TryAddWithoutValidation("Accept-Encoding", request.Headers["accept-encoding"]);
 
         message.Headers.TryAddWithoutValidation("user-agent", request.Headers["user-agent"]);
 
@@ -121,7 +128,15 @@ internal sealed class ConfigController : WebApiController
 
         message.Headers.TryAddWithoutValidation("Accept", "application/json");
 
-        return await _Client.SendAsync(message);
+        var response = await _Client.SendAsync(message);
+
+        if (response.Content.Headers.ContentEncoding.Contains("gzip"))
+        {
+            var originalContent = await response.Content.ReadAsStreamAsync();
+            response.Content = new StreamContent(new GZipStream(originalContent, CompressionMode.Decompress));
+        }
+
+        return response;
     }
 
     private async Task SendResponse(HttpResponseMessage response, string content)
@@ -146,7 +161,7 @@ internal sealed class ConfigController : WebApiController
 }
 internal sealed class LedgeController : WebApiController
 {
-private static HttpClient _Client = new(new HttpClientHandler { UseCookies = false, UseProxy = false, Proxy = null });
+    private static HttpClient _Client = new(new HttpClientHandler { UseCookies = false, UseProxy = false, Proxy = null });
 
     private static string LEDGE_URL => EnsureLedgeUrlIsSet();
 
@@ -169,11 +184,10 @@ private static HttpClient _Client = new(new HttpClientHandler { UseCookies = fal
         var response = await GetLedge(HttpContext.Request);
         var content = await response.Content.ReadAsStringAsync();
 
-        content = _Events.InvokeProcessLedge(content, HttpContext.Request);
+        content = _Events.InvokeClientLedge(content, HttpContext.Request);
 
         await SendResponse(response, content);
     }
-
     [Route(HttpVerbs.Post, "/", true)]
     public async Task PostLedge()
     {
@@ -186,11 +200,10 @@ private static HttpClient _Client = new(new HttpClientHandler { UseCookies = fal
         var response = await PostLedge(HttpContext.Request, requestBody);
         var content = await response.Content.ReadAsStringAsync();
 
-        content = _Events.InvokeProcessLedge(content, HttpContext.Request);
+        content = _Events.InvokeClientLedge(content, HttpContext.Request);
 
         await SendResponse(response, content);
     }
-
     [Route(HttpVerbs.Put, "/", true)]
     public async Task PutLedge()
     {
@@ -203,11 +216,10 @@ private static HttpClient _Client = new(new HttpClientHandler { UseCookies = fal
         var response = await PutLedge(HttpContext.Request, requestBody);
         var content = await response.Content.ReadAsStringAsync();
 
-        content = _Events.InvokeProcessLedge(content, HttpContext.Request);
+        content = _Events.InvokeClientLedge(content, HttpContext.Request);
 
         await SendResponse(response, content);
     }
-
     private static string EnsureLedgeUrlIsSet()
     {
         var ledgeUrl = App.SharedLeagueEdgeUrl.Get();
@@ -226,19 +238,15 @@ private static HttpClient _Client = new(new HttpClientHandler { UseCookies = fal
 
         using var message = new HttpRequestMessage(HttpMethod.Put, url);
 
+        if (request.Headers["accept-encoding"] is not null)
+            message.Headers.TryAddWithoutValidation("Accept-Encoding", request.Headers["accept-encoding"]);
+
         message.Headers.TryAddWithoutValidation("user-agent", request.Headers["user-agent"]);
-
-        if (request.Headers["content-encoding"] is not null)
-            message.Headers.TryAddWithoutValidation("Content-Encoding", request.Headers["content-encoding"]);
-
-        if (request.Headers["content-type"] is not null)
-            message.Headers.TryAddWithoutValidation("Content-Type", request.Headers["content-type"]);
 
         if (request.Headers["authorization"] is not null)
             message.Headers.TryAddWithoutValidation("Authorization", request.Headers["authorization"]);
 
-        if (request.Headers["content-type"] is not null)
-            message.Headers.TryAddWithoutValidation("Content-Type", request.Headers["content-type"]);
+        message.Headers.TryAddWithoutValidation("Content-type", "application/json");
 
         message.Headers.TryAddWithoutValidation("Accept", "application/json");
 
@@ -251,13 +259,25 @@ private static HttpClient _Client = new(new HttpClientHandler { UseCookies = fal
                 message.Content.Headers.ContentLength = contentLength;
         }
 
-        return await _Client.SendAsync(message);
+        var response = await _Client.SendAsync(message);
+
+        if (response.Content.Headers.ContentEncoding.Contains("gzip"))
+        {
+            var originalContent = await response.Content.ReadAsStreamAsync();
+            response.Content = new StreamContent(new GZipStream(originalContent, CompressionMode.Decompress));
+        }
+
+        return response;
     }
+
     private async Task<HttpResponseMessage> PostLedge(IHttpRequest request, string body)
     {
         var url = LEDGE_URL + request.RawUrl;
 
         using var message = new HttpRequestMessage(HttpMethod.Post, url);
+
+        if (request.Headers["accept-encoding"] is not null)
+            message.Headers.TryAddWithoutValidation("Accept-Encoding", request.Headers["accept-encoding"]);
 
         message.Headers.TryAddWithoutValidation("user-agent", request.Headers["user-agent"]);
 
@@ -269,11 +289,6 @@ private static HttpClient _Client = new(new HttpClientHandler { UseCookies = fal
             message.Content = new StringContent(body, null, request.Headers["content-type"]);
         }
 
-        if (request.Headers["content-encoding"] is not null)
-        {
-            message.Content = new StringContent(body, null, request.Headers["content-encoding"]);
-        }
-
         message.Headers.TryAddWithoutValidation("Accept", "application/json");
 
         if (request.Headers["content-length"] is not null)
@@ -282,7 +297,15 @@ private static HttpClient _Client = new(new HttpClientHandler { UseCookies = fal
                 message.Content.Headers.ContentLength = contentLength;
         }
 
-        return await _Client.SendAsync(message);
+        var response = await _Client.SendAsync(message);
+
+        if (response.Content.Headers.ContentEncoding.Contains("gzip"))
+        {
+            var originalContent = await response.Content.ReadAsStreamAsync();
+            response.Content = new StreamContent(new GZipStream(originalContent, CompressionMode.Decompress));
+        }
+
+        return response;
     }
 
     private async Task<HttpResponseMessage> GetLedge(IHttpRequest request)
@@ -305,33 +328,42 @@ private static HttpClient _Client = new(new HttpClientHandler { UseCookies = fal
         if (request.Headers["accept"] is not null)
             message.Headers.TryAddWithoutValidation("Accept", request.Headers["accept"]);
 
-        return await _Client.SendAsync(message);
+        var response = await _Client.SendAsync(message);
+
+        if (response.Content.Headers.ContentEncoding.Contains("gzip"))
+        {
+            var originalContent = await response.Content.ReadAsStreamAsync();
+            response.Content = new StreamContent(new GZipStream(originalContent, CompressionMode.Decompress));
+        }
+
+        return response; 
     }
 
     private async Task SendResponse(HttpResponseMessage response, string content)
     {
+        var responseBuffer = Encoding.UTF8.GetBytes(content);
+
         HttpContext.Response.SendChunked = false;
         HttpContext.Response.ContentType = "application/json";
-        HttpContext.Response.ContentLength64 = response.Content.Headers.ContentLength ?? 0;
+        HttpContext.Response.ContentLength64 = responseBuffer.Length;
         HttpContext.Response.StatusCode = (int)response.StatusCode;
 
-        if (response.Content.Headers.ContentEncoding.Contains("gzip"))
+        if (response.StatusCode == HttpStatusCode.Forbidden)
         {
-            HttpContext.Response.Headers.Add("Content-Encoding", "gzip");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Ledge request Cloudflare blocked (403), please open issue on GitHub or contact c4t_bot on Discord");
+            Console.ResetColor();
         }
 
-        await response.Content.CopyToAsync(HttpContext.Response.OutputStream);
+        await HttpContext.Response.OutputStream.WriteAsync(responseBuffer, 0, responseBuffer.Length);
         HttpContext.Response.OutputStream.Close();
     }
 }
 internal sealed class GeopassController : WebApiController
 {
     private static HttpClient _Client = new(new HttpClientHandler { UseCookies = false, UseProxy = false, Proxy = null });
-
     private static string GEOPASS_URL => EnsureGeopassUrlIsSet();
-
     private static LeagueProxyEvents _Events => LeagueProxyEvents.Instance;
-
     [Route(HttpVerbs.Get, "/", true)]
     public async Task GetGeopass()
     {
@@ -339,11 +371,10 @@ internal sealed class GeopassController : WebApiController
         var response = await GetGeopass(HttpContext.Request);
         var content = await response.Content.ReadAsStringAsync();
 
-        content = _Events.InvokeProcessGeopass(content, HttpContext.Request);
+        content = _Events.InvokeClientGeopass(content, HttpContext.Request);
 
         await SendResponse(response, content);
     }
-
     [Route(HttpVerbs.Put, "/", true)]
     public async Task PutGeopass()
     {
@@ -356,12 +387,10 @@ internal sealed class GeopassController : WebApiController
         var response = await PutGeopass(HttpContext.Request, requestBody);
         var content = await response.Content.ReadAsStringAsync();
 
-        content = _Events.InvokeProcessGeopass(content, HttpContext.Request);
+        content = _Events.InvokeClientGeopass(content, HttpContext.Request);
 
         await SendResponse(response, content);
     }
-
-
     private static string EnsureGeopassUrlIsSet()
     {
         var GeopassUrl = App.SharedGeopassUrl.Get();
@@ -373,7 +402,6 @@ internal sealed class GeopassController : WebApiController
 
         return GeopassUrl;
     }
-
     private async Task<HttpResponseMessage> GetGeopass(IHttpRequest request)
     {
         var url = GEOPASS_URL + request.RawUrl;
@@ -383,7 +411,7 @@ internal sealed class GeopassController : WebApiController
         if (request.Headers["accept-encoding"] is not null)
             message.Headers.TryAddWithoutValidation("Accept-Encoding", request.Headers["accept-encoding"]);
 
-        message.Headers.TryAddWithoutValidation("user-agent", request.Headers["user-agent"]);
+        message.Headers.TryAddWithoutValidation("user-agent", HttpContext.Request.Headers["user-agent"]);
 
         if (request.Headers["authorization"] is not null)
             message.Headers.TryAddWithoutValidation("Authorization", request.Headers["authorization"]);
@@ -399,9 +427,16 @@ internal sealed class GeopassController : WebApiController
 
         message.Headers.TryAddWithoutValidation("Accept", "application/json");
 
-        return await _Client.SendAsync(message);
-    }
+        var response = await _Client.SendAsync(message);
 
+        if (response.Content.Headers.ContentEncoding.Contains("gzip"))
+        {
+            var originalContent = await response.Content.ReadAsStreamAsync();
+            response.Content = new StreamContent(new GZipStream(originalContent, CompressionMode.Decompress));
+        }
+
+        return response;
+    }
     private async Task<HttpResponseMessage> PutGeopass(IHttpRequest request, string body)
     {
         var url = GEOPASS_URL + request.RawUrl;
@@ -411,7 +446,7 @@ internal sealed class GeopassController : WebApiController
         if (request.Headers["accept-encoding"] is not null)
             message.Headers.TryAddWithoutValidation("Accept-Encoding", request.Headers["accept-encoding"]);
 
-        message.Headers.TryAddWithoutValidation("user-agent", request.Headers["user-agent"]);
+        message.Headers.TryAddWithoutValidation("user-agent", HttpContext.Request.Headers["user-agent"]);
 
         if (request.Headers["authorization"] is not null)
             message.Headers.TryAddWithoutValidation("Authorization", request.Headers["authorization"]);
@@ -441,22 +476,24 @@ internal sealed class GeopassController : WebApiController
         {
             message.Content = new StringContent(body, Encoding.UTF8, request.Headers["content-type"]);
         }
-
-        return await _Client.SendAsync(message);
-    }
-
-
-    private async Task SendResponse(HttpResponseMessage response, string content)
-    {
-        HttpContext.Response.SendChunked = false;
-        HttpContext.Response.ContentType = "application/json";
-        HttpContext.Response.ContentLength64 = response.Content.Headers.ContentLength ?? 0;
-        HttpContext.Response.StatusCode = (int)response.StatusCode;
+        var response = await _Client.SendAsync(message);
 
         if (response.Content.Headers.ContentEncoding.Contains("gzip"))
         {
-            HttpContext.Response.Headers.Add("Content-Encoding", "gzip");
+            var originalContent = await response.Content.ReadAsStreamAsync();
+            response.Content = new StreamContent(new GZipStream(originalContent, CompressionMode.Decompress));
         }
+
+        return response;
+    }
+    private async Task SendResponse(HttpResponseMessage response, string content)
+    {
+        var responseBuffer = Encoding.UTF8.GetBytes(content);
+
+        HttpContext.Response.SendChunked = false;
+        HttpContext.Response.ContentType = "application/json";
+        HttpContext.Response.ContentLength64 = responseBuffer.Length;
+        HttpContext.Response.StatusCode = (int)response.StatusCode;
 
         if (response.StatusCode == HttpStatusCode.Forbidden)
         {
@@ -465,19 +502,18 @@ internal sealed class GeopassController : WebApiController
             Console.ResetColor();
         }
 
-        await response.Content.CopyToAsync(HttpContext.Response.OutputStream);
+        await HttpContext.Response.OutputStream.WriteAsync(responseBuffer, 0, responseBuffer.Length);
         HttpContext.Response.OutputStream.Close();
     }
 }
-
-internal sealed class ProxyServer<T> where T : WebApiController, new()
+internal sealed class httpProxyServer<T> where T : WebApiController, new()
 {
     private WebServer _WebServer;
     private int _Port;
 
     public string Url => $"http://127.0.0.1:{_Port}";
 
-    public ProxyServer(int port)
+    public httpProxyServer(int port)
     {
         _Port = port;
 
@@ -502,9 +538,9 @@ internal sealed class ProxyServer<T> where T : WebApiController, new()
 
 public class LeagueProxy
 {
-    private ProxyServer<ConfigController> _ConfigServer;
-    private ProxyServer<GeopassController> _GeopassServer;
-    private ProxyServer<LedgeController> _LedgeServer;
+    private httpProxyServer<ConfigController> _ConfigServer;
+    private httpProxyServer<GeopassController> _GeopassServer;
+    private httpProxyServer<LedgeController> _LedgeServer;
     private RiotClient _RiotClient;
     private CancellationTokenSource? _ServerCTS;
 
@@ -513,9 +549,9 @@ public class LeagueProxy
 
     public LeagueProxy()
     {
-        _ConfigServer = new ProxyServer<ConfigController>(29150); // Port for ConfigServer
-        _GeopassServer = new ProxyServer<GeopassController>(29151);   // Port for 
-        _LedgeServer = new ProxyServer<LedgeController>(29152);   // Port for ledge
+        _ConfigServer = new httpProxyServer<ConfigController>(29150); // Port for ConfigServer
+        _GeopassServer = new httpProxyServer<GeopassController>(29151);   // Port for 
+        _LedgeServer = new httpProxyServer<LedgeController>(29152);   // Port for ledge
         _RiotClient = new RiotClient();
         _ServerCTS = null;
     }
@@ -573,7 +609,6 @@ public class LeagueProxy
 
         _GeopassServer.Start(_ServerCTS.Token);
         GeopassServerUrl = _GeopassServer.Url;
-
     }
 
     public void Stop()
