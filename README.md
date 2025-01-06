@@ -7,7 +7,7 @@
 By default, this app provides the following enhancements:
 - :white_check_mark: **Vanguard Bypass**: Access full functionality of the League Client and use Kbot without risk of being banned. You may also play matches without getting kicked (Vanguard Event), ensuring your privacy remains protected. To disable this feature, run the app with the --usevgk argument.
 - :white_check_mark: **Appear offline**: Option to mask your status to appear offline to your friends list. They cannot invite you, however, you can still invite them. Just type `0` in console to appear offline and `1` to appear online again.
-- - :white_check_mark: **Hawolt ban bypass**: Proof of concept exploit that may or may not actually work, basically this will block RMS session notifications delaying the amount of time it takes for session to expire. [More info](https://web.archive.org/web/20230628125118/https://twitter.com/hawolt/status/1674029547363217410) about this exploit.
+- :white_check_mark: **Hawolt ban bypass**: Proof of concept exploit that may or may not actually work, basically this will block RMS session notifications delaying the amount of time it takes for session to expire. [More info](https://web.archive.org/web/20230628125118/https://twitter.com/hawolt/status/1674029547363217410) about this exploit.
 - :white_check_mark: **Removal of Bloatware**: Removes the Legends of Runeterra (LoR) button, Info Hub and suppresses some behavior warnings (ranked restrictions and so on).
 - :white_check_mark: **Streamlined Interface**: Eliminates promotions and other unnecessary clutter from the client.
 - :white_check_mark: **Ban Reason Fix**: Resolves issues where the ban reason doesn't display on certain accounts, fixing the infinite loading/unknown player bug.
