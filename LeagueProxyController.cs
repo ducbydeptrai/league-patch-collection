@@ -344,9 +344,15 @@ internal sealed class LedgeController : WebApiController
         }
 
         message.Headers.TryAddWithoutValidation("user-agent", request.Headers["user-agent"]);
-        message.Headers.TryAddWithoutValidation("Sec-Fetch-Mode", request.Headers["sec-fetch-mode"]);
-        message.Headers.TryAddWithoutValidation("Sec-Fetch-Site", request.Headers["sec-fetch-site"]);
-        message.Headers.TryAddWithoutValidation("Sec-Fetch-Dest", request.Headers["sec-fetch-dest"]);
+
+        if (request.Headers["sec-fetch-mode"] is not null)
+            message.Headers.TryAddWithoutValidation("Sec-Fetch-Mode", request.Headers["sec-fetch-mode"]);
+
+        if (request.Headers["sec-fetch-site"] is not null)
+            message.Headers.TryAddWithoutValidation("Sec-Fetch-Site", request.Headers["sec-fetch-site"]);
+
+        if (request.Headers["sec-fetch-dest"] is not null)
+            message.Headers.TryAddWithoutValidation("Sec-Fetch-Dest", request.Headers["sec-fetch-dest"]);
 
         if (request.Headers["accept-encoding"] is not null)
             message.Headers.TryAddWithoutValidation("Accept-Encoding", request.Headers["accept-encoding"]);
@@ -642,6 +648,9 @@ public class LeagueProxy
     private httpProxyServer<LedgeController> _LedgeServer;
     private RiotClient _RiotClient;
     private CancellationTokenSource? _ServerCTS;
+    private XMPPProxy _ChatProxy;
+    private RTMPProxy _RtmpProxy;
+    private RMSProxy _RmsProxy;
 
 
     public LeagueProxyEvents Events => LeagueProxyEvents.Instance;
@@ -653,6 +662,9 @@ public class LeagueProxy
         _LedgeServer = new httpProxyServer<LedgeController>(29152);   // Port for ledge
         _RiotClient = new RiotClient();
         _ServerCTS = null;
+        _ChatProxy = new XMPPProxy();
+        _RtmpProxy = new RTMPProxy();
+        _RmsProxy = new RMSProxy();
     }
 
     private void TerminateRiotServices()
@@ -708,6 +720,10 @@ public class LeagueProxy
 
         _GeopassServer.Start(_ServerCTS.Token);
         GeopassServerUrl = _GeopassServer.Url;
+
+        var chatProxyTask = _ChatProxy.RunAsync();
+        var rtmpProxyTask = _RtmpProxy.RunAsync();
+        var rmsProxyTask = _RmsProxy.RunAsync();
     }
 
     public void Stop()
@@ -717,7 +733,6 @@ public class LeagueProxy
             Console.ForegroundColor = ConsoleColor.Red;
             throw new Exception("Failed to stop proxy service, service not running.");
         }
-
         _ServerCTS.Cancel();
         _ServerCTS = null;
         Console.WriteLine("Proxy services successfully stopped.");

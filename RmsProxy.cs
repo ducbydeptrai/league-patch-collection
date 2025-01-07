@@ -49,7 +49,12 @@ namespace LeaguePatchCollection
             {
                 var rmsHost = SharedRmsHost.Get(); // Retrieve the RMS host
 
-                using var tcpClient = new TcpClient(rmsHost.Replace("wss://", ""), RMSPort); // Connect to the RMS host
+                // Strip the 'wss://' prefix if it exists
+                rmsHost = rmsHost.Replace("wss://", "");
+
+
+                // Connect to the RMS host after stripping the protocol
+                using var tcpClient = new TcpClient(rmsHost, RMSPort);
                 Stream serverStream = tcpClient.GetStream();
 
                 if (RequiresTLS())

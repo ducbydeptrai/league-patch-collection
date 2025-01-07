@@ -120,7 +120,7 @@ class App
             SetKey(configObject, "keystone.client.feature_flags.keystone_login_splash_video.enabled", false);
             SetKey(configObject, "keystone.client.feature_flags.launch_on_computer_start.enabled", false);
             SetKey(configObject, "keystone.client.feature_flags.mfa_notification.enabled", false);
-            SetKey(configObject, "keystone.client.feature_flags.open_telemetry_sender.enabled", false); 
+            SetKey(configObject, "keystone.client.feature_flags.open_telemetry_sender.enabled", false);
             SetKey(configObject, "keystone.client.feature_flags.pcbang_vanguard_restart_bypass.disabled", true);
             SetKey(configObject, "keystone.client.feature_flags.penaltyNotifications.enabled", false);
             SetKey(configObject, "keystone.client.feature_flags.pending_consent_modal.enabled", false);
@@ -343,13 +343,8 @@ class App
             return;
         }
 
-        var ChatProxy = new XMPPProxy();
-        var RtmpProxy = new RTMPProxy();
-        var RmsProxy = new RMSProxy();
+        await process.WaitForExitAsync();
 
-        var proxyTasks = Task.WhenAll(ChatProxy.RunAsync(), RtmpProxy.RunAsync(), RmsProxy.RunAsync());
-
-        await Task.WhenAny(process.WaitForExitAsync(), proxyTasks);
         leagueProxy.Stop();
     }
 
@@ -361,7 +356,7 @@ class App
         }
         else if (configObject?[configKey] is JsonObject jsonObject)
         {
-            jsonObject[configKey] = new JsonArray(); 
+            jsonObject[configKey] = new JsonArray();
         }
     }
     static void SetKey(JsonNode? configObject, string key, object value)
@@ -561,7 +556,6 @@ class App
             _chatHost = host;
         }
     }
-
     public static class SharedRmsHost
     {
         public static string? _RmsHost;
