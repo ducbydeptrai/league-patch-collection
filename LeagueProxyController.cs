@@ -188,6 +188,18 @@ internal sealed class LedgeController : WebApiController
 
         await SendResponse(response, content);
     }
+
+    [Route(HttpVerbs.Options, "/", true)]
+    public async Task OptionsLedge()
+    {
+        var response = await OptionsLedge(HttpContext.Request);
+        var content = await response.Content.ReadAsStringAsync();
+
+        content = _Events.InvokeClientLedge(content, HttpContext.Request);
+
+        await SendResponse(response, content);
+    }
+
     [Route(HttpVerbs.Post, "/", true)]
     public async Task PostLedge()
     {
@@ -307,12 +319,66 @@ internal sealed class LedgeController : WebApiController
 
         return response;
     }
+    private async Task<HttpResponseMessage> OptionsLedge(IHttpRequest request)
+    {
+        var url = LEDGE_URL + request.RawUrl;
+
+        using var message = new HttpRequestMessage(HttpMethod.Options, url);
+
+        if (request.Headers["connection"] is not null)
+            message.Headers.TryAddWithoutValidation("Connection", request.Headers["connection"]);
+
+        if (request.Headers["accept"] is not null)
+            message.Headers.TryAddWithoutValidation("Accept", request.Headers["accept"]);
+
+        if (request.Headers["access-control-request-method"] is not null)
+            message.Headers.TryAddWithoutValidation("Access-Control-Request-Method", request.Headers["access-control-request-method"]);
+
+        if (request.Headers["access-control-request-headers"] is not null)
+            message.Headers.TryAddWithoutValidation("Access-Control-Request-Headers", request.Headers["access-control-request-headers"]);
+
+        if (request.Headers["origin"] is not null)
+        {
+            var sharedLedgeUrl = App.SharedLeagueEdgeUrl.Get();
+            message.Headers.TryAddWithoutValidation("Origin", sharedLedgeUrl);
+        }
+
+        message.Headers.TryAddWithoutValidation("user-agent", request.Headers["user-agent"]);
+        message.Headers.TryAddWithoutValidation("Sec-Fetch-Mode", request.Headers["sec-fetch-mode"]);
+        message.Headers.TryAddWithoutValidation("Sec-Fetch-Site", request.Headers["sec-fetch-site"]);
+        message.Headers.TryAddWithoutValidation("Sec-Fetch-Dest", request.Headers["sec-fetch-dest"]);
+
+        if (request.Headers["accept-encoding"] is not null)
+            message.Headers.TryAddWithoutValidation("Accept-Encoding", request.Headers["accept-encoding"]);
+
+        if (request.Headers["accept-language"] is not null)
+            message.Headers.TryAddWithoutValidation("Accept-Language", request.Headers["accept-language"]);
+
+        var response = await _Client.SendAsync(message);
+
+        if (response.Content.Headers.ContentEncoding.Contains("gzip"))
+        {
+            var originalContent = await response.Content.ReadAsStreamAsync();
+            response.Content = new StreamContent(new GZipStream(originalContent, CompressionMode.Decompress));
+        }
+
+        return response;
+    }
 
     private async Task<HttpResponseMessage> GetLedge(IHttpRequest request)
     {
         var url = LEDGE_URL + request.RawUrl;
 
         using var message = new HttpRequestMessage(HttpMethod.Get, url);
+
+        if (request.Headers["connection"] is not null)
+            message.Headers.TryAddWithoutValidation("Connection", request.Headers["connection"]);
+
+        if (request.Headers["sec-ch-ua"] is not null)
+            message.Headers.TryAddWithoutValidation("sec-ch-ua", request.Headers["sec-ch-ua"]);
+
+        if (request.Headers["sec-ch-ua-mobile"] is not null)
+            message.Headers.TryAddWithoutValidation("sec-ch-ua-mobile", request.Headers["sec-ch-ua-mobile"]);
 
         if (request.Headers["accept-encoding"] is not null)
             message.Headers.TryAddWithoutValidation("Accept-Encoding", request.Headers["accept-encoding"]);
@@ -321,6 +387,27 @@ internal sealed class LedgeController : WebApiController
 
         if (request.Headers["authorization"] is not null)
             message.Headers.TryAddWithoutValidation("Authorization", request.Headers["authorization"]);
+
+        if (request.Headers["sec-ch-ua-platform"] is not null)
+            message.Headers.TryAddWithoutValidation("sec-ch-ua-platform", request.Headers["sec-ch-ua-platform"]);
+
+        if (request.Headers["origin"] is not null)
+        {
+            var sharedLedgeUrl = App.SharedLeagueEdgeUrl.Get();
+            message.Headers.TryAddWithoutValidation("Origin", sharedLedgeUrl);
+        }
+
+        if (request.Headers["sec-fetch-site"] is not null)
+            message.Headers.TryAddWithoutValidation("Sec-Fetch-Site", request.Headers["sec-fetch-site"]);
+
+        if (request.Headers["sec-fetch-mode"] is not null)
+            message.Headers.TryAddWithoutValidation("Sec-Fetch-Mode", request.Headers["sec-fetch-mode"]);
+
+        if (request.Headers["sec-fetch-dest"] is not null)
+            message.Headers.TryAddWithoutValidation("Sec-Fetch-Dest", request.Headers["sec-fetch-dest"]);
+
+        if (request.Headers["accept-language"] is not null)
+            message.Headers.TryAddWithoutValidation("Accept-Language", request.Headers["accept-language"]);
 
         if (request.Headers["Content-type"] is not null)
             message.Headers.TryAddWithoutValidation("Content-Type", request.Headers["Content-type"]);
@@ -347,6 +434,18 @@ internal sealed class LedgeController : WebApiController
         HttpContext.Response.ContentType = "application/json";
         HttpContext.Response.ContentLength64 = responseBuffer.Length;
         HttpContext.Response.StatusCode = (int)response.StatusCode;
+
+        HttpContext.Response.Headers["Access-Control-Allow-Origin"] = "*"; // Allows all origins; restrict as needed
+        HttpContext.Response.Headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"; // Allowed HTTP methods
+        HttpContext.Response.Headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type"; // Allowed headers
+
+        if (HttpContext.Request.HttpMethod == "OPTIONS")
+        {
+            // Handle preflight requests
+            HttpContext.Response.StatusCode = (int)HttpStatusCode.OK;
+            await HttpContext.Response.OutputStream.FlushAsync();
+            return;
+        }
 
         if (response.StatusCode == HttpStatusCode.Forbidden)
         {
