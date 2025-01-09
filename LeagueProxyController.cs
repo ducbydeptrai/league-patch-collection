@@ -744,7 +744,7 @@ public class LeagueProxy
         if (_ServerCTS is null)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            throw new Exception("Error starting patcher. Please contact c4t_bot on Discord if this issue persists.");
+            throw new Exception("Error starting proxies. Please contact c4t_bot on Discord if this issue persists.");
         }
 
         return _RiotClient.Launch(_ConfigServer.Url, args);

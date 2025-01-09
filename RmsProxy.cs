@@ -47,13 +47,10 @@ namespace LeaguePatchCollection
         {
             try
             {
-                var rmsHost = SharedRmsHost.Get(); // Retrieve the RMS host
+                var rmsHost = SharedRmsHost.Get();
 
-                // Strip the 'wss://' prefix if it exists
                 rmsHost = rmsHost.Replace("wss://", "");
 
-
-                // Connect to the RMS host after stripping the protocol
                 using var tcpClient = new TcpClient(rmsHost, RMSPort);
                 Stream serverStream = tcpClient.GetStream();
 
@@ -78,7 +75,6 @@ namespace LeaguePatchCollection
             }
         }
 
-
         private async Task HandleWebSocketHandshakeAsync(Stream clientStream, Stream serverStream)
         {
             var clientReader = new StreamReader(clientStream, Encoding.ASCII);
@@ -86,23 +82,23 @@ namespace LeaguePatchCollection
             var serverWriter = new StreamWriter(serverStream, Encoding.ASCII) { AutoFlush = true };
 
             string requestLine = await clientReader.ReadLineAsync();
-            await serverWriter.WriteLineAsync(requestLine);
+            await serverWriter.WriteLineAsync(requestLine); // Write the request line to the server
 
             string header;
             while (!string.IsNullOrEmpty(header = await clientReader.ReadLineAsync()))
             {
                 if (header.StartsWith("Host: "))
                 {
-                    header = $"Host: {SharedRmsHost.Get().Replace("wss://", "")}"; // Remove wss:// from Host
+                    header = $"Host: {SharedRmsHost.Get().Replace("wss://", "")}"; // Correct Host header
                 }
                 else if (header.StartsWith("Origin: "))
                 {
-                    header = $"Origin: {SharedRmsHost.Get().Replace("wss://", "")}"; // Remove wss:// from Origin
+                    header = $"Origin: {SharedRmsHost.Get().Replace("wss://", "")}"; // Correct Origin header
                 }
 
                 await serverWriter.WriteLineAsync(header);
             }
-            await serverWriter.WriteLineAsync();
+            await serverWriter.WriteLineAsync();  
 
             var serverReader = new StreamReader(serverStream, Encoding.ASCII);
             string responseLine = await serverReader.ReadLineAsync();
@@ -115,6 +111,7 @@ namespace LeaguePatchCollection
             }
             await clientWriter.WriteLineAsync();
         }
+
 
         private async Task ForwardDataAsync(Stream source, Stream destination, string direction)
         {
@@ -148,15 +145,13 @@ namespace LeaguePatchCollection
                     decodedMessage = Encoding.UTF8.GetString(outputStream.ToArray());
                 }
 
-                //if (Regex.IsMatch(decodedMessage, "parties/v1/notifications"))
-                //{
-                //decodedMessage = Regex.Replace(decodedMessage, "\"activityLocked\":true", "\"activityLocked\":false");
-                //Console.WriteLine($"[RMS] Modified frame containing 'activityLocked': {decodedMessage}");
-                //}
+                if (Regex.IsMatch(decodedMessage, "parties/v1/notifications"))
+                {
+                decodedMessage = Regex.Replace(decodedMessage, "\"activityLocked\":true", "\"activityLocked\":false");
+                }
 
                 if (Regex.IsMatch(decodedMessage, @"RANKED_RESTRICTION"))
                 {
-                    //Console.WriteLine($"[RMS] Blocking frame containing ranked restriction: {decodedMessage}");
                     continue; // Skip sending this message to the client to block popup about ranked restriction
                 }
 
@@ -168,7 +163,9 @@ namespace LeaguePatchCollection
 
                 if (direction == "RMS Server -> Client")
                 {
+                    //Console.ForegroundColor = ConsoleColor.Cyan;
                     //Console.WriteLine($"[RMS] {direction}: Decoded message: {decodedMessage}");
+                    //Console.ResetColor();
                 }
 
                 await destination.WriteAsync(buffer, 0, bytesRead);

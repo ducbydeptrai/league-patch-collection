@@ -23,9 +23,10 @@ class App
 
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine("--------------------------------------------");
-        Console.WriteLine("Contact me:");
+        Console.WriteLine("My socials:");
         Console.WriteLine(" Discord : c4t_bot");
         Console.WriteLine(" Reddit  : u/Cat_Bot4");
+        Console.WriteLine(" Venmo  : @Cat_Bot");
         Console.WriteLine("--------------------------------------------");
         Console.ResetColor();
 
@@ -40,20 +41,14 @@ class App
             Console.WriteLine("=========================================");
             Console.ResetColor();
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("Vanguard bypass is active. You can now use Kbot or other blacklisted apps without risk of being banned. If you havent already, uninstall vgk");
-            Console.ResetColor();
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine("If you see this message, you can now use Kbot or other blacklisted apps without risk of being banned. If you havent already, uninstall vgk");
             Console.WriteLine("IMPORTANT");
-            Console.WriteLine("To avoid getting kicked in game (Vanguard Event), use Kbot or other tool to clear logs every 1-3 games and sign back in.");
-            Console.WriteLine("Doing this will reset your limit on the backend for how many games the server lets you play without Vanguard.");
-            Console.WriteLine("Rinse and Repeat!");
+            Console.WriteLine("As of January 9th, 2025 Riot has fully patched this method and trying to play without vanguard will just cause you to get kicked (Vanguard Event)");
+            Console.WriteLine("DO NOT open a issue on Github or DM me saying the vanguard bypass doesnt work I get vanguard event ITS BEEN PATCHED AND DOESNT WORK ANYMORE");
             Console.ResetColor();
             Console.WriteLine("--------------------------------------------");
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("launch this app with --usevgk to NOT use the Vanguard bypass.");
-            Console.ResetColor();
             Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.WriteLine("launch this app with --usevgk to NOT use the Vanguard bypass.");
             Console.WriteLine("There are other features in this app like showing offline,");
             Console.WriteLine("using the old honor system, and bloatware removal that you'll benefit from.");
             Console.WriteLine("=========================================");
@@ -173,7 +168,7 @@ class App
             SetKey(configObject, "lol.game_client_settings.telemetry.standalone.long_frame_min_time", 99999);
             SetKey(configObject, "lol.game_client_settings.telemetry.standalone.nr_sample_rate", 0);
             SetKey(configObject, "lol.game_client_settings.telemetry.standalone.sample_rate", 0);
-            SetKey(configObject, "riot.eula.agreementBaseURI", "");
+            SetKey(configObject, "riot.eula.agreementBaseURI", ""); 
             SetKey(configObject, "rms.host", "ws://127.0.0.1");
             SetKey(configObject, "rms.port", 29155);
             SetKey(configObject, "rms.allow_bad_cert.enabled", true);
@@ -345,6 +340,7 @@ class App
 
         await process.WaitForExitAsync();
 
+
         leagueProxy.Stop();
     }
 
@@ -415,6 +411,7 @@ class App
         SetKey(configObject, "keystone.client.feature_flags.restart_required.disabled", true);
         SetKey(configObject, "keystone.client.feature_flags.vanguardLaunch.disabled", true);
         SetKey(configObject, "lol.client_settings.vanguard.enabled", false);
+        SetKey(configObject, "lol.client_settings.vanguard.enabled_embedded", false);
         SetKey(configObject, "lol.client_settings.vanguard.enabled_mac", false);
         SetKey(configObject, "lol.client_settings.vanguard.url", "");
         RemoveVanguardDependencies(configObject, "keystone.products.league_of_legends.patchlines.live");
