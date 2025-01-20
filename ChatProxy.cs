@@ -123,7 +123,6 @@ namespace LeaguePatchCollection
                     {
                         if (message.Contains("00000000-0000-0000-0000-000000000000@na1.pvp.net"))
                         {
-                            Console.WriteLine("Blocked message related to the fake player from being sent to real server.");
                             continue;
                         }
                     }
