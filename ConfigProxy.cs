@@ -17,23 +17,10 @@ class App
         Console.WriteLine("=========================================");
         Console.ResetColor();
 
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.WriteLine("Important: IF YOU PAID FOR THIS, YOU GOT SCAMMED!");
-        Console.ResetColor();
-
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine("--------------------------------------------");
-        Console.WriteLine("My socials:");
-        Console.WriteLine(" Discord : c4t_bot");
-        Console.WriteLine(" Reddit  : u/Cat_Bot4");
-        Console.WriteLine(" Venmo  : @Cat_Bot");
-        Console.WriteLine("--------------------------------------------");
-        Console.ResetColor();
-
         bool usevgk = args.Contains("--usevgk");
         bool legacyhonor = args.Contains("--legacyhonor");
-
-        var leagueProxy = new LeagueProxy();
+        bool nobehavior = args.Contains("--nobehavior");
+        bool namebypass = args.Contains("--namebypass");
 
         if (!usevgk)
         {
@@ -63,6 +50,14 @@ class App
             Console.WriteLine("---------------------------------------");
             Console.ResetColor();
         }
+        if (!namebypass)
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine("Use --namebypass to bypass forced name change screen");
+            Console.WriteLine("--------------------------------------------");
+            Console.ResetColor();
+        }
         if (!legacyhonor)
         {
             Console.ForegroundColor = ConsoleColor.White;
@@ -80,6 +75,8 @@ class App
             Console.ResetColor();
         }
 
+        var leagueProxy = new LeagueProxy();
+
         leagueProxy.Events.OnClientConfigPublic += (string content, IHttpRequest request) =>
         {
             var configObject = JsonSerializer.Deserialize<JsonNode>(content);
@@ -92,11 +89,33 @@ class App
 
             if (!usevgk)
             {
-                DisableVanguard(configObject);
+                SetKey(configObject, "anticheat.vanguard.backgroundInstall", false);
+                SetKey(configObject, "anticheat.vanguard.enabled", false);
+                SetKey(configObject, "keystone.client.feature_flags.restart_required.disabled", true);
+                SetKey(configObject, "keystone.client.feature_flags.vanguardLaunch.disabled", true);
+                SetKey(configObject, "lol.client_settings.vanguard.enabled", false);
+                SetKey(configObject, "lol.client_settings.vanguard.enabled_embedded", false);
+                SetKey(configObject, "lol.client_settings.vanguard.enabled_mac", false);
+                SetKey(configObject, "lol.client_settings.vanguard.url", "");
+                RemoveVanguardDependencies(configObject, "keystone.products.league_of_legends.patchlines.live");
+                RemoveVanguardDependencies(configObject, "keystone.products.league_of_legends.patchlines.pbe");
+                RemoveVanguardDependencies(configObject, "keystone.products.valorant.patchlines.live");
             }
             if (legacyhonor)
             {
-                LegacyHonor(configObject);
+                SetNestedKeys(configObject, "lol.client_settings.honor", "CeremonyV3Enabled", false);
+                SetNestedKeys(configObject, "lol.client_settings.honor", "Enabled", true);
+                SetNestedKeys(configObject, "lol.client_settings.honor", "HonorEndpointsV2Enabled", false);
+                SetNestedKeys(configObject, "lol.client_settings.honor", "HonorSuggestionsEnabled", true);
+                SetNestedKeys(configObject, "lol.client_settings.honor", "HonorVisibilityEnabled", true);
+                SetNestedKeys(configObject, "lol.client_settings.honor", "SecondsToVote", 90);
+            }
+            if (namebypass)
+            {
+                SetKey(configObject, "keystone.client.feature_flags.dismissible_name_change_modal.enabled", true);
+                SetKey(configObject, "keystone.client.feature_flags.flaggedNameModal.disabled", true);
+                SetKey(configObject, "keystone.client.feature_flags.riot_id_required_modal.enabled", false);
+                SetKey(configObject, "keystone.client.feature_flags.username_required_modal.enabled", false);
             }
 
             SetKey(configObject, "keystone.age_restriction.enabled", false);
@@ -109,9 +128,7 @@ class App
             SetKey(configObject, "keystone.client.feature_flags.autoPatch.disabled", true);
             SetKey(configObject, "keystone.client.feature_flags.background_mode_patching.enabled", false);
             SetKey(configObject, "keystone.client.feature_flags.cpu_memory_warning_report.enabled", false);
-            SetKey(configObject, "keystone.client.feature_flags.dismissible_name_change_modal.enabled", true);
             SetKey(configObject, "keystone.client.feature_flags.eula.use_patch_downloader.enabled", false);
-            SetKey(configObject, "keystone.client.feature_flags.flaggedNameModal.disabled", true);
             SetKey(configObject, "keystone.client.feature_flags.keystone_login_splash_video.enabled", false);
             SetKey(configObject, "keystone.client.feature_flags.launch_on_computer_start.enabled", false);
             SetKey(configObject, "keystone.client.feature_flags.mfa_notification.enabled", false);
@@ -128,10 +145,8 @@ class App
             SetKey(configObject, "keystone.client.feature_flags.qrcode_modal.enabled", false);
             SetKey(configObject, "keystone.client.feature_flags.quick_actions.enabled", true);
             SetKey(configObject, "keystone.client.feature_flags.regionlessLoginInfoTooltip.enabled", false);
-            SetKey(configObject, "keystone.client.feature_flags.riot_id_required_modal.enabled", false);
             SetKey(configObject, "keystone.client.feature_flags.riot_mobile_special_event.enabled", false);
             SetKey(configObject, "keystone.client.feature_flags.self_update_in_background.enabled", false);
-            SetKey(configObject, "keystone.client.feature_flags.username_required_modal.enabled", false);
             SetKey(configObject, "keystone.client_config.diagnostics_enabled", false);
             SetKey(configObject, "games_library.special_events.enabled", false);
             SetKey(configObject, "keystone.player-affinity.playerAffinityServiceURL", "http://127.0.0.1:29151");
@@ -315,14 +330,17 @@ class App
         leagueProxy.Events.OnClientLedge += (string content, IHttpRequest request) =>
         {
 
-            if (request.Url.LocalPath == "/leaverbuster-ledge/restrictionInfo")
+            if (nobehavior)
             {
-                var configObject = JsonSerializer.Deserialize<JsonNode>(content);
+                if (request.Url.LocalPath == "/leaverbuster-ledge/restrictionInfo")
+                {
+                    var configObject = JsonSerializer.Deserialize<JsonNode>(content);
 
-                SetNestedKeys(configObject, "rankedRestrictionEntryDto", "rankedRestrictionAckNeeded", false);
-                SetNestedKeys(configObject, "leaverBusterEntryDto", "preLockoutAckNeeded", false);
-                SetNestedKeys(configObject, "leaverBusterEntryDto", "onLockoutAckNeeded", false);
-                content = JsonSerializer.Serialize(configObject);
+                    SetNestedKeys(configObject, "rankedRestrictionEntryDto", "rankedRestrictionAckNeeded", false);
+                    SetNestedKeys(configObject, "leaverBusterEntryDto", "preLockoutAckNeeded", false);
+                    SetNestedKeys(configObject, "leaverBusterEntryDto", "onLockoutAckNeeded", false);
+                    content = JsonSerializer.Serialize(configObject);
+                }
             }
 
             return content;
@@ -403,29 +421,6 @@ class App
                     throw new InvalidOperationException($"Unsupported type: {value.GetType()}");
             }
         }
-    }
-    public static void DisableVanguard(JsonNode? configObject)
-    {
-        SetKey(configObject, "anticheat.vanguard.backgroundInstall", false);
-        SetKey(configObject, "anticheat.vanguard.enabled", false);
-        SetKey(configObject, "keystone.client.feature_flags.restart_required.disabled", true);
-        SetKey(configObject, "keystone.client.feature_flags.vanguardLaunch.disabled", true);
-        SetKey(configObject, "lol.client_settings.vanguard.enabled", false);
-        SetKey(configObject, "lol.client_settings.vanguard.enabled_embedded", false);
-        SetKey(configObject, "lol.client_settings.vanguard.enabled_mac", false);
-        SetKey(configObject, "lol.client_settings.vanguard.url", "");
-        RemoveVanguardDependencies(configObject, "keystone.products.league_of_legends.patchlines.live");
-        RemoveVanguardDependencies(configObject, "keystone.products.league_of_legends.patchlines.pbe");
-        RemoveVanguardDependencies(configObject, "keystone.products.valorant.patchlines.live");
-    }
-    public static void LegacyHonor(JsonNode? configObject)
-    {
-        SetNestedKeys(configObject, "lol.client_settings.honor", "CeremonyV3Enabled", false);
-        SetNestedKeys(configObject, "lol.client_settings.honor", "Enabled", true);
-        SetNestedKeys(configObject, "lol.client_settings.honor", "HonorEndpointsV2Enabled", false);
-        SetNestedKeys(configObject, "lol.client_settings.honor", "HonorSuggestionsEnabled", true);
-        SetNestedKeys(configObject, "lol.client_settings.honor", "HonorVisibilityEnabled", true);
-        SetNestedKeys(configObject, "lol.client_settings.honor", "SecondsToVote", 90);
     }
     public static class SharedGeopassUrl
     {

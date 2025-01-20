@@ -184,10 +184,8 @@ namespace LeaguePatchCollection
                 int firstByte = stream.ReadByte();
                 int secondByte = stream.ReadByte();
 
-                // Restore original position after checking
                 stream.Position = originalPosition;
 
-                // Gzip magic numbers are 0x1F and 0x8B
                 return firstByte == 0x1F && secondByte == 0x8B;
             }
             catch

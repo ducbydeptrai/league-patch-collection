@@ -13,10 +13,7 @@ using Swan.Logging;
 using System.Net;
 using System.IO.Compression;
 using static LeaguePatchCollection.SystemYamlLive;
-using static System.Net.Mime.MediaTypeNames;
-using Swan.Formatters;
-using System.Net.WebSockets;
-using EmbedIO.WebSockets;
+using System.IO;
 
 namespace LeaguePatchCollection;
 

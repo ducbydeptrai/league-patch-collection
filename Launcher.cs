@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.IO;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -63,7 +64,6 @@ internal sealed class RiotClient
         }
         else
         {
-            // Check all drives for the Riot Client executable
             foreach (var drive in DriveInfo.GetDrives().Where(d => d.IsReady && d.DriveType == DriveType.Fixed))
             {
                 var potentialPath = Path.Combine(drive.RootDirectory.FullName, "Riot Games", "Riot Client", "RiotClientServices.exe");

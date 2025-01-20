@@ -17,6 +17,7 @@ namespace LeaguePatchCollection
         private const int Port = 29153;
         private const int XMPPPort = 5223;
         private static bool enableOffline = false;
+        private bool _WelcomeMessageSent = false;
 
         public async Task RunAsync()
         {
@@ -88,6 +89,25 @@ namespace LeaguePatchCollection
                 {
                     var message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
+                    const string rosterTag = "<query xmlns='jabber:iq:riotgames:roster'>";
+
+                    if (direction == "XMPP Server -> Client" && message.Contains(rosterTag))
+                    {
+                        string fakePlayer =
+                            "<item jid='00000000-0000-0000-0000-000000000000@na1.pvp.net' name='League Patch Collection' subscription='both' puuid='00000000-0000-0000-0000-000000000000'>" +
+                            "<note>This is an automated service by League Patch Collection - The fan-favorite League Client mod menu and Vanguard bypass.</note>" +
+                            "<group priority='9999'>Third Party</group>" +
+                            "<state>online</state>" +
+                            "<id name='League Patch Collection' tagline='Free'/>" +
+                            "<platforms><riot name='League Patch Collection' tagline='Free'/></platforms>" +
+                            "<lol name='League Patch Collection'/>" +
+                            "</item>";
+
+                        message = message.Insert(message.IndexOf(rosterTag, StringComparison.Ordinal) + rosterTag.Length, fakePlayer);
+
+                        _ = Task.Run(() => SendCustomPacket(destination));
+                    }
+
                     if (direction == "Client -> XMPP Server" && enableOffline)
                     {
                         message = Regex.Replace(message, @"<show>chat</show>", "<show>offline</show>");
@@ -99,8 +119,17 @@ namespace LeaguePatchCollection
                         message = Regex.Replace(message, "<bacon>.*?</bacon>", string.Empty);
                     }
 
-                    var modifiedBuffer = Encoding.UTF8.GetBytes(message);
-                    await destination.WriteAsync(modifiedBuffer, 0, modifiedBuffer.Length);
+                    if (direction == "Client -> XMPP Server")
+                    {
+                        if (message.Contains("00000000-0000-0000-0000-000000000000@na1.pvp.net"))
+                        {
+                            Console.WriteLine("Blocked message related to the fake player from being sent to real server.");
+                            continue;
+                        }
+                    }
+
+                    var modifiedBufferFinal = Encoding.UTF8.GetBytes(message);
+                    await destination.WriteAsync(modifiedBufferFinal, 0, modifiedBufferFinal.Length);
                     await destination.FlushAsync();
                 }
             }
@@ -108,6 +137,65 @@ namespace LeaguePatchCollection
             {
                 Console.WriteLine($"[XMPP] Error during {direction}: {ex.Message}");
             }
+        }
+        private async Task SendCustomPacket(Stream destination)
+        {
+            var randomStanzaId = Guid.NewGuid();
+            var unixTimeMilliseconds = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+
+            var presenceMessage =
+                $"<presence from='00000000-0000-0000-0000-000000000000@na1.pvp.net/RC-LeaguePatchCollection' id='presence_{randomStanzaId}'>" +
+                "<games>" +
+                $"<keystone><st>chat</st><s.t>{unixTimeMilliseconds}</s.t><s.p>keystone</s.p></keystone>" +
+                $"<league_of_legends><st>chat</st><s.t>{unixTimeMilliseconds}</s.t><s.p>league_of_legends</s.p><s.c>live</s.c><m>Active and Working</m>" +
+                $"<p>{{\"championId\":\"\",\"gameQueueType\":\"\",\"gameStatus\":\"outOfGame\",\"legendaryMasteryScore\":\"\",\"level\":\"\",\"mapId\":\"\",\"profileIcon\":\"-1\",\"puuid\":\"\",\"rankedLeagueDivision\":\"\",\"rankedLeagueQueue\":\"\",\"rankedLeagueTier\":\"\",\"rankedLosses\":\"\",\"rankedPrevSeasonDivision\":\"\",\"rankedPrevSeasonTier\":\"\",\"rankedSplitRewardLevel\":\"\",\"rankedWins\":\"\",\"regalia\":\"\",\"skinVariant\":\"\",\"skinname\":\"\"}}</p>" +
+                "</league_of_legends>" +
+                $"<valorant><st>away</st><s.t>{unixTimeMilliseconds}</s.t><s.p>valorant</s.p><s.r>PC</s.r><m>Active and Working</m>" +
+                $"<p>eyJpc1ZhbGlkIjp0cnVlLCJwYXJ0eUlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAwIiwicGFydHlDbGllbnRWZXJzaW9uIjoidW5rbm93biIsImFjY291bnRMZXZlbCI6OTk5fQ==</p>" +
+                "</valorant>" +
+                $"<bacon><st>away</st><s.t>{unixTimeMilliseconds}</s.t><s.l>bacon_availability_online</s.l><s.p>bacon</s.p></bacon>" +
+                "</games>" +
+                "<show>chat</show>" +
+                "<platform>riot</platform>" +
+                "<status></status>" +
+                "</presence>";
+
+            var presenceBytes = Encoding.UTF8.GetBytes(presenceMessage);
+
+            await destination.WriteAsync(presenceBytes, 0, presenceBytes.Length);
+            if (!_WelcomeMessageSent)
+            {
+                _WelcomeMessageSent = true;
+                _ = Task.Run(() => SendFirstMessage(destination));
+            }
+        }
+
+        private async Task SendFirstMessage(Stream destination)
+        {
+            await Task.Delay(1000);
+            var randomStanzaId = Guid.NewGuid();
+            var stamp = DateTime.UtcNow.AddSeconds(1).ToString("yyyy-MM-dd HH:mm:ss.fff");
+
+            var FirstMessage =
+                $"<message from='00000000-0000-0000-0000-000000000000@na1.pvp.net/RC-LeaguePatchCollection' stamp='{stamp}' id='fake-{stamp}' type='chat'><body>Welcome to League Patch Collection, created by Cat Bot. This tool is free and open-source at https://github.com/Cat1Bot/league-patch-collection - IF YOU PAID FOR THIS, YOU GOT SCAMMED.</body></message>";
+
+            var messageBytes = Encoding.UTF8.GetBytes(FirstMessage);
+
+            await destination.WriteAsync(messageBytes, 0, messageBytes.Length);
+            _ = Task.Run(() => SendSecondMessage(destination));
+        }
+        private async Task SendSecondMessage(Stream destination)
+        {
+            await Task.Delay(1000);
+            var randomStanzaId = Guid.NewGuid();
+            var stamp = DateTime.UtcNow.AddSeconds(1).ToString("yyyy-MM-dd HH:mm:ss.fff");
+
+            var SecondMessage =
+                $"<message from='00000000-0000-0000-0000-000000000000@na1.pvp.net/RC-LeaguePatchCollection' stamp='{stamp}' id='fake-{stamp}' type='chat'><body>Contact || Discord: c4t_bot , Reddit: u/Cat_Bot4 || Donate || Venmo: @Cat_Bot</body></message>";
+
+            var SecondmessageBytes = Encoding.UTF8.GetBytes(SecondMessage);
+
+            await destination.WriteAsync(SecondmessageBytes, 0, SecondmessageBytes.Length);
         }
 
         private static bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
