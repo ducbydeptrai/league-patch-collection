@@ -13,7 +13,9 @@ class App
         Console.ForegroundColor = ConsoleColor.Magenta;
         Console.WriteLine("=========================================");
         Console.WriteLine("  Welcome to League Patch Collection");
-        Console.WriteLine("    Made with <3 by Cat Bot");
+        Console.WriteLine("  Made by Cat Bot");
+        Console.WriteLine("  This tool is FREE");
+        Console.WriteLine("  IF YOU PAID FOR THIS YOU GOT SCAMMED");
         Console.WriteLine("=========================================");
         Console.ResetColor();
 
@@ -24,21 +26,10 @@ class App
 
         if (!usevgk)
         {
-            Console.ForegroundColor = ConsoleColor.DarkCyan;
-            Console.WriteLine("=========================================");
-            Console.ResetColor();
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("If you see this message, you can now use Kbot or other blacklisted apps without risk of being banned. If you havent already, uninstall vgk");
-            Console.WriteLine("IMPORTANT");
-            Console.WriteLine("As of January 9th, 2025 Riot has fully patched this method and trying to play without vanguard will just cause you to get kicked (Vanguard Event)");
-            Console.WriteLine("DO NOT open a issue on Github or DM me saying the vanguard bypass doesnt work I get vanguard event ITS BEEN PATCHED AND DOESNT WORK ANYMORE");
-            Console.ResetColor();
             Console.WriteLine("--------------------------------------------");
-            Console.ForegroundColor = ConsoleColor.DarkCyan;
-            Console.WriteLine("launch this app with --usevgk to NOT use the Vanguard bypass.");
-            Console.WriteLine("There are other features in this app like showing offline,");
-            Console.WriteLine("using the old honor system, and bloatware removal that you'll benefit from.");
-            Console.WriteLine("=========================================");
+            Console.WriteLine("Vanguard disbaler is active, uninstall Vanguard if you havent already");
+            Console.WriteLine("--------------------------------------------");
             Console.ResetColor();
         }
         else if (usevgk)
@@ -77,7 +68,7 @@ class App
 
         var leagueProxy = new LeagueProxy();
 
-        leagueProxy.Events.OnClientConfigPublic += (string content, IHttpRequest request) =>
+        leagueProxy.Events.HookClientConfigPublic += (string content, IHttpRequest request) =>
         {
             var configObject = JsonSerializer.Deserialize<JsonNode>(content);
 
@@ -91,13 +82,16 @@ class App
             {
                 SetKey(configObject, "anticheat.vanguard.backgroundInstall", false);
                 SetKey(configObject, "anticheat.vanguard.enabled", false);
+                SetKey(configObject, "keystone.client.feature_flags.pcbang_vanguard_restart_bypass.disabled", true);
                 SetKey(configObject, "keystone.client.feature_flags.restart_required.disabled", true);
                 SetKey(configObject, "keystone.client.feature_flags.vanguardLaunch.disabled", true);
                 SetKey(configObject, "lol.client_settings.vanguard.enabled", false);
+                SetKey(configObject, "lol.client_settings.vanguard.enabled_embedded", false);
                 SetKey(configObject, "lol.client_settings.vanguard.url", "");
                 RemoveVanguardDependencies(configObject, "keystone.products.league_of_legends.patchlines.live");
                 RemoveVanguardDependencies(configObject, "keystone.products.league_of_legends.patchlines.pbe");
                 RemoveVanguardDependencies(configObject, "keystone.products.valorant.patchlines.live");
+                RemoveMvgModuleMac(configObject, "keystone.products.league_of_legends.patchlines.live");
             }
             if (legacyhonor)
             {
@@ -200,13 +194,12 @@ class App
             SetNestedKeys(configObject, "lol.client_settings.sentry_config", "isEnabled", false);
             SetNestedKeys(configObject, "lol.client_settings.sentry_config", "sampleRate", 0);
             SetNestedKeys(configObject, "lol.client_settings.sentry_config", "dsn", "");
-            //OverridePatchUrl(configObject, "keystone.products.league_of_legends.patchlines.live");
             //AppendLauncherArgumentsWin(configObject, "keystone.products.league_of_legends.patchlines.pbe");
 
             return JsonSerializer.Serialize(configObject);
         };
 
-        leagueProxy.Events.OnClientConfigPlayer += (string content, IHttpRequest request) =>
+        leagueProxy.Events.HookClientConfigPlayer += (string content, IHttpRequest request) =>
         {
             var configObject = JsonSerializer.Deserialize<JsonNode>(content);
 
@@ -308,7 +301,7 @@ class App
             return JsonSerializer.Serialize(configObject);
         };
 
-        leagueProxy.Events.OnClientGeopass += (string content, IHttpRequest request) =>
+        leagueProxy.Events.HookClientGeopass += (string content, IHttpRequest request) =>
         {
             if (request.Url.LocalPath == "/pas/v1/service/chat")
             {
@@ -321,7 +314,7 @@ class App
             return content;
         };
 
-        leagueProxy.Events.OnClientLedge += (string content, IHttpRequest request) =>
+        leagueProxy.Events.HookClientLedge += (string content, IHttpRequest request) =>
         {
 
             if (nobehavior)
@@ -576,19 +569,19 @@ class App
             }
         }
     }
-    static void OverridePatchUrl(JsonNode configObject, string patchline)
+    static void RemoveMvgModuleMac(JsonNode configObject, string patchline)
     {
         var productNode = configObject?[patchline];
         if (productNode is not null)
         {
-            var configs = productNode["platforms"]?["win"]?["configurations"]?.AsArray();
+            var configs = productNode["platforms"]?["mac"]?["configurations"]?.AsArray();
             if (configs != null)
             {
                 foreach (var config in configs)
                 {
                     if (config["patch_url"] is not null)
                     {
-                        config["patch_url"] = "";
+                        config["patch_url"] = "https://lol.secure.dyn.riotcdn.net/channels/public/releases/109E8AB9F90763E9.manifest";
                     }
 
                     var patchArtifacts = config["patch_artifacts"]?.AsArray();
@@ -598,7 +591,7 @@ class App
                         {
                             if (artifact["type"]?.ToString() == "patch_url")
                             {
-                                artifact["patch_url"] = "";
+                                artifact["patch_url"] = "https://lol.secure.dyn.riotcdn.net/channels/public/releases/109E8AB9F90763E9.manifest";
                             }
                         }
                     }
