@@ -23,19 +23,15 @@ By default, this app provides the following enhancements:
 - :white_check_mark: **Home Hub Fix**: Fixes home hubs taking longer than usual to load issue.
 - :information_source: **[Coming Soon] Lobby Revealer**: A feature to reveal names in champ select.
 
-## Usage
+##  Usage
 
-If you want to change what the tool patches, look at the arguments below.
+Before running the application, ensure that you have the [.NET 8.0 SDK](https://dotnet.microsoft.com/en-us/download) installed. If not, download and install it from the link.
 
-### Arguments
-- `--usevgk`:  Disables vanguard bypass feature.
-- `--legacyhonor`: Reverts the honor system to its pre-patch 14.9 state, removing the option to honor enemies.
-
-## Building and Usage
-
-Before running the application, make sure you have the [.NET 8.0 SDK](https://dotnet.microsoft.com/en-us/download) installed. If not, download and install it from the link.
-
-Use the precompiled exe from releases or git clone this repository in visual studio then use the dotnet publish command to build `dotnet publish "C:\path\to\league-patch-collection.csproj" -c Release -r win-x64 --self-contained false /p:PublishSingleFile=true`
+You can either use the precompiled executable available in the releases section or clone this repository using Visual Studio. To manually build the project, run the following command in the terminal:
+```bash   
+dotnet publish "C:\path\to\league-patch-collection.csproj" -c Release -r win-x64 --self-contained false /p:PublishSingleFile=true
+```
+Replace C:\path\to\league-patch-collection.csproj with the actual path to the project file.
 
 ## Pull requests needed
 
