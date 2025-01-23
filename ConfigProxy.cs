@@ -181,11 +181,10 @@ class App
             SetKey(configObject, "lol.game_client_settings.telemetry.standalone.long_frame_min_time", 99999);
             SetKey(configObject, "lol.game_client_settings.telemetry.standalone.nr_sample_rate", 0);
             SetKey(configObject, "lol.game_client_settings.telemetry.standalone.sample_rate", 0);
-            SetKey(configObject, "riot.eula.agreementBaseURI", ""); 
+            SetKey(configObject, "riot.eula.agreementBaseURI", "");
             SetKey(configObject, "rms.host", "ws://127.0.0.1");
             SetKey(configObject, "rms.port", 29155);
             SetKey(configObject, "rms.allow_bad_cert.enabled", true);
-
             SetNestedKeys(configObject, "lol.client_settings.datadog_rum_config", "applicationID", "");
             SetNestedKeys(configObject, "lol.client_settings.datadog_rum_config", "clientToken", "");
             SetNestedKeys(configObject, "lol.client_settings.datadog_rum_config", "isEnabled", false);
@@ -201,11 +200,8 @@ class App
             SetNestedKeys(configObject, "lol.client_settings.sentry_config", "isEnabled", false);
             SetNestedKeys(configObject, "lol.client_settings.sentry_config", "sampleRate", 0);
             SetNestedKeys(configObject, "lol.client_settings.sentry_config", "dsn", "");
-
-            //AppendLauncherArgumentsWin(configObject, "keystone.products.league_of_legends.patchlines.live");
+            //OverridePatchUrl(configObject, "keystone.products.league_of_legends.patchlines.live");
             //AppendLauncherArgumentsWin(configObject, "keystone.products.league_of_legends.patchlines.pbe");
-            //AppendLauncherArgumentsMac(configObject, "keystone.products.league_of_legends.patchlines.live");
-            //AppendLauncherArgumentsMac(configObject, "keystone.products.league_of_legends.patchlines.pbe");
 
             return JsonSerializer.Serialize(configObject);
         };
@@ -580,21 +576,34 @@ class App
             }
         }
     }
-    static void AppendLauncherArgumentsMac(JsonNode configObject, string patchline)
+    static void OverridePatchUrl(JsonNode configObject, string patchline)
     {
         var productNode = configObject?[patchline];
         if (productNode is not null)
         {
-            var configs = productNode["platforms"]?["mac"]?["configurations"]?.AsArray();
+            var configs = productNode["platforms"]?["win"]?["configurations"]?.AsArray();
             if (configs != null)
             {
                 foreach (var config in configs)
                 {
-                    var launcherArray = config["launcher"]?["arguments"]?.AsArray();
-                    if (launcherArray is not null)
+                    if (config["patch_url"] is not null)
                     {
-                        launcherArray.Add("--system-yaml-override=\"Config/system.yaml\"");
+                        config["patch_url"] = "";
                     }
+
+                    var patchArtifacts = config["patch_artifacts"]?.AsArray();
+                    if (patchArtifacts != null)
+                    {
+                        foreach (var artifact in patchArtifacts)
+                        {
+                            if (artifact["type"]?.ToString() == "patch_url")
+                            {
+                                artifact["patch_url"] = "";
+                            }
+                        }
+                    }
+
+                    config["launchable_on_update_fail"] = true;
                 }
             }
         }
