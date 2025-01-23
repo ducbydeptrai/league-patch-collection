@@ -67,28 +67,14 @@ public static class SystemYamlLive
 
     private static string GetYamlFilePath()
     {
-        if (OperatingSystem.IsMacOS())
-        {
-            return "/Users/Shared/Riot Games/Metadata/league_of_legends.live/league_of_legends.live.product_settings.yaml";
-        }
-        else
-        {
-            string programDataPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
-            return Path.Combine(programDataPath, "Riot Games", "Metadata", "league_of_legends.live", "league_of_legends.live.product_settings.yaml");
-        }
+        string programDataPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+        return Path.Combine(programDataPath, "Riot Games", "Metadata", "league_of_legends.live", "league_of_legends.live.product_settings.yaml");
     }
 
     private static string GetDefaultRiotGamesPath()
     {
-        if (OperatingSystem.IsMacOS())
-        {
-            return "/Applications/League of Legends.app";
-        }
-        else
-        {
-            string driveLetter = Environment.GetEnvironmentVariable("SYSTEMDRIVE");
-            return Path.Combine(driveLetter ?? "C:", "Riot Games", "League of Legends");
-        }
+        string driveLetter = Environment.GetEnvironmentVariable("SYSTEMDRIVE");
+        return Path.Combine(driveLetter ?? "C:", "Riot Games", "League of Legends");
     }
 
     public static void CopySystemYaml(string sourcePath, string destinationPath)
