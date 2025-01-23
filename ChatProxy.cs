@@ -95,7 +95,7 @@ namespace LeaguePatchCollection
                     {
                         string fakePlayer =
                             "<item jid='00000000-0000-0000-0000-000000000000@na1.pvp.net' name='League Patch Collection' subscription='both' puuid='00000000-0000-0000-0000-000000000000'>" +
-                            "<note>This is an automated service by League Patch Collection - The fan-favorite League Client mod menu and Vanguard bypass.</note>" +
+                            "<note>Making Phillip Koskinas cry - Shouldnt have manually banned my main account, look what ive done now o_o</note>" +
                             "<group priority='9999'>Third Party</group>" +
                             "<state>online</state>" +
                             "<id name='League Patch Collection' tagline='Free'/>" +
