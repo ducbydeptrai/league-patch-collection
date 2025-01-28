@@ -12,7 +12,7 @@
 > As of January 9th this play without vanguard bypass has been **partially patched**. If you try to play without Vanguard, **you may get kicked (Vanguard Event) and get leaver busted**.
 
 By default, this app provides the following enhancements:
-- :white_check_mark: **Vanguard Disabler**: Access full functionality of the League Client and use Kbot without risk of being banned. NOTE: You cannot actually play matches without VGK you will just get kicked (Vanguard Event) and get leaver busted. To disable this feature, run the app with the --usevgk argument.
+- :white_check_mark: **Vanguard Disabler**: Access full functionality of the League Client and use Kbot without risk of being banned. NOTE: You may not be able to actually play matches without VGK, you may get kicked (Vanguard Event) and get leaver busted.
 - :white_check_mark: **Show Legacy Patch Numbers**: Reverts the version format change in season 15. For example, instead seeing 25.S1.1 youll see 15.1 and so on.
 - :white_check_mark: **Log Cleaner**: Clean all client and account logs with the click of a button.
 - :white_check_mark: **Appear offline**: Option to mask your status to appear offline to your friends list. They cannot invite you, however, you can still invite them. Just type `0` in console to appear offline and `1` to appear online again.
