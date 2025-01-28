@@ -32,7 +32,7 @@ You can either use the precompiled executable available in the releases section 
 ```bash   
 dotnet publish "C:\path\to\league-patch-collection.csproj" -c Release -r win-x64 --self-contained false /p:PublishSingleFile=true
 ```
-Replace C:\path\to\league-patch-collection.csproj with the actual path to the project file.
+Replace C:\path\to\LeaguePatchCollection.csproj with the actual path to the project file.
 
 ## Pull requests needed
 
