@@ -1,8 +1,5 @@
 > [!WARNING]
-> As of January 9th this play without vanguard bypass has been **patched**. Do NOT try to play without vanguard, **you will just get kicked (Vanguard Event) and get leaver busted**.
-
-> [!IMPORTANT]
->  DO NOT DM ME OR OPEN ISSUE ABOUT THIS - its patched and theres nothing I can do about it for the forseeable future as Vanguard Event error is server-sided.
+> As of January 9th this play without vanguard bypass has been **partially patched**. If you try to play without Vanguard, **you may get kicked (Vanguard Event) and get leaver busted**.
  
 # League Patch Collection – Vanguard Disabler & QOL Optimizer for League Client
 
