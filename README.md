@@ -1,7 +1,4 @@
 ![image](https://github.com/user-attachments/assets/fd5dc899-3a23-4445-9452-3deeb4e5c348)
-
-> [!WARNING]
-> As of January 9th this play without vanguard bypass has been **partially patched**. If you try to play without Vanguard, **you may get kicked (Vanguard Event) and get leaver busted**.
  
 # League Patch Collection – Vanguard Disabler & QOL Optimizer for League Client
 
@@ -10,6 +7,9 @@
 >  Unlike most third party tools, this app does NOT use the Riot Client or LCU api. Instead it hooks into backend protocals like XMPP (chat), Websocket (RMS) and https (Ledge).
 
 ## Features
+
+> [!WARNING]
+> As of January 9th this play without vanguard bypass has been **partially patched**. If you try to play without Vanguard, **you may get kicked (Vanguard Event) and get leaver busted**.
 
 By default, this app provides the following enhancements:
 - :white_check_mark: **Vanguard Disabler**: Access full functionality of the League Client and use Kbot without risk of being banned. NOTE: You cannot actually play matches without VGK you will just get kicked (Vanguard Event) and get leaver busted. To disable this feature, run the app with the --usevgk argument.
