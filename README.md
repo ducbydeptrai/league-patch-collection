@@ -7,6 +7,8 @@
 
 >  Unlike most third party tools, this app does NOT use the Riot Client or LCU api. Instead it hooks into backend protocals like XMPP (chat), Websocket (RMS) and https (Ledge).
 
+![image](https://github.com/user-attachments/assets/fd5dc899-3a23-4445-9452-3deeb4e5c348)
+
 ## Features
 
 By default, this app provides the following enhancements:
