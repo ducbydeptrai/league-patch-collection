@@ -1,3 +1,5 @@
+![image](https://github.com/user-attachments/assets/fd5dc899-3a23-4445-9452-3deeb4e5c348)
+
 > [!WARNING]
 > As of January 9th this play without vanguard bypass has been **partially patched**. If you try to play without Vanguard, **you may get kicked (Vanguard Event) and get leaver busted**.
  
@@ -6,8 +8,6 @@
 **League Patch Collection** is a lightweight C# application designed for Windows to enhance your League of Legends experience. This tool introduces several quality-of-life features and optimizations League Client experience. See command line arguments additional options.
 
 >  Unlike most third party tools, this app does NOT use the Riot Client or LCU api. Instead it hooks into backend protocals like XMPP (chat), Websocket (RMS) and https (Ledge).
-
-![image](https://github.com/user-attachments/assets/fd5dc899-3a23-4445-9452-3deeb4e5c348)
 
 ## Features
 
