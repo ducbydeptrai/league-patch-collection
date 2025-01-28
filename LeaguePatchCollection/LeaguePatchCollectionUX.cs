@@ -25,6 +25,7 @@ namespace LeaguePatchCollection
             InitializeComponent();
             MainHeaderBackdrop.MouseDown += MainHeaderBackdrop_MouseDown;
             WindowTitle.MouseDown += WindowTitle_MouseDown;
+            TopWindowIcon.MouseDown += TopWindowIcon_MouseDown;
 
             // Load settings when the form is initialized
             SettingsManager.LoadSettings();
@@ -51,7 +52,14 @@ namespace LeaguePatchCollection
                 SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTCAPTION, 0);
             }
         }
-
+        private void TopWindowIcon_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                ReleaseCapture();
+                SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTCAPTION, 0);
+            }
+        }
         private void WindowTitle_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)

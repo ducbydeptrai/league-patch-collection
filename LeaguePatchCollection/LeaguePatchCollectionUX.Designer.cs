@@ -48,7 +48,7 @@ namespace LeaguePatchCollection
             MainControllerBackdrop = new Panel();
             StartButton = new Guna.UI2.WinForms.Guna2Button();
             MainHeaderBackdrop = new Panel();
-            pictureBox1 = new PictureBox();
+            TopWindowIcon = new PictureBox();
             CloseButton = new Guna.UI2.WinForms.Guna2ControlBox();
             WindowTitle = new Guna.UI2.WinForms.Guna2HtmlLabel();
             MinimizeButton = new Guna.UI2.WinForms.Guna2ControlBox();
@@ -77,7 +77,7 @@ namespace LeaguePatchCollection
             ConfigSeperatorLeft = new Guna.UI2.WinForms.Guna2Separator();
             MainControllerBackdrop.SuspendLayout();
             MainHeaderBackdrop.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)TopWindowIcon).BeginInit();
             SuspendLayout();
             // 
             // MainControllerBackdrop
@@ -120,7 +120,7 @@ namespace LeaguePatchCollection
             // MainHeaderBackdrop
             // 
             MainHeaderBackdrop.BackColor = Color.FromArgb(60, 60, 60);
-            MainHeaderBackdrop.Controls.Add(pictureBox1);
+            MainHeaderBackdrop.Controls.Add(TopWindowIcon);
             MainHeaderBackdrop.Controls.Add(CloseButton);
             MainHeaderBackdrop.Controls.Add(WindowTitle);
             MainHeaderBackdrop.Controls.Add(MinimizeButton);
@@ -130,15 +130,16 @@ namespace LeaguePatchCollection
             MainHeaderBackdrop.TabIndex = 16;
             MainHeaderBackdrop.MouseDown += MainHeaderBackdrop_MouseDown;
             // 
-            // pictureBox1
+            // TopWindowIcon
             // 
-            pictureBox1.Image = Properties.Resources.LPC;
-            pictureBox1.Location = new Point(12, 2);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(24, 24);
-            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
-            pictureBox1.TabIndex = 50;
-            pictureBox1.TabStop = false;
+            TopWindowIcon.Image = Properties.Resources.LPC;
+            TopWindowIcon.Location = new Point(12, 2);
+            TopWindowIcon.Name = "TopWindowIcon";
+            TopWindowIcon.Size = new Size(24, 24);
+            TopWindowIcon.SizeMode = PictureBoxSizeMode.StretchImage;
+            TopWindowIcon.TabIndex = 50;
+            TopWindowIcon.TabStop = false;
+            TopWindowIcon.MouseDown += TopWindowIcon_MouseDown;
             // 
             // CloseButton
             // 
@@ -647,7 +648,7 @@ namespace LeaguePatchCollection
             MainControllerBackdrop.ResumeLayout(false);
             MainHeaderBackdrop.ResumeLayout(false);
             MainHeaderBackdrop.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)TopWindowIcon).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -681,7 +682,7 @@ namespace LeaguePatchCollection
         private Guna.UI2.WinForms.Guna2ControlBox CloseButton;
         private Guna.UI2.WinForms.Guna2Button BanReasonButton;
         private Guna.UI2.WinForms.Guna2CheckBox OldPatch;
-        private PictureBox pictureBox1;
+        private PictureBox TopWindowIcon;
         private Guna.UI2.WinForms.Guna2Separator ConfigSeperatorLeft;
     }
 }
