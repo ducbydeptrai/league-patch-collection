@@ -14,6 +14,7 @@
 By default, this app provides the following enhancements:
 - :white_check_mark: **Vanguard Disabler**: Access full functionality of the League Client and use Kbot without risk of being banned. NOTE: You may not be able to actually play matches without VGK, you may get kicked (Vanguard Event) and get leaver busted.
 - :white_check_mark: **Show Legacy Patch Numbers**: Reverts the version format change in season 15. For example, instead seeing 25.S1.1 youll see 15.1 and so on.
+- :white_check_mark: **Legacy Honor**: Restores the old post game honor screen pre patch 14.19 where you can only only one teammate. Honoring enemies is cringe.
 - :white_check_mark: **Log Cleaner**: Clean all client and account logs with the click of a button.
 - :white_check_mark: **Appear offline**: Option to mask your status to appear offline to your friends list. They cannot invite you, however, you can still invite them. Just type `0` in console to appear offline and `1` to appear online again.
 - :white_check_mark: **Hawolt ban bypass**: Proof of concept exploit that may or may not actually work, basically this will block RMS session notifications delaying the amount of time it takes for session to expire. [More info](https://web.archive.org/web/20230628125118/https://twitter.com/hawolt/status/1674029547363217410) about this exploit.
