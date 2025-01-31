@@ -1,5 +1,5 @@
-![image](https://github.com/user-attachments/assets/fd5dc899-3a23-4445-9452-3deeb4e5c348)
- 
+![image](https://github.com/user-attachments/assets/93f8d790-4d25-4dac-9dc0-bf1878630d60)
+
 # League Patch Collection – Vanguard Disabler & QOL Optimizer for League Client
 
 **League Patch Collection** is a lightweight C# application designed for Windows to enhance your League of Legends experience. This tool introduces several quality-of-life features and optimizations League Client experience. See command line arguments additional options.
