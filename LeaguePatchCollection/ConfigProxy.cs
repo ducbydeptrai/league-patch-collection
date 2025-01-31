@@ -54,6 +54,7 @@ class HttpProxy
                     SetKey(configObject, "keystone.client.feature_flags.restart_required.disabled", true);
                     SetKey(configObject, "keystone.client.feature_flags.vanguardLaunch.disabled", true);
                     SetKey(configObject, "lol.client_settings.vanguard.enabled", false);
+                    SetKey(configObject, "lol.client_settings.vanguard.enabled_embedded", false);
                     SetKey(configObject, "lol.client_settings.vanguard.url", "");
                     RemoveVanguardDependencies(configObject, "keystone.products.league_of_legends.patchlines.live");
                     RemoveVanguardDependencies(configObject, "keystone.products.league_of_legends.patchlines.pbe");
