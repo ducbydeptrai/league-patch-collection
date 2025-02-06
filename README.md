@@ -1,4 +1,4 @@
-> [!INFO]
+> [!INFORMATION]
 > **UPDATE 2/5/2025** Riot has made it so you cannot even enter a game after champ select if vanguard isnt running. Basically the RMS message to client telling it to start game is never recieved causing the client to just hang and bug out. This is a deliberate and disgusting move by Phillip Koskinas "mirageofpenguins" that specificly targets this repo to stop people from a/b testing ways to avoid vanguard event kick. Im currently in the progress of updating this repo to bypass this restriction.
 
 ![image](https://github.com/user-attachments/assets/93f8d790-4d25-4dac-9dc0-bf1878630d60)
