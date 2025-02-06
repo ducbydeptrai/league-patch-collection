@@ -1,3 +1,6 @@
+> [!INFO]
+> **UPDATE 2/5/2025** Riot has made it so you cannot even enter a game after champ select if vanguard isnt running. Basically the RMS message to client telling it to start game is never recieved causing the client to just hang and bug out. This is a deliberate and disgusting move by Phillip Koskinas "mirageofpenguins" that specificly targets this repo to stop people from a/b testing ways to avoid vanguard event kick. Im currently in the progress of updating this repo to bypass this restriction.
+
 ![image](https://github.com/user-attachments/assets/93f8d790-4d25-4dac-9dc0-bf1878630d60)
 
 # League Patch Collection – Vanguard Disabler & QOL Optimizer for League Client
@@ -7,9 +10,6 @@
 >  Unlike most third party tools, this app does NOT use the Riot Client or LCU api. Instead it hooks into backend protocals like XMPP (chat), Websocket (RMS) and https (Ledge).
 
 ## Features
-
-> [!WARNING]
-> As of January 9th this play without vanguard bypass has been **partially patched**. If you try to play without Vanguard, **you may get kicked (Vanguard Event) and get leaver busted**.
 
 By default, this app provides the following enhancements:
 - :white_check_mark: **Vanguard Disabler**: Access full functionality of the League Client and use Kbot without risk of being banned. NOTE: You may not be able to actually play matches without VGK, you may get kicked (Vanguard Event) and get leaver busted.
