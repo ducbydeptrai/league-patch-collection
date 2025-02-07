@@ -12,7 +12,7 @@
 ## Features
 
 By default, this app provides the following enhancements:
-- :white_check_mark: **Vanguard Disabler**: Access full functionality of the League Client and use Kbot without risk of being banned. NOTE: You may not be able to actually play matches without VGK, you may get kicked (Vanguard Event) and get leaver busted.
+- :white_check_mark: **Vanguard Disabler**: Access full functionality of the League Client and use Kbot without risk of being banned. Rest of this doesnt work as of patch 15.3 due to new restictions added (see note at top).
 - :white_check_mark: **Show Legacy Patch Numbers**: Reverts the version format change in season 15. For example, instead seeing 25.S1.1 youll see 15.1 and so on.
 - :white_check_mark: **Legacy Honor**: Restores the old post game honor screen pre patch 14.19 where you can only only one teammate. Honoring enemies is cringe.
 - :white_check_mark: **Log Cleaner**: Clean all client and account logs with the click of a button.
