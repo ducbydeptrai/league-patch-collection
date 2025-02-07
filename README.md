@@ -1,5 +1,5 @@
 > [!IMPORTANT]
-> UPDATE 2/5/2025: As of patch 15.3, Riot has implemented a change that prevents players from entering a game after champ select unless Vanguard is running. This occurs because the RMS message instructing the client to start the game is not received, causing the client to freeze and bug out. This appears to be a targeted move by Phillip Koskinas ("mirageofpenguins") specifically aimed at disrupting this repository and preventing users from conducting A/B tests to bypass Vanguard event kicks. I am currently working on updating this repo to bypass this new restriction.
+> **UPDATE 2/5/2025:** As of patch 15.3, Riot has implemented a change that prevents players from entering a game after champ select unless Vanguard is running. This occurs because the RMS message instructing the client to start the game is not received, causing the client to freeze and bug out. This appears to be a targeted move by Phillip Koskinas ("mirageofpenguins") specifically aimed at disrupting this repository and preventing users from conducting A/B tests to bypass Vanguard event kicks. I am currently working on updating this repo to bypass this new restriction.
 
 ![image](https://github.com/user-attachments/assets/93f8d790-4d25-4dac-9dc0-bf1878630d60)
 
