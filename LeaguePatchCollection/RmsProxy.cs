@@ -6,6 +6,7 @@ using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using System.Text;
+using System.Diagnostics;
 
 namespace LeaguePatchCollection
 {
@@ -92,11 +93,11 @@ namespace LeaguePatchCollection
 
                 if (header.StartsWith("Host: "))
                 {
-                    header = $"Host: {HttpProxy.SharedRmsHost.Get().Replace("wss://", "")}";
+                    header = $"Host: {HttpProxy.SharedRmsHost.Get()!.Replace("wss://", "")}";
                 }
                 else if (header.StartsWith("Origin: "))
                 {
-                    header = $"Origin: {HttpProxy.SharedRmsHost.Get().Replace("wss://", "")}";
+                    header = $"Origin: {HttpProxy.SharedRmsHost.Get()!.Replace("wss://", "")}";
                 }
 
                 await serverWriter.WriteLineAsync(header);
@@ -156,7 +157,14 @@ namespace LeaguePatchCollection
 
                 if (HawoltBypass().IsMatch(decodedMessage))
                 {
+                    Trace.WriteLine("[RMS] Blocked message detected: " + decodedMessage);
                     continue; // hawolt ban bypass exploit
+                }
+
+                if (BlockVanguardSessionCheck().IsMatch(decodedMessage))
+                {
+                    Trace.WriteLine("[RMS] Blocked message detected: " + decodedMessage);
+                    continue; // Block this message so the client never sees it
                 }
 
                 await destination.WriteAsync(buffer.AsMemory(0, bytesRead));
@@ -212,7 +220,10 @@ namespace LeaguePatchCollection
 
         [GeneratedRegex(@"RANKED_RESTRICTION")]
         private static partial Regex RankedRestriction();
-        [GeneratedRegex(@"gaps-session-service")]
+        [GeneratedRegex(@"SESSION_CREATED")]
         private static partial Regex HawoltBypass();
+        [GeneratedRegex(@"PLAYER_LACKS_VANGUARD_SESSION")]
+        private static partial Regex BlockVanguardSessionCheck();
+
     }
 }

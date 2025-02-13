@@ -1,12 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing.Text;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Windows.Forms;
+using System.Drawing;
+using System.Windows.Forms;
 using Newtonsoft.Json;
+using System.Reflection;
 
 namespace LeaguePatchCollection
 {
@@ -20,18 +24,18 @@ namespace LeaguePatchCollection
 
         private const int WM_NCLBUTTONDOWN = 0xA1;
         private const int HTCAPTION = 0x2;
+        private static readonly char[] separator = [' '];
 
         public LeaguePatchCollectionUX()
         {
             InitializeComponent();
-            MainHeaderBackdrop.MouseDown += MainHeaderBackdrop_MouseDown;
-            WindowTitle.MouseDown += WindowTitle_MouseDown;
-            TopWindowIcon.MouseDown += TopWindowIcon_MouseDown;
 
-            // Load settings when the form is initialized
+            MainHeaderBackdrop.MouseDown += MainHeaderBackdrop_MouseDown!;
+            WindowTitle.MouseDown += WindowTitle_MouseDown!;
+            TopWindowIcon.MouseDown += TopWindowIcon_MouseDown!;
+
             SettingsManager.LoadSettings();
 
-            // Set the checkbox states based on the loaded settings
             DisableVanguard.Checked = SettingsManager.ConfigSettings.Novgk;
             LegacyHonor.Checked = SettingsManager.ConfigSettings.Legacyhonor;
             SupressBehavior.Checked = SettingsManager.ConfigSettings.Nobehavior;
@@ -43,31 +47,42 @@ namespace LeaguePatchCollection
             ShowAwayButton.Checked = SettingsManager.ChatSettings.EnableAway;
             ShowOnlineButton.Checked = SettingsManager.ChatSettings.EnableOnline;
             ArgsBox.Text = SettingsManager.ConfigSettings.Args;
+            this.Shown += LeaguePatchCollectionUX_Shown;
         }
 
+        private async void LeaguePatchCollectionUX_Shown(object? sender, EventArgs e)
+        {
+            LeagueProxy.Start(out _, out _, out _);
+
+            await Task.Delay(1000);
+
+            StartButton.Enabled = true;
+            StartButton.Text = "LAUNCH CLIENT";
+        }
 
         private void MainHeaderBackdrop_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
-                ReleaseCapture();
-                SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTCAPTION, 0);
+                _ = ReleaseCapture();
+                _ = SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTCAPTION, 0);
             }
         }
         private void TopWindowIcon_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
-                ReleaseCapture();
-                SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTCAPTION, 0);
+                _ = ReleaseCapture();
+                _ = SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTCAPTION, 0);
             }
+
         }
         private void WindowTitle_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
-                ReleaseCapture();
-                SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTCAPTION, 0);
+                _ = ReleaseCapture();
+                _ = SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTCAPTION, 0);
             }
         }
 
@@ -91,7 +106,7 @@ namespace LeaguePatchCollection
                 DeleteFolder(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Riot Games"));
                 DeleteFolder(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "riot-client-ux"));
 
-                string leagueOfLegendsPath = FindLeagueOfLegendsPath();
+                string? leagueOfLegendsPath = FindLeagueOfLegendsPath();
                 if (!string.IsNullOrEmpty(leagueOfLegendsPath))
                 {
                     DeleteFile(Path.Combine(leagueOfLegendsPath, "debug.log"));
@@ -115,16 +130,14 @@ namespace LeaguePatchCollection
             }
         }
 
-        private bool IsRunningAsAdmin()
+        private static bool IsRunningAsAdmin()
         {
-            using (var identity = WindowsIdentity.GetCurrent())
-            {
-                var principal = new WindowsPrincipal(identity);
-                return principal.IsInRole(WindowsBuiltInRole.Administrator);
-            }
+            using var identity = WindowsIdentity.GetCurrent();
+            var principal = new WindowsPrincipal(identity);
+            return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
 
-        private string FindLeagueOfLegendsPath()
+        private static string? FindLeagueOfLegendsPath()
         {
             foreach (var drive in DriveInfo.GetDrives().Where(d => d.DriveType == DriveType.Fixed))
             {
@@ -137,7 +150,7 @@ namespace LeaguePatchCollection
             return null;
         }
 
-        private void DeleteFolder(string folderPath)
+        private static void DeleteFolder(string folderPath)
         {
             if (Directory.Exists(folderPath))
             {
@@ -145,7 +158,7 @@ namespace LeaguePatchCollection
             }
         }
 
-        private void DeleteFile(string filePath)
+        private static void DeleteFile(string filePath)
         {
             if (File.Exists(filePath))
             {
@@ -157,7 +170,7 @@ namespace LeaguePatchCollection
         {
             string args = SettingsManager.ConfigSettings.Args;
 
-            string[] argsArray = args.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] argsArray = args.Split(separator, StringSplitOptions.RemoveEmptyEntries);
 
             if (!argsArray.Contains("--allow-multiple-clients"))
             {
@@ -177,8 +190,8 @@ namespace LeaguePatchCollection
         }
         private void DisconnectChatButton_Click(object sender, EventArgs e)
         {
-            //TODO; add logic for disabling MUC (lobby chat) here
         }
+
         private void DisableVanguard_CheckedChanged(object sender, EventArgs e)
         {
             SettingsManager.ConfigSettings.Novgk = DisableVanguard.Checked;
@@ -246,8 +259,8 @@ namespace LeaguePatchCollection
 
         public static class SettingsManager
         {
-            private static string settingsFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LeaguePatchCollection");
-            private static string settingsFilePath = Path.Combine(settingsFolderPath, "settings.json");
+            private static readonly string settingsFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LeaguePatchCollection");
+            private static readonly string settingsFilePath = Path.Combine(settingsFolderPath, "settings.json");
 
             public static ChatSettings ChatSettings { get; set; } = new ChatSettings();
             public static ConfigSettings ConfigSettings { get; set; } = new ConfigSettings();
@@ -264,7 +277,7 @@ namespace LeaguePatchCollection
                     if (File.Exists(settingsFilePath))
                     {
                         string json = File.ReadAllText(settingsFilePath);
-                        dynamic settings = JsonConvert.DeserializeObject(json);
+                        dynamic? settings = JsonConvert.DeserializeObject(json);
 
                         if (settings?.ChatSettings == null ||
                             settings?.ConfigSettings == null ||
@@ -285,18 +298,18 @@ namespace LeaguePatchCollection
                         }
                         else
                         {
-                            ChatSettings.EnableOffline = settings.ChatSettings.EnableOffline;
-                            ChatSettings.EnableMobile = settings.ChatSettings.EnableMobile;
-                            ChatSettings.EnableAway = settings.ChatSettings.EnableAway;
-                            ChatSettings.EnableOnline = settings.ChatSettings.EnableOnline;
+                            ChatSettings.EnableOffline = settings?.ChatSettings.EnableOffline;
+                            ChatSettings.EnableMobile = settings?.ChatSettings.EnableMobile;
+                            ChatSettings.EnableAway = settings?.ChatSettings.EnableAway;
+                            ChatSettings.EnableOnline = settings?.ChatSettings.EnableOnline;
 
-                            ConfigSettings.Novgk = settings.ConfigSettings.Novgk;
-                            ConfigSettings.Legacyhonor = settings.ConfigSettings.Legacyhonor;
-                            ConfigSettings.Namebypass = settings.ConfigSettings.Namebypass;
-                            ConfigSettings.Oldpatch = settings.ConfigSettings.Oldpatch;
-                            ConfigSettings.Nobloatware = settings.ConfigSettings.Nobloatware;
-                            ConfigSettings.Nobehavior = settings.ConfigSettings.Nobehavior;
-                            ConfigSettings.Args = settings.ConfigSettings.Args;
+                            ConfigSettings.Novgk = settings?.ConfigSettings.Novgk;
+                            ConfigSettings.Legacyhonor = settings?.ConfigSettings.Legacyhonor;
+                            ConfigSettings.Namebypass = settings?.ConfigSettings.Namebypass;
+                            ConfigSettings.Oldpatch = settings?.ConfigSettings.Oldpatch;
+                            ConfigSettings.Nobloatware = settings?.ConfigSettings.Nobloatware;
+                            ConfigSettings.Nobehavior = settings?.ConfigSettings.Nobehavior;
+                            ConfigSettings.Args = settings?.ConfigSettings.Args ?? string.Empty;
                         }
                     }
                     else
@@ -311,8 +324,6 @@ namespace LeaguePatchCollection
                     SaveSettings();
                 }
             }
-
-            // Save settings to JSON
             public static void SaveSettings()
             {
                 var settings = new
@@ -360,16 +371,14 @@ namespace LeaguePatchCollection
             public string Args { get; set; } = "--launch-product=league_of_legends --launch-patchline=live";
 
         }
-        public class TimestampedTextWriterTraceListener : TextWriterTraceListener
+        public class TimestampedTextWriterTraceListener(string fileName) : TextWriterTraceListener(fileName)
         {
-            public TimestampedTextWriterTraceListener(string fileName) : base(fileName) { }
-
-            public override void WriteLine(string message)
+            public override void WriteLine(string? message)
             {
                 base.WriteLine($"[{DateTime.Now:MM-dd-yyyy hh:mm:ss tt}] {message}");
             }
 
-            public override void Write(string message)
+            public override void Write(string? message)
             {
                 base.Write($"[{DateTime.Now:MM-dd-yyyy hh:mm:ss tt}] {message}");
             }
@@ -389,8 +398,6 @@ namespace LeaguePatchCollection
                 Trace.Listeners.Add(new TimestampedTextWriterTraceListener(logFilePath));
                 Trace.AutoFlush = true;
                 Trace.WriteLine("[INFO] Trace listener initialized.");
-
-                LeagueProxy.Start(out _, out _, out _);
                 ApplicationConfiguration.Initialize();
                 Application.Run(new LeaguePatchCollectionUX());
                 LeagueProxy.Stop();

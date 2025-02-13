@@ -40,26 +40,23 @@ namespace LeaguePatchCollection
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges6 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges7 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges8 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges13 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges14 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges9 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges10 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges11 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges12 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges13 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges14 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges21 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges22 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges15 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges16 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges17 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges18 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges19 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges20 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges23 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges24 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LeaguePatchCollectionUX));
-            MainControllerBackdrop = new Panel();
-            CloseClientsButton = new Guna.UI2.WinForms.Guna2Button();
-            RestartUXbutton = new Guna.UI2.WinForms.Guna2Button();
-            StartButton = new Guna.UI2.WinForms.Guna2Button();
-            MainHeaderBackdrop = new Panel();
-            TopWindowIcon = new PictureBox();
-            CloseButton = new Guna.UI2.WinForms.Guna2ControlBox();
-            WindowTitle = new Guna.UI2.WinForms.Guna2HtmlLabel();
-            MinimizeButton = new Guna.UI2.WinForms.Guna2ControlBox();
             SectionLabelConfig = new Guna.UI2.WinForms.Guna2HtmlLabel();
             DisableVanguard = new Guna.UI2.WinForms.Guna2CheckBox();
             LegacyHonor = new Guna.UI2.WinForms.Guna2CheckBox();
@@ -69,7 +66,6 @@ namespace LeaguePatchCollection
             ChatLabel = new Guna.UI2.WinForms.Guna2HtmlLabel();
             ChatSeperatorRight = new Guna.UI2.WinForms.Guna2Separator();
             NoBloatware = new Guna.UI2.WinForms.Guna2CheckBox();
-            ConfigSeperatorRight = new Guna.UI2.WinForms.Guna2Separator();
             AppearAsLabel = new Guna.UI2.WinForms.Guna2HtmlLabel();
             ShowOnlineButton = new Guna.UI2.WinForms.Guna2RadioButton();
             ShowOfflineButton = new Guna.UI2.WinForms.Guna2RadioButton();
@@ -79,200 +75,38 @@ namespace LeaguePatchCollection
             MiscSeperatorRight = new Guna.UI2.WinForms.Guna2Separator();
             MiscLabel = new Guna.UI2.WinForms.Guna2HtmlLabel();
             MiscSeperatorLeft = new Guna.UI2.WinForms.Guna2Separator();
-            CleanLogsButton = new Guna.UI2.WinForms.Guna2Button();
             BanReasonButton = new Guna.UI2.WinForms.Guna2Button();
             OldPatch = new Guna.UI2.WinForms.Guna2CheckBox();
             ConfigSeperatorLeft = new Guna.UI2.WinForms.Guna2Separator();
             ArgsBox = new Guna.UI2.WinForms.Guna2TextBox();
             ArgsLabel = new Guna.UI2.WinForms.Guna2HtmlLabel();
-            MainControllerBackdrop.SuspendLayout();
+            CleanLogsButton = new Guna.UI2.WinForms.Guna2Button();
+            ConfigSeperatorRight = new Guna.UI2.WinForms.Guna2Separator();
+            MainHeaderBackdrop = new Guna.UI2.WinForms.Guna2CustomGradientPanel();
+            WindowTitle = new Guna.UI2.WinForms.Guna2HtmlLabel();
+            MinimizeButton = new Guna.UI2.WinForms.Guna2ControlBox();
+            TopWindowIcon = new PictureBox();
+            CloseButton = new Guna.UI2.WinForms.Guna2ControlBox();
+            guna2CustomGradientPanel1 = new Guna.UI2.WinForms.Guna2CustomGradientPanel();
+            RestartUXbutton = new Guna.UI2.WinForms.Guna2Button();
+            StartButton = new Guna.UI2.WinForms.Guna2Button();
+            CloseClientsButton = new Guna.UI2.WinForms.Guna2Button();
+            guna2CustomGradientPanel2 = new Guna.UI2.WinForms.Guna2CustomGradientPanel();
             MainHeaderBackdrop.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)TopWindowIcon).BeginInit();
+            guna2CustomGradientPanel1.SuspendLayout();
+            guna2CustomGradientPanel2.SuspendLayout();
             SuspendLayout();
-            // 
-            // MainControllerBackdrop
-            // 
-            MainControllerBackdrop.BackColor = Color.FromArgb(60, 60, 60);
-            MainControllerBackdrop.Controls.Add(CloseClientsButton);
-            MainControllerBackdrop.Controls.Add(RestartUXbutton);
-            MainControllerBackdrop.Controls.Add(StartButton);
-            MainControllerBackdrop.Location = new Point(0, 340);
-            MainControllerBackdrop.Margin = new Padding(0);
-            MainControllerBackdrop.Name = "MainControllerBackdrop";
-            MainControllerBackdrop.Size = new Size(600, 60);
-            MainControllerBackdrop.TabIndex = 12;
-            // 
-            // CloseClientsButton
-            // 
-            CloseClientsButton.BorderColor = Color.FromArgb(175, 0, 0);
-            CloseClientsButton.BorderRadius = 2;
-            CloseClientsButton.BorderThickness = 2;
-            CloseClientsButton.Cursor = Cursors.Hand;
-            CloseClientsButton.CustomizableEdges = customizableEdges1;
-            CloseClientsButton.DisabledState.BorderColor = Color.DarkGray;
-            CloseClientsButton.DisabledState.CustomBorderColor = Color.DarkGray;
-            CloseClientsButton.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
-            CloseClientsButton.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
-            CloseClientsButton.FillColor = Color.FromArgb(125, 0, 0);
-            CloseClientsButton.Font = new Font("Inter Tight ExtraBold", 14F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            CloseClientsButton.ForeColor = Color.FromArgb(235, 235, 235);
-            CloseClientsButton.HoverState.BorderColor = Color.FromArgb(200, 0, 0);
-            CloseClientsButton.HoverState.CustomBorderColor = Color.Transparent;
-            CloseClientsButton.HoverState.FillColor = Color.FromArgb(150, 0, 0);
-            CloseClientsButton.HoverState.ForeColor = Color.White;
-            CloseClientsButton.Location = new Point(224, 11);
-            CloseClientsButton.Name = "CloseClientsButton";
-            CloseClientsButton.ShadowDecoration.BorderRadius = 2;
-            CloseClientsButton.ShadowDecoration.CustomizableEdges = customizableEdges2;
-            CloseClientsButton.Size = new Size(177, 37);
-            CloseClientsButton.TabIndex = 2;
-            CloseClientsButton.Text = "CLOSE CLIENTS";
-            CloseClientsButton.Click += CloseClientsButton_Click;
-            // 
-            // RestartUXbutton
-            // 
-            RestartUXbutton.BorderColor = Color.FromArgb(0, 0, 175);
-            RestartUXbutton.BorderRadius = 2;
-            RestartUXbutton.BorderThickness = 2;
-            RestartUXbutton.Cursor = Cursors.Hand;
-            RestartUXbutton.CustomizableEdges = customizableEdges3;
-            RestartUXbutton.DisabledState.BorderColor = Color.DarkGray;
-            RestartUXbutton.DisabledState.CustomBorderColor = Color.DarkGray;
-            RestartUXbutton.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
-            RestartUXbutton.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
-            RestartUXbutton.FillColor = Color.FromArgb(0, 0, 125);
-            RestartUXbutton.Font = new Font("Inter Tight ExtraBold", 14F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            RestartUXbutton.ForeColor = Color.FromArgb(235, 235, 235);
-            RestartUXbutton.HoverState.BorderColor = Color.FromArgb(0, 0, 200);
-            RestartUXbutton.HoverState.CustomBorderColor = Color.Transparent;
-            RestartUXbutton.HoverState.FillColor = Color.FromArgb(0, 0, 150);
-            RestartUXbutton.HoverState.ForeColor = Color.White;
-            RestartUXbutton.Location = new Point(70, 11);
-            RestartUXbutton.Name = "RestartUXbutton";
-            RestartUXbutton.ShadowDecoration.BorderRadius = 2;
-            RestartUXbutton.ShadowDecoration.CustomizableEdges = customizableEdges4;
-            RestartUXbutton.Size = new Size(148, 37);
-            RestartUXbutton.TabIndex = 1;
-            RestartUXbutton.Text = "RESTART UX";
-            RestartUXbutton.Click += RestartUXbutton_Click;
-            // 
-            // StartButton
-            // 
-            StartButton.BorderColor = Color.FromArgb(0, 175, 0);
-            StartButton.BorderRadius = 2;
-            StartButton.BorderThickness = 2;
-            StartButton.Cursor = Cursors.Hand;
-            StartButton.CustomizableEdges = customizableEdges5;
-            StartButton.DisabledState.BorderColor = Color.DarkGray;
-            StartButton.DisabledState.CustomBorderColor = Color.DarkGray;
-            StartButton.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
-            StartButton.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
-            StartButton.FillColor = Color.FromArgb(0, 125, 0);
-            StartButton.Font = new Font("Inter Tight ExtraBold", 14F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            StartButton.ForeColor = Color.FromArgb(235, 235, 235);
-            StartButton.HoverState.BorderColor = Color.FromArgb(0, 200, 0);
-            StartButton.HoverState.CustomBorderColor = Color.Transparent;
-            StartButton.HoverState.FillColor = Color.FromArgb(0, 150, 0);
-            StartButton.HoverState.ForeColor = Color.White;
-            StartButton.Location = new Point(407, 11);
-            StartButton.Name = "StartButton";
-            StartButton.ShadowDecoration.BorderRadius = 2;
-            StartButton.ShadowDecoration.CustomizableEdges = customizableEdges6;
-            StartButton.Size = new Size(181, 37);
-            StartButton.TabIndex = 0;
-            StartButton.Text = "LAUNCH CLIENT";
-            StartButton.Click += StartButton_Click;
-            // 
-            // MainHeaderBackdrop
-            // 
-            MainHeaderBackdrop.BackColor = Color.FromArgb(60, 60, 60);
-            MainHeaderBackdrop.Controls.Add(TopWindowIcon);
-            MainHeaderBackdrop.Controls.Add(CloseButton);
-            MainHeaderBackdrop.Controls.Add(WindowTitle);
-            MainHeaderBackdrop.Controls.Add(MinimizeButton);
-            MainHeaderBackdrop.Location = new Point(0, 0);
-            MainHeaderBackdrop.Name = "MainHeaderBackdrop";
-            MainHeaderBackdrop.Size = new Size(600, 29);
-            MainHeaderBackdrop.TabIndex = 16;
-            MainHeaderBackdrop.MouseDown += MainHeaderBackdrop_MouseDown;
-            // 
-            // TopWindowIcon
-            // 
-            TopWindowIcon.Image = Properties.Resources.LPC;
-            TopWindowIcon.Location = new Point(12, 2);
-            TopWindowIcon.Name = "TopWindowIcon";
-            TopWindowIcon.Size = new Size(24, 24);
-            TopWindowIcon.SizeMode = PictureBoxSizeMode.StretchImage;
-            TopWindowIcon.TabIndex = 50;
-            TopWindowIcon.TabStop = false;
-            TopWindowIcon.MouseDown += TopWindowIcon_MouseDown;
-            // 
-            // CloseButton
-            // 
-            CloseButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            CloseButton.BackColor = Color.Transparent;
-            CloseButton.BorderColor = Color.Transparent;
-            CloseButton.ControlBoxStyle = Guna.UI2.WinForms.Enums.ControlBoxStyle.Custom;
-            CloseButton.Cursor = Cursors.Hand;
-            CloseButton.CustomizableEdges = customizableEdges7;
-            CloseButton.FillColor = Color.Transparent;
-            CloseButton.HoverState.BorderColor = Color.Red;
-            CloseButton.HoverState.FillColor = Color.Red;
-            CloseButton.HoverState.IconColor = Color.White;
-            CloseButton.IconColor = Color.FromArgb(175, 175, 175);
-            CloseButton.Location = new Point(570, 0);
-            CloseButton.Name = "CloseButton";
-            CloseButton.ShadowDecoration.BorderRadius = 0;
-            CloseButton.ShadowDecoration.CustomizableEdges = customizableEdges8;
-            CloseButton.Size = new Size(30, 29);
-            CloseButton.TabIndex = 28;
-            // 
-            // WindowTitle
-            // 
-            WindowTitle.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            WindowTitle.BackColor = Color.Transparent;
-            WindowTitle.Font = new Font("Inter Tight SemiBold", 12F, FontStyle.Bold);
-            WindowTitle.ForeColor = Color.FromArgb(225, 225, 225);
-            WindowTitle.IsContextMenuEnabled = false;
-            WindowTitle.IsSelectionEnabled = false;
-            WindowTitle.Location = new Point(42, 3);
-            WindowTitle.Name = "WindowTitle";
-            WindowTitle.Size = new Size(177, 25);
-            WindowTitle.TabIndex = 27;
-            WindowTitle.Text = "League Patch Collection";
-            WindowTitle.TextAlignment = ContentAlignment.MiddleCenter;
-            WindowTitle.MouseDown += MainHeaderBackdrop_MouseDown;
-            // 
-            // MinimizeButton
-            // 
-            MinimizeButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            MinimizeButton.BackColor = Color.Transparent;
-            MinimizeButton.BorderColor = Color.Transparent;
-            MinimizeButton.ControlBoxStyle = Guna.UI2.WinForms.Enums.ControlBoxStyle.Custom;
-            MinimizeButton.ControlBoxType = Guna.UI2.WinForms.Enums.ControlBoxType.MinimizeBox;
-            MinimizeButton.Cursor = Cursors.Hand;
-            MinimizeButton.CustomizableEdges = customizableEdges9;
-            MinimizeButton.FillColor = Color.Transparent;
-            MinimizeButton.HoverState.BorderColor = SystemColors.WindowFrame;
-            MinimizeButton.HoverState.FillColor = SystemColors.WindowFrame;
-            MinimizeButton.HoverState.IconColor = Color.White;
-            MinimizeButton.IconColor = Color.FromArgb(175, 175, 175);
-            MinimizeButton.Location = new Point(540, 0);
-            MinimizeButton.Name = "MinimizeButton";
-            MinimizeButton.ShadowDecoration.BorderRadius = 0;
-            MinimizeButton.ShadowDecoration.CustomizableEdges = customizableEdges10;
-            MinimizeButton.Size = new Size(30, 29);
-            MinimizeButton.TabIndex = 2;
             // 
             // SectionLabelConfig
             // 
             SectionLabelConfig.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             SectionLabelConfig.BackColor = Color.Transparent;
             SectionLabelConfig.Font = new Font("Roboto", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            SectionLabelConfig.ForeColor = Color.White;
+            SectionLabelConfig.ForeColor = Color.FromArgb(225, 225, 225);
             SectionLabelConfig.IsContextMenuEnabled = false;
             SectionLabelConfig.IsSelectionEnabled = false;
-            SectionLabelConfig.Location = new Point(252, 35);
+            SectionLabelConfig.Location = new Point(246, 38);
             SectionLabelConfig.Name = "SectionLabelConfig";
             SectionLabelConfig.Size = new Size(106, 17);
             SectionLabelConfig.TabIndex = 0;
@@ -283,90 +117,91 @@ namespace LeaguePatchCollection
             // 
             DisableVanguard.AutoSize = true;
             DisableVanguard.CheckedState.BorderColor = Color.DodgerBlue;
-            DisableVanguard.CheckedState.BorderRadius = 1;
-            DisableVanguard.CheckedState.BorderThickness = 1;
-            DisableVanguard.CheckedState.FillColor = Color.DeepSkyBlue;
+            DisableVanguard.CheckedState.BorderRadius = 0;
+            DisableVanguard.CheckedState.BorderThickness = 2;
+            DisableVanguard.CheckedState.FillColor = Color.DodgerBlue;
             DisableVanguard.Cursor = Cursors.Hand;
             DisableVanguard.Font = new Font("Inter Tight SemiBold", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            DisableVanguard.ForeColor = Color.FromArgb(225, 225, 225);
-            DisableVanguard.Location = new Point(12, 55);
+            DisableVanguard.ForeColor = Color.FromArgb(175, 175, 175);
+            DisableVanguard.Location = new Point(12, 58);
             DisableVanguard.Name = "DisableVanguard";
             DisableVanguard.Size = new Size(155, 27);
             DisableVanguard.TabIndex = 22;
             DisableVanguard.Text = "Vanguard Bypass";
-            DisableVanguard.UncheckedState.BorderColor = Color.Gray;
-            DisableVanguard.UncheckedState.BorderRadius = 1;
-            DisableVanguard.UncheckedState.BorderThickness = 1;
-            DisableVanguard.UncheckedState.FillColor = Color.Silver;
+            DisableVanguard.UncheckedState.BorderColor = Color.FromArgb(120, 120, 120);
+            DisableVanguard.UncheckedState.BorderRadius = 0;
+            DisableVanguard.UncheckedState.BorderThickness = 2;
+            DisableVanguard.UncheckedState.FillColor = Color.Transparent;
             DisableVanguard.CheckedChanged += DisableVanguard_CheckedChanged;
             // 
             // LegacyHonor
             // 
             LegacyHonor.AutoSize = true;
             LegacyHonor.CheckedState.BorderColor = Color.DodgerBlue;
-            LegacyHonor.CheckedState.BorderRadius = 1;
-            LegacyHonor.CheckedState.BorderThickness = 1;
-            LegacyHonor.CheckedState.FillColor = Color.DeepSkyBlue;
+            LegacyHonor.CheckedState.BorderRadius = 0;
+            LegacyHonor.CheckedState.BorderThickness = 2;
+            LegacyHonor.CheckedState.FillColor = Color.DodgerBlue;
             LegacyHonor.Cursor = Cursors.Hand;
             LegacyHonor.Font = new Font("Inter Tight SemiBold", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            LegacyHonor.ForeColor = Color.FromArgb(225, 225, 225);
-            LegacyHonor.Location = new Point(12, 84);
+            LegacyHonor.ForeColor = Color.FromArgb(175, 175, 175);
+            LegacyHonor.Location = new Point(12, 88);
             LegacyHonor.Name = "LegacyHonor";
             LegacyHonor.Size = new Size(160, 27);
             LegacyHonor.TabIndex = 24;
             LegacyHonor.Text = "Use Legacy Honor";
-            LegacyHonor.UncheckedState.BorderColor = Color.Gray;
-            LegacyHonor.UncheckedState.BorderRadius = 1;
-            LegacyHonor.UncheckedState.BorderThickness = 1;
-            LegacyHonor.UncheckedState.FillColor = Color.Silver;
+            LegacyHonor.UncheckedState.BorderColor = Color.FromArgb(120, 120, 120);
+            LegacyHonor.UncheckedState.BorderRadius = 0;
+            LegacyHonor.UncheckedState.BorderThickness = 2;
+            LegacyHonor.UncheckedState.FillColor = Color.Transparent;
             LegacyHonor.CheckedChanged += LegacyHonor_CheckedChanged;
             // 
             // NameChangeBypass
             // 
             NameChangeBypass.AutoSize = true;
             NameChangeBypass.CheckedState.BorderColor = Color.DodgerBlue;
-            NameChangeBypass.CheckedState.BorderRadius = 1;
-            NameChangeBypass.CheckedState.BorderThickness = 1;
-            NameChangeBypass.CheckedState.FillColor = Color.DeepSkyBlue;
+            NameChangeBypass.CheckedState.BorderRadius = 0;
+            NameChangeBypass.CheckedState.BorderThickness = 2;
+            NameChangeBypass.CheckedState.FillColor = Color.DodgerBlue;
             NameChangeBypass.Cursor = Cursors.Hand;
             NameChangeBypass.Font = new Font("Inter Tight SemiBold", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            NameChangeBypass.ForeColor = Color.FromArgb(225, 225, 225);
-            NameChangeBypass.Location = new Point(381, 55);
+            NameChangeBypass.ForeColor = Color.FromArgb(175, 175, 175);
+            NameChangeBypass.Location = new Point(381, 58);
             NameChangeBypass.Name = "NameChangeBypass";
             NameChangeBypass.Size = new Size(187, 27);
             NameChangeBypass.TabIndex = 25;
             NameChangeBypass.Text = "Bypass Name Change";
-            NameChangeBypass.UncheckedState.BorderColor = Color.Gray;
-            NameChangeBypass.UncheckedState.BorderRadius = 1;
-            NameChangeBypass.UncheckedState.BorderThickness = 1;
-            NameChangeBypass.UncheckedState.FillColor = Color.Silver;
+            NameChangeBypass.UncheckedState.BorderColor = Color.FromArgb(120, 120, 120);
+            NameChangeBypass.UncheckedState.BorderRadius = 0;
+            NameChangeBypass.UncheckedState.BorderThickness = 2;
+            NameChangeBypass.UncheckedState.FillColor = Color.Transparent;
             NameChangeBypass.CheckedChanged += NameChangeBypass_CheckedChanged;
             // 
             // SupressBehavior
             // 
             SupressBehavior.AutoSize = true;
             SupressBehavior.CheckedState.BorderColor = Color.DodgerBlue;
-            SupressBehavior.CheckedState.BorderRadius = 1;
-            SupressBehavior.CheckedState.BorderThickness = 1;
-            SupressBehavior.CheckedState.FillColor = Color.DeepSkyBlue;
+            SupressBehavior.CheckedState.BorderRadius = 0;
+            SupressBehavior.CheckedState.BorderThickness = 2;
+            SupressBehavior.CheckedState.FillColor = Color.DodgerBlue;
             SupressBehavior.Cursor = Cursors.Hand;
             SupressBehavior.Font = new Font("Inter Tight SemiBold", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            SupressBehavior.ForeColor = Color.FromArgb(225, 225, 225);
-            SupressBehavior.Location = new Point(173, 55);
+            SupressBehavior.ForeColor = Color.FromArgb(175, 175, 175);
+            SupressBehavior.Location = new Point(173, 58);
             SupressBehavior.Name = "SupressBehavior";
             SupressBehavior.Size = new Size(202, 27);
             SupressBehavior.TabIndex = 26;
             SupressBehavior.Text = "Hide Behavior Warnings";
-            SupressBehavior.UncheckedState.BorderColor = Color.Gray;
-            SupressBehavior.UncheckedState.BorderRadius = 1;
-            SupressBehavior.UncheckedState.BorderThickness = 1;
-            SupressBehavior.UncheckedState.FillColor = Color.Silver;
+            SupressBehavior.UncheckedState.BorderColor = Color.FromArgb(120, 120, 120);
+            SupressBehavior.UncheckedState.BorderRadius = 0;
+            SupressBehavior.UncheckedState.BorderThickness = 2;
+            SupressBehavior.UncheckedState.FillColor = Color.Transparent;
             SupressBehavior.CheckedChanged += SupressBehavior_CheckedChanged;
             // 
             // ChatSeperatorLeft
             // 
+            ChatSeperatorLeft.FillColor = SystemColors.ScrollBar;
             ChatSeperatorLeft.FillThickness = 2;
-            ChatSeperatorLeft.Location = new Point(12, 155);
+            ChatSeperatorLeft.Location = new Point(11, 158);
             ChatSeperatorLeft.Name = "ChatSeperatorLeft";
             ChatSeperatorLeft.Size = new Size(266, 17);
             ChatSeperatorLeft.TabIndex = 29;
@@ -376,10 +211,10 @@ namespace LeaguePatchCollection
             ChatLabel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             ChatLabel.BackColor = Color.Transparent;
             ChatLabel.Font = new Font("Roboto", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            ChatLabel.ForeColor = Color.White;
+            ChatLabel.ForeColor = Color.FromArgb(225, 225, 225);
             ChatLabel.IsContextMenuEnabled = false;
             ChatLabel.IsSelectionEnabled = false;
-            ChatLabel.Location = new Point(281, 155);
+            ChatLabel.Location = new Point(281, 158);
             ChatLabel.Name = "ChatLabel";
             ChatLabel.Size = new Size(38, 17);
             ChatLabel.TabIndex = 30;
@@ -388,8 +223,9 @@ namespace LeaguePatchCollection
             // 
             // ChatSeperatorRight
             // 
+            ChatSeperatorRight.FillColor = SystemColors.ScrollBar;
             ChatSeperatorRight.FillThickness = 2;
-            ChatSeperatorRight.Location = new Point(322, 155);
+            ChatSeperatorRight.Location = new Point(322, 158);
             ChatSeperatorRight.Name = "ChatSeperatorRight";
             ChatSeperatorRight.Size = new Size(266, 17);
             ChatSeperatorRight.TabIndex = 31;
@@ -398,30 +234,22 @@ namespace LeaguePatchCollection
             // 
             NoBloatware.AutoSize = true;
             NoBloatware.CheckedState.BorderColor = Color.DodgerBlue;
-            NoBloatware.CheckedState.BorderRadius = 1;
-            NoBloatware.CheckedState.BorderThickness = 1;
-            NoBloatware.CheckedState.FillColor = Color.DeepSkyBlue;
+            NoBloatware.CheckedState.BorderRadius = 0;
+            NoBloatware.CheckedState.BorderThickness = 2;
+            NoBloatware.CheckedState.FillColor = Color.DodgerBlue;
             NoBloatware.Cursor = Cursors.Hand;
             NoBloatware.Font = new Font("Inter Tight SemiBold", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            NoBloatware.ForeColor = Color.FromArgb(224, 224, 224);
-            NoBloatware.Location = new Point(178, 84);
+            NoBloatware.ForeColor = Color.FromArgb(175, 175, 175);
+            NoBloatware.Location = new Point(178, 88);
             NoBloatware.Name = "NoBloatware";
             NoBloatware.Size = new Size(166, 27);
             NoBloatware.TabIndex = 32;
             NoBloatware.Text = "Remove Bloatware";
-            NoBloatware.UncheckedState.BorderColor = Color.Gray;
-            NoBloatware.UncheckedState.BorderRadius = 1;
-            NoBloatware.UncheckedState.BorderThickness = 1;
-            NoBloatware.UncheckedState.FillColor = Color.Silver;
+            NoBloatware.UncheckedState.BorderColor = Color.FromArgb(120, 120, 120);
+            NoBloatware.UncheckedState.BorderRadius = 0;
+            NoBloatware.UncheckedState.BorderThickness = 2;
+            NoBloatware.UncheckedState.FillColor = Color.Transparent;
             NoBloatware.CheckedChanged += NoBloatware_CheckedChanged;
-            // 
-            // ConfigSeperatorRight
-            // 
-            ConfigSeperatorRight.FillThickness = 2;
-            ConfigSeperatorRight.Location = new Point(364, 35);
-            ConfigSeperatorRight.Name = "ConfigSeperatorRight";
-            ConfigSeperatorRight.Size = new Size(224, 17);
-            ConfigSeperatorRight.TabIndex = 34;
             // 
             // AppearAsLabel
             // 
@@ -431,7 +259,7 @@ namespace LeaguePatchCollection
             AppearAsLabel.ForeColor = SystemColors.ScrollBar;
             AppearAsLabel.IsContextMenuEnabled = false;
             AppearAsLabel.IsSelectionEnabled = false;
-            AppearAsLabel.Location = new Point(12, 178);
+            AppearAsLabel.Location = new Point(12, 180);
             AppearAsLabel.Name = "AppearAsLabel";
             AppearAsLabel.Size = new Size(61, 24);
             AppearAsLabel.TabIndex = 36;
@@ -449,7 +277,7 @@ namespace LeaguePatchCollection
             ShowOnlineButton.Cursor = Cursors.Hand;
             ShowOnlineButton.Font = new Font("Roboto", 12F);
             ShowOnlineButton.ForeColor = Color.FromArgb(175, 175, 175);
-            ShowOnlineButton.Location = new Point(79, 179);
+            ShowOnlineButton.Location = new Point(79, 182);
             ShowOnlineButton.Name = "ShowOnlineButton";
             ShowOnlineButton.Size = new Size(72, 23);
             ShowOnlineButton.TabIndex = 37;
@@ -471,7 +299,7 @@ namespace LeaguePatchCollection
             ShowOfflineButton.Cursor = Cursors.Hand;
             ShowOfflineButton.Font = new Font("Roboto", 12F);
             ShowOfflineButton.ForeColor = Color.FromArgb(175, 175, 175);
-            ShowOfflineButton.Location = new Point(310, 179);
+            ShowOfflineButton.Location = new Point(310, 182);
             ShowOfflineButton.Name = "ShowOfflineButton";
             ShowOfflineButton.Size = new Size(73, 23);
             ShowOfflineButton.TabIndex = 38;
@@ -493,7 +321,7 @@ namespace LeaguePatchCollection
             ShowAwayButton.Cursor = Cursors.Hand;
             ShowAwayButton.Font = new Font("Roboto", 12F);
             ShowAwayButton.ForeColor = Color.FromArgb(175, 175, 175);
-            ShowAwayButton.Location = new Point(157, 179);
+            ShowAwayButton.Location = new Point(157, 182);
             ShowAwayButton.Name = "ShowAwayButton";
             ShowAwayButton.Size = new Size(66, 23);
             ShowAwayButton.TabIndex = 39;
@@ -515,7 +343,7 @@ namespace LeaguePatchCollection
             ShowMobileButton.Cursor = Cursors.Hand;
             ShowMobileButton.Font = new Font("Roboto", 12F);
             ShowMobileButton.ForeColor = Color.FromArgb(175, 175, 175);
-            ShowMobileButton.Location = new Point(229, 179);
+            ShowMobileButton.Location = new Point(229, 182);
             ShowMobileButton.Name = "ShowMobileButton";
             ShowMobileButton.Size = new Size(75, 23);
             ShowMobileButton.TabIndex = 40;
@@ -528,36 +356,37 @@ namespace LeaguePatchCollection
             // 
             // DisconnectChatButton
             // 
-            DisconnectChatButton.BorderColor = Color.FromArgb(60, 60, 60);
+            DisconnectChatButton.BorderColor = Color.FromArgb(40, 40, 40);
             DisconnectChatButton.BorderRadius = 2;
             DisconnectChatButton.BorderThickness = 2;
             DisconnectChatButton.Cursor = Cursors.Hand;
-            DisconnectChatButton.CustomBorderColor = Color.FromArgb(60, 60, 60);
+            DisconnectChatButton.CustomBorderColor = Color.FromArgb(40, 40, 40);
             DisconnectChatButton.CustomBorderThickness = new Padding(1);
-            DisconnectChatButton.CustomizableEdges = customizableEdges11;
+            DisconnectChatButton.CustomizableEdges = customizableEdges1;
             DisconnectChatButton.DisabledState.BorderColor = Color.DarkGray;
             DisconnectChatButton.DisabledState.CustomBorderColor = Color.DarkGray;
             DisconnectChatButton.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
             DisconnectChatButton.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
-            DisconnectChatButton.FillColor = Color.FromArgb(40, 40, 40);
+            DisconnectChatButton.FillColor = Color.FromArgb(20, 20, 20);
             DisconnectChatButton.Font = new Font("Inter Medium", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             DisconnectChatButton.ForeColor = Color.FromArgb(225, 225, 225);
             DisconnectChatButton.HoverState.BorderColor = Color.FromArgb(80, 80, 80);
             DisconnectChatButton.HoverState.FillColor = Color.FromArgb(60, 60, 60);
             DisconnectChatButton.HoverState.ForeColor = Color.Yellow;
-            DisconnectChatButton.Location = new Point(389, 176);
+            DisconnectChatButton.Location = new Point(389, 179);
             DisconnectChatButton.Name = "DisconnectChatButton";
-            DisconnectChatButton.ShadowDecoration.CustomizableEdges = customizableEdges12;
+            DisconnectChatButton.ShadowDecoration.CustomizableEdges = customizableEdges2;
             DisconnectChatButton.Size = new Size(199, 26);
             DisconnectChatButton.TabIndex = 41;
             DisconnectChatButton.Click += DisconnectChatButton_Click;
             // 
             // MiscSeperatorRight
             // 
+            MiscSeperatorRight.FillColor = SystemColors.ScrollBar;
             MiscSeperatorRight.FillThickness = 2;
-            MiscSeperatorRight.Location = new Point(364, 208);
+            MiscSeperatorRight.Location = new Point(359, 211);
             MiscSeperatorRight.Name = "MiscSeperatorRight";
-            MiscSeperatorRight.Size = new Size(224, 17);
+            MiscSeperatorRight.Size = new Size(229, 17);
             MiscSeperatorRight.TabIndex = 42;
             // 
             // MiscLabel
@@ -565,10 +394,10 @@ namespace LeaguePatchCollection
             MiscLabel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             MiscLabel.BackColor = Color.Transparent;
             MiscLabel.Font = new Font("Roboto", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            MiscLabel.ForeColor = Color.White;
+            MiscLabel.ForeColor = Color.FromArgb(225, 225, 225);
             MiscLabel.IsContextMenuEnabled = false;
             MiscLabel.IsSelectionEnabled = false;
-            MiscLabel.Location = new Point(253, 208);
+            MiscLabel.Location = new Point(246, 211);
             MiscLabel.Name = "MiscLabel";
             MiscLabel.Size = new Size(107, 17);
             MiscLabel.TabIndex = 43;
@@ -577,64 +406,35 @@ namespace LeaguePatchCollection
             // 
             // MiscSeperatorLeft
             // 
+            MiscSeperatorLeft.FillColor = SystemColors.ScrollBar;
             MiscSeperatorLeft.FillThickness = 2;
-            MiscSeperatorLeft.Location = new Point(12, 208);
+            MiscSeperatorLeft.Location = new Point(11, 211);
             MiscSeperatorLeft.Name = "MiscSeperatorLeft";
-            MiscSeperatorLeft.Size = new Size(235, 17);
+            MiscSeperatorLeft.Size = new Size(229, 17);
             MiscSeperatorLeft.TabIndex = 44;
-            // 
-            // CleanLogsButton
-            // 
-            CleanLogsButton.BorderColor = Color.FromArgb(60, 60, 60);
-            CleanLogsButton.BorderRadius = 2;
-            CleanLogsButton.BorderThickness = 2;
-            CleanLogsButton.Cursor = Cursors.Hand;
-            CleanLogsButton.CustomBorderColor = Color.FromArgb(60, 60, 60);
-            CleanLogsButton.CustomBorderThickness = new Padding(1);
-            CleanLogsButton.CustomizableEdges = customizableEdges13;
-            CleanLogsButton.DisabledState.BorderColor = Color.DarkGray;
-            CleanLogsButton.DisabledState.CustomBorderColor = Color.DarkGray;
-            CleanLogsButton.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
-            CleanLogsButton.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
-            CleanLogsButton.FillColor = Color.FromArgb(40, 40, 40);
-            CleanLogsButton.Font = new Font("Inter SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            CleanLogsButton.ForeColor = Color.FromArgb(225, 225, 225);
-            CleanLogsButton.HoverState.BorderColor = Color.FromArgb(80, 80, 80);
-            CleanLogsButton.HoverState.CustomBorderColor = Color.FromArgb(80, 80, 80);
-            CleanLogsButton.HoverState.FillColor = Color.FromArgb(60, 60, 60);
-            CleanLogsButton.HoverState.ForeColor = Color.White;
-            CleanLogsButton.Image = Properties.Resources.uac;
-            CleanLogsButton.Location = new Point(12, 231);
-            CleanLogsButton.Name = "CleanLogsButton";
-            CleanLogsButton.ShadowDecoration.CustomizableEdges = customizableEdges14;
-            CleanLogsButton.Size = new Size(125, 33);
-            CleanLogsButton.TabIndex = 47;
-            CleanLogsButton.Text = "Clean logs";
-            CleanLogsButton.Click += CleanLogsButton_Click;
             // 
             // BanReasonButton
             // 
-            BanReasonButton.BorderColor = Color.FromArgb(60, 60, 60);
+            BanReasonButton.BorderColor = Color.FromArgb(50, 50, 50);
             BanReasonButton.BorderRadius = 2;
             BanReasonButton.BorderThickness = 2;
             BanReasonButton.Cursor = Cursors.Hand;
-            BanReasonButton.CustomBorderColor = Color.FromArgb(60, 60, 60);
-            BanReasonButton.CustomBorderThickness = new Padding(1);
-            BanReasonButton.CustomizableEdges = customizableEdges15;
+            BanReasonButton.CustomBorderColor = Color.FromArgb(50, 50, 50);
+            BanReasonButton.CustomizableEdges = customizableEdges3;
             BanReasonButton.DisabledState.BorderColor = Color.DarkGray;
             BanReasonButton.DisabledState.CustomBorderColor = Color.DarkGray;
             BanReasonButton.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
             BanReasonButton.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
-            BanReasonButton.FillColor = Color.FromArgb(40, 40, 40);
-            BanReasonButton.Font = new Font("Inter SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            BanReasonButton.FillColor = Color.FromArgb(30, 30, 30);
+            BanReasonButton.Font = new Font("Inter SemiBold", 12F, FontStyle.Bold);
             BanReasonButton.ForeColor = Color.FromArgb(225, 225, 225);
             BanReasonButton.HoverState.BorderColor = Color.FromArgb(80, 80, 80);
             BanReasonButton.HoverState.CustomBorderColor = Color.FromArgb(80, 80, 80);
             BanReasonButton.HoverState.FillColor = Color.FromArgb(60, 60, 60);
             BanReasonButton.HoverState.ForeColor = Color.White;
-            BanReasonButton.Location = new Point(143, 231);
+            BanReasonButton.Location = new Point(143, 234);
             BanReasonButton.Name = "BanReasonButton";
-            BanReasonButton.ShadowDecoration.CustomizableEdges = customizableEdges16;
+            BanReasonButton.ShadowDecoration.CustomizableEdges = customizableEdges4;
             BanReasonButton.Size = new Size(174, 33);
             BanReasonButton.TabIndex = 48;
             BanReasonButton.Text = "Check ban reason";
@@ -644,54 +444,55 @@ namespace LeaguePatchCollection
             // 
             OldPatch.AutoSize = true;
             OldPatch.CheckedState.BorderColor = Color.DodgerBlue;
-            OldPatch.CheckedState.BorderRadius = 1;
-            OldPatch.CheckedState.BorderThickness = 1;
-            OldPatch.CheckedState.FillColor = Color.DeepSkyBlue;
+            OldPatch.CheckedState.BorderRadius = 0;
+            OldPatch.CheckedState.BorderThickness = 2;
+            OldPatch.CheckedState.FillColor = Color.DodgerBlue;
             OldPatch.Cursor = Cursors.Hand;
             OldPatch.Font = new Font("Inter Tight SemiBold", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            OldPatch.ForeColor = Color.FromArgb(225, 225, 225);
-            OldPatch.Location = new Point(350, 85);
+            OldPatch.ForeColor = Color.FromArgb(175, 175, 175);
+            OldPatch.Location = new Point(350, 88);
             OldPatch.Name = "OldPatch";
             OldPatch.Size = new Size(188, 27);
             OldPatch.TabIndex = 49;
             OldPatch.Text = "Legacy Patch Number";
-            OldPatch.UncheckedState.BorderColor = Color.Gray;
-            OldPatch.UncheckedState.BorderRadius = 1;
-            OldPatch.UncheckedState.BorderThickness = 1;
-            OldPatch.UncheckedState.FillColor = Color.Silver;
+            OldPatch.UncheckedState.BorderColor = Color.FromArgb(120, 120, 120);
+            OldPatch.UncheckedState.BorderRadius = 0;
+            OldPatch.UncheckedState.BorderThickness = 2;
+            OldPatch.UncheckedState.FillColor = Color.Transparent;
             OldPatch.CheckedChanged += OldPatch_CheckedChanged;
             // 
             // ConfigSeperatorLeft
             // 
+            ConfigSeperatorLeft.FillColor = SystemColors.ScrollBar;
             ConfigSeperatorLeft.FillThickness = 2;
-            ConfigSeperatorLeft.Location = new Point(12, 35);
+            ConfigSeperatorLeft.Location = new Point(11, 38);
             ConfigSeperatorLeft.Name = "ConfigSeperatorLeft";
-            ConfigSeperatorLeft.Size = new Size(235, 17);
+            ConfigSeperatorLeft.Size = new Size(230, 17);
             ConfigSeperatorLeft.TabIndex = 28;
             // 
             // ArgsBox
             // 
-            ArgsBox.BorderColor = Color.FromArgb(60, 60, 60);
+            ArgsBox.BorderColor = Color.FromArgb(40, 40, 40);
             ArgsBox.BorderRadius = 1;
             ArgsBox.BorderThickness = 2;
-            ArgsBox.CustomizableEdges = customizableEdges17;
+            ArgsBox.CustomizableEdges = customizableEdges5;
             ArgsBox.DefaultText = "";
             ArgsBox.DisabledState.BorderColor = Color.FromArgb(208, 208, 208);
             ArgsBox.DisabledState.FillColor = Color.FromArgb(226, 226, 226);
             ArgsBox.DisabledState.ForeColor = Color.FromArgb(138, 138, 138);
             ArgsBox.DisabledState.PlaceholderForeColor = Color.FromArgb(138, 138, 138);
-            ArgsBox.FillColor = Color.FromArgb(40, 40, 40);
+            ArgsBox.FillColor = Color.FromArgb(20, 20, 20);
             ArgsBox.FocusedState.BorderColor = Color.FromArgb(94, 148, 255);
             ArgsBox.Font = new Font("Inter SemiBold", 10F, FontStyle.Bold);
             ArgsBox.ForeColor = Color.FromArgb(225, 225, 225);
             ArgsBox.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
-            ArgsBox.Location = new Point(60, 117);
+            ArgsBox.Location = new Point(60, 120);
             ArgsBox.Name = "ArgsBox";
             ArgsBox.PasswordChar = '\0';
-            ArgsBox.PlaceholderForeColor = Color.Silver;
+            ArgsBox.PlaceholderForeColor = Color.FromArgb(175, 175, 175);
             ArgsBox.PlaceholderText = "";
             ArgsBox.SelectedText = "";
-            ArgsBox.ShadowDecoration.CustomizableEdges = customizableEdges18;
+            ArgsBox.ShadowDecoration.CustomizableEdges = customizableEdges6;
             ArgsBox.Size = new Size(528, 32);
             ArgsBox.TabIndex = 50;
             ArgsBox.TextChanged += ArgsBox_TextChanged;
@@ -704,28 +505,273 @@ namespace LeaguePatchCollection
             ArgsLabel.ForeColor = SystemColors.ScrollBar;
             ArgsLabel.IsContextMenuEnabled = false;
             ArgsLabel.IsSelectionEnabled = false;
-            ArgsLabel.Location = new Point(12, 120);
+            ArgsLabel.Location = new Point(12, 123);
             ArgsLabel.Name = "ArgsLabel";
             ArgsLabel.Size = new Size(42, 24);
             ArgsLabel.TabIndex = 51;
             ArgsLabel.Text = "Args:";
             ArgsLabel.TextAlignment = ContentAlignment.MiddleCenter;
             // 
+            // CleanLogsButton
+            // 
+            CleanLogsButton.BorderColor = Color.FromArgb(50, 50, 50);
+            CleanLogsButton.BorderRadius = 2;
+            CleanLogsButton.BorderThickness = 2;
+            CleanLogsButton.Cursor = Cursors.Hand;
+            CleanLogsButton.CustomBorderColor = Color.FromArgb(50, 50, 50);
+            CleanLogsButton.CustomizableEdges = customizableEdges7;
+            CleanLogsButton.DisabledState.BorderColor = Color.DarkGray;
+            CleanLogsButton.DisabledState.CustomBorderColor = Color.DarkGray;
+            CleanLogsButton.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
+            CleanLogsButton.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
+            CleanLogsButton.FillColor = Color.FromArgb(30, 30, 30);
+            CleanLogsButton.Font = new Font("Inter SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            CleanLogsButton.ForeColor = Color.FromArgb(225, 225, 225);
+            CleanLogsButton.HoverState.BorderColor = Color.FromArgb(80, 80, 80);
+            CleanLogsButton.HoverState.CustomBorderColor = Color.FromArgb(80, 80, 80);
+            CleanLogsButton.HoverState.FillColor = Color.FromArgb(60, 60, 60);
+            CleanLogsButton.HoverState.ForeColor = Color.White;
+            CleanLogsButton.Image = Properties.Resources.uac;
+            CleanLogsButton.Location = new Point(13, 234);
+            CleanLogsButton.Name = "CleanLogsButton";
+            CleanLogsButton.ShadowDecoration.CustomizableEdges = customizableEdges8;
+            CleanLogsButton.Size = new Size(125, 33);
+            CleanLogsButton.TabIndex = 47;
+            CleanLogsButton.Text = "Clean logs";
+            CleanLogsButton.Click += CleanLogsButton_Click;
+            // 
+            // ConfigSeperatorRight
+            // 
+            ConfigSeperatorRight.FillColor = SystemColors.ScrollBar;
+            ConfigSeperatorRight.FillThickness = 2;
+            ConfigSeperatorRight.Location = new Point(358, 38);
+            ConfigSeperatorRight.Name = "ConfigSeperatorRight";
+            ConfigSeperatorRight.Size = new Size(230, 17);
+            ConfigSeperatorRight.TabIndex = 34;
+            // 
+            // MainHeaderBackdrop
+            // 
+            MainHeaderBackdrop.BorderColor = Color.Transparent;
+            MainHeaderBackdrop.Controls.Add(WindowTitle);
+            MainHeaderBackdrop.Controls.Add(MinimizeButton);
+            MainHeaderBackdrop.Controls.Add(TopWindowIcon);
+            MainHeaderBackdrop.Controls.Add(CloseButton);
+            MainHeaderBackdrop.CustomBorderColor = SystemColors.WindowFrame;
+            MainHeaderBackdrop.CustomBorderThickness = new Padding(2, 2, 2, 0);
+            MainHeaderBackdrop.CustomizableEdges = customizableEdges13;
+            MainHeaderBackdrop.FillColor = Color.FromArgb(20, 20, 20);
+            MainHeaderBackdrop.FillColor2 = Color.FromArgb(20, 20, 20);
+            MainHeaderBackdrop.FillColor3 = Color.FromArgb(20, 20, 20);
+            MainHeaderBackdrop.FillColor4 = Color.FromArgb(20, 20, 20);
+            MainHeaderBackdrop.Location = new Point(0, 0);
+            MainHeaderBackdrop.Name = "MainHeaderBackdrop";
+            MainHeaderBackdrop.ShadowDecoration.CustomizableEdges = customizableEdges14;
+            MainHeaderBackdrop.Size = new Size(600, 32);
+            MainHeaderBackdrop.TabIndex = 3;
+            MainHeaderBackdrop.MouseDown += MainHeaderBackdrop_MouseDown;
+            // 
+            // WindowTitle
+            // 
+            WindowTitle.BackColor = Color.Transparent;
+            WindowTitle.Font = new Font("Inter Tight SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            WindowTitle.ForeColor = Color.FromArgb(225, 225, 225);
+            WindowTitle.IsContextMenuEnabled = false;
+            WindowTitle.IsSelectionEnabled = false;
+            WindowTitle.Location = new Point(40, 5);
+            WindowTitle.Name = "WindowTitle";
+            WindowTitle.Size = new Size(177, 25);
+            WindowTitle.TabIndex = 4;
+            WindowTitle.Text = "League Patch Collection";
+            WindowTitle.MouseDown += WindowTitle_MouseDown;
+            // 
+            // MinimizeButton
+            // 
+            MinimizeButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            MinimizeButton.BackColor = Color.Transparent;
+            MinimizeButton.BorderColor = Color.Transparent;
+            MinimizeButton.ControlBoxStyle = Guna.UI2.WinForms.Enums.ControlBoxStyle.Custom;
+            MinimizeButton.ControlBoxType = Guna.UI2.WinForms.Enums.ControlBoxType.MinimizeBox;
+            MinimizeButton.Cursor = Cursors.Hand;
+            MinimizeButton.CustomizableEdges = customizableEdges9;
+            MinimizeButton.FillColor = Color.Transparent;
+            MinimizeButton.HoverState.BorderColor = SystemColors.WindowFrame;
+            MinimizeButton.HoverState.FillColor = SystemColors.WindowFrame;
+            MinimizeButton.HoverState.IconColor = Color.White;
+            MinimizeButton.IconColor = Color.FromArgb(175, 175, 175);
+            MinimizeButton.Location = new Point(538, 3);
+            MinimizeButton.Name = "MinimizeButton";
+            MinimizeButton.ShadowDecoration.BorderRadius = 0;
+            MinimizeButton.ShadowDecoration.CustomizableEdges = customizableEdges10;
+            MinimizeButton.Size = new Size(30, 29);
+            MinimizeButton.TabIndex = 2;
+            // 
+            // TopWindowIcon
+            // 
+            TopWindowIcon.BackColor = Color.FromArgb(20, 20, 20);
+            TopWindowIcon.Image = Properties.Resources.LPC;
+            TopWindowIcon.Location = new Point(12, 5);
+            TopWindowIcon.Name = "TopWindowIcon";
+            TopWindowIcon.Size = new Size(24, 24);
+            TopWindowIcon.SizeMode = PictureBoxSizeMode.StretchImage;
+            TopWindowIcon.TabIndex = 50;
+            TopWindowIcon.TabStop = false;
+            TopWindowIcon.MouseDown += TopWindowIcon_MouseDown;
+            // 
+            // CloseButton
+            // 
+            CloseButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            CloseButton.BackColor = Color.Transparent;
+            CloseButton.BorderColor = Color.Transparent;
+            CloseButton.ControlBoxStyle = Guna.UI2.WinForms.Enums.ControlBoxStyle.Custom;
+            CloseButton.Cursor = Cursors.Hand;
+            CloseButton.CustomizableEdges = customizableEdges11;
+            CloseButton.FillColor = Color.Transparent;
+            CloseButton.HoverState.BorderColor = Color.Red;
+            CloseButton.HoverState.FillColor = Color.Red;
+            CloseButton.HoverState.IconColor = Color.White;
+            CloseButton.IconColor = Color.FromArgb(175, 175, 175);
+            CloseButton.Location = new Point(567, 3);
+            CloseButton.Name = "CloseButton";
+            CloseButton.ShadowDecoration.BorderRadius = 0;
+            CloseButton.ShadowDecoration.CustomizableEdges = customizableEdges12;
+            CloseButton.Size = new Size(30, 29);
+            CloseButton.TabIndex = 28;
+            // 
+            // guna2CustomGradientPanel1
+            // 
+            guna2CustomGradientPanel1.BorderColor = SystemColors.WindowFrame;
+            guna2CustomGradientPanel1.Controls.Add(RestartUXbutton);
+            guna2CustomGradientPanel1.Controls.Add(StartButton);
+            guna2CustomGradientPanel1.Controls.Add(CloseClientsButton);
+            guna2CustomGradientPanel1.CustomBorderColor = SystemColors.WindowFrame;
+            guna2CustomGradientPanel1.CustomBorderThickness = new Padding(2, 0, 2, 2);
+            guna2CustomGradientPanel1.CustomizableEdges = customizableEdges21;
+            guna2CustomGradientPanel1.FillColor = Color.FromArgb(20, 20, 20);
+            guna2CustomGradientPanel1.FillColor2 = Color.FromArgb(20, 20, 20);
+            guna2CustomGradientPanel1.FillColor3 = Color.FromArgb(20, 20, 20);
+            guna2CustomGradientPanel1.FillColor4 = Color.FromArgb(20, 20, 20);
+            guna2CustomGradientPanel1.Location = new Point(0, 344);
+            guna2CustomGradientPanel1.Name = "guna2CustomGradientPanel1";
+            guna2CustomGradientPanel1.ShadowDecoration.CustomizableEdges = customizableEdges22;
+            guna2CustomGradientPanel1.Size = new Size(600, 56);
+            guna2CustomGradientPanel1.TabIndex = 0;
+            // 
+            // RestartUXbutton
+            // 
+            RestartUXbutton.BorderColor = Color.FromArgb(80, 80, 80);
+            RestartUXbutton.BorderRadius = 2;
+            RestartUXbutton.BorderThickness = 2;
+            RestartUXbutton.Cursor = Cursors.Hand;
+            RestartUXbutton.CustomBorderColor = Color.FromArgb(80, 80, 80);
+            RestartUXbutton.CustomizableEdges = customizableEdges15;
+            RestartUXbutton.DisabledState.BorderColor = Color.DarkGray;
+            RestartUXbutton.DisabledState.CustomBorderColor = Color.DarkGray;
+            RestartUXbutton.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
+            RestartUXbutton.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
+            RestartUXbutton.FillColor = Color.FromArgb(30, 30, 30);
+            RestartUXbutton.Font = new Font("Inter Tight", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            RestartUXbutton.ForeColor = Color.FromArgb(225, 225, 225);
+            RestartUXbutton.HoverState.BorderColor = Color.FromArgb(0, 0, 200);
+            RestartUXbutton.HoverState.CustomBorderColor = Color.Transparent;
+            RestartUXbutton.HoverState.FillColor = Color.FromArgb(0, 0, 150);
+            RestartUXbutton.HoverState.ForeColor = Color.White;
+            RestartUXbutton.Location = new Point(136, 10);
+            RestartUXbutton.Name = "RestartUXbutton";
+            RestartUXbutton.ShadowDecoration.BorderRadius = 2;
+            RestartUXbutton.ShadowDecoration.CustomizableEdges = customizableEdges16;
+            RestartUXbutton.Size = new Size(129, 34);
+            RestartUXbutton.TabIndex = 49;
+            RestartUXbutton.Text = "RESTART UX";
+            RestartUXbutton.Click += RestartUXbutton_Click;
+            // 
+            // StartButton
+            // 
+            StartButton.BorderColor = Color.FromArgb(0, 155, 0);
+            StartButton.BorderRadius = 2;
+            StartButton.BorderThickness = 2;
+            StartButton.Cursor = Cursors.Hand;
+            StartButton.CustomizableEdges = customizableEdges17;
+            StartButton.DisabledState.BorderColor = Color.FromArgb(60, 60, 60);
+            StartButton.DisabledState.FillColor = Color.FromArgb(40, 40, 40);
+            StartButton.DisabledState.ForeColor = Color.FromArgb(120, 120, 120);
+            StartButton.Enabled = false;
+            StartButton.FillColor = Color.FromArgb(20, 40, 20);
+            StartButton.Font = new Font("Inter Tight", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            StartButton.ForeColor = Color.FromArgb(235, 235, 235);
+            StartButton.HoverState.BorderColor = Color.FromArgb(0, 200, 0);
+            StartButton.HoverState.CustomBorderColor = Color.Transparent;
+            StartButton.HoverState.FillColor = Color.FromArgb(0, 150, 0);
+            StartButton.HoverState.ForeColor = Color.White;
+            StartButton.Location = new Point(430, 10);
+            StartButton.Name = "StartButton";
+            StartButton.ShadowDecoration.BorderRadius = 2;
+            StartButton.ShadowDecoration.CustomizableEdges = customizableEdges18;
+            StartButton.Size = new Size(159, 34);
+            StartButton.TabIndex = 0;
+            StartButton.Text = "INITIALIZING...";
+            StartButton.Click += StartButton_Click;
+            // 
+            // CloseClientsButton
+            // 
+            CloseClientsButton.BackColor = Color.FromArgb(20, 20, 20);
+            CloseClientsButton.BorderColor = Color.FromArgb(155, 0, 0);
+            CloseClientsButton.BorderRadius = 2;
+            CloseClientsButton.BorderThickness = 2;
+            CloseClientsButton.Cursor = Cursors.Hand;
+            CloseClientsButton.CustomizableEdges = customizableEdges19;
+            CloseClientsButton.DisabledState.BorderColor = Color.DarkGray;
+            CloseClientsButton.DisabledState.CustomBorderColor = Color.DarkGray;
+            CloseClientsButton.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
+            CloseClientsButton.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
+            CloseClientsButton.FillColor = Color.FromArgb(40, 20, 20);
+            CloseClientsButton.Font = new Font("Inter Tight", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            CloseClientsButton.ForeColor = Color.FromArgb(235, 235, 235);
+            CloseClientsButton.HoverState.BorderColor = Color.FromArgb(200, 0, 0);
+            CloseClientsButton.HoverState.CustomBorderColor = Color.Transparent;
+            CloseClientsButton.HoverState.FillColor = Color.FromArgb(150, 0, 0);
+            CloseClientsButton.HoverState.ForeColor = Color.White;
+            CloseClientsButton.Location = new Point(271, 10);
+            CloseClientsButton.Name = "CloseClientsButton";
+            CloseClientsButton.ShadowDecoration.BorderRadius = 2;
+            CloseClientsButton.ShadowDecoration.CustomizableEdges = customizableEdges20;
+            CloseClientsButton.Size = new Size(153, 34);
+            CloseClientsButton.TabIndex = 2;
+            CloseClientsButton.Text = "CLOSE CLIENTS";
+            CloseClientsButton.Click += CloseClientsButton_Click;
+            // 
+            // guna2CustomGradientPanel2
+            // 
+            guna2CustomGradientPanel2.BorderColor = SystemColors.WindowFrame;
+            guna2CustomGradientPanel2.BorderThickness = 2;
+            guna2CustomGradientPanel2.Controls.Add(guna2CustomGradientPanel1);
+            guna2CustomGradientPanel2.Controls.Add(MainHeaderBackdrop);
+            guna2CustomGradientPanel2.Controls.Add(MiscLabel);
+            guna2CustomGradientPanel2.CustomizableEdges = customizableEdges23;
+            guna2CustomGradientPanel2.FillColor = Color.Transparent;
+            guna2CustomGradientPanel2.FillColor2 = Color.Transparent;
+            guna2CustomGradientPanel2.FillColor3 = Color.Transparent;
+            guna2CustomGradientPanel2.FillColor4 = Color.Transparent;
+            guna2CustomGradientPanel2.Location = new Point(0, 0);
+            guna2CustomGradientPanel2.Name = "guna2CustomGradientPanel2";
+            guna2CustomGradientPanel2.ShadowDecoration.CustomizableEdges = customizableEdges24;
+            guna2CustomGradientPanel2.Size = new Size(600, 400);
+            guna2CustomGradientPanel2.TabIndex = 52;
+            // 
             // LeaguePatchCollectionUX
             // 
             AutoScaleDimensions = new SizeF(12F, 26F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoValidate = AutoValidate.EnableAllowFocusChange;
-            BackColor = Color.FromArgb(20, 20, 20);
+            BackColor = Color.FromArgb(10, 10, 10);
             ClientSize = new Size(600, 400);
             ControlBox = false;
+            Controls.Add(ConfigSeperatorRight);
+            Controls.Add(CleanLogsButton);
             Controls.Add(ArgsLabel);
             Controls.Add(ArgsBox);
             Controls.Add(OldPatch);
             Controls.Add(BanReasonButton);
-            Controls.Add(CleanLogsButton);
             Controls.Add(MiscSeperatorLeft);
-            Controls.Add(MiscLabel);
             Controls.Add(MiscSeperatorRight);
             Controls.Add(DisconnectChatButton);
             Controls.Add(ShowMobileButton);
@@ -733,7 +779,6 @@ namespace LeaguePatchCollection
             Controls.Add(ShowOfflineButton);
             Controls.Add(ShowOnlineButton);
             Controls.Add(AppearAsLabel);
-            Controls.Add(ConfigSeperatorRight);
             Controls.Add(NoBloatware);
             Controls.Add(ChatSeperatorRight);
             Controls.Add(ChatLabel);
@@ -744,8 +789,7 @@ namespace LeaguePatchCollection
             Controls.Add(LegacyHonor);
             Controls.Add(DisableVanguard);
             Controls.Add(SectionLabelConfig);
-            Controls.Add(MainHeaderBackdrop);
-            Controls.Add(MainControllerBackdrop);
+            Controls.Add(guna2CustomGradientPanel2);
             Font = new Font("Beaufort for LOL", 16F, FontStyle.Bold);
             ForeColor = Color.Transparent;
             FormBorderStyle = FormBorderStyle.None;
@@ -755,30 +799,26 @@ namespace LeaguePatchCollection
             Name = "LeaguePatchCollectionUX";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "League Patch Collection";
-            MainControllerBackdrop.ResumeLayout(false);
             MainHeaderBackdrop.ResumeLayout(false);
             MainHeaderBackdrop.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)TopWindowIcon).EndInit();
+            guna2CustomGradientPanel1.ResumeLayout(false);
+            guna2CustomGradientPanel2.ResumeLayout(false);
+            guna2CustomGradientPanel2.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
-        private Panel MainControllerBackdrop;
-        private Guna.UI2.WinForms.Guna2Button StartButton;
-        private Panel MainHeaderBackdrop;
         private Guna.UI2.WinForms.Guna2HtmlLabel SectionLabelConfig;
         private Guna.UI2.WinForms.Guna2CheckBox DisableVanguard;
         private Guna.UI2.WinForms.Guna2CheckBox LegacyHonor;
         private Guna.UI2.WinForms.Guna2CheckBox NameChangeBypass;
         private Guna.UI2.WinForms.Guna2CheckBox SupressBehavior;
-        private Guna.UI2.WinForms.Guna2ControlBox MinimizeButton;
-        private Guna.UI2.WinForms.Guna2HtmlLabel WindowTitle;
         private Guna.UI2.WinForms.Guna2Separator ChatSeperatorLeft;
         private Guna.UI2.WinForms.Guna2HtmlLabel ChatLabel;
         private Guna.UI2.WinForms.Guna2Separator ChatSeperatorRight;
         private Guna.UI2.WinForms.Guna2CheckBox NoBloatware;
-        private Guna.UI2.WinForms.Guna2Separator ConfigSeperatorRight;
         private Guna.UI2.WinForms.Guna2HtmlLabel AppearAsLabel;
         private Guna.UI2.WinForms.Guna2RadioButton ShowOnlineButton;
         private Guna.UI2.WinForms.Guna2RadioButton ShowOfflineButton;
@@ -788,15 +828,22 @@ namespace LeaguePatchCollection
         private Guna.UI2.WinForms.Guna2Separator MiscSeperatorRight;
         private Guna.UI2.WinForms.Guna2HtmlLabel MiscLabel;
         private Guna.UI2.WinForms.Guna2Separator MiscSeperatorLeft;
-        private Guna.UI2.WinForms.Guna2Button CleanLogsButton;
-        private Guna.UI2.WinForms.Guna2ControlBox CloseButton;
         private Guna.UI2.WinForms.Guna2Button BanReasonButton;
         private Guna.UI2.WinForms.Guna2CheckBox OldPatch;
-        private PictureBox TopWindowIcon;
         private Guna.UI2.WinForms.Guna2Separator ConfigSeperatorLeft;
         private Guna.UI2.WinForms.Guna2TextBox ArgsBox;
         private Guna.UI2.WinForms.Guna2HtmlLabel ArgsLabel;
-        private Guna.UI2.WinForms.Guna2Button CloseClientsButton;
+        private Guna.UI2.WinForms.Guna2Button CleanLogsButton;
+        private Guna.UI2.WinForms.Guna2Separator ConfigSeperatorRight;
+        private Guna.UI2.WinForms.Guna2CustomGradientPanel MainHeaderBackdrop;
+        private Guna.UI2.WinForms.Guna2HtmlLabel WindowTitle;
+        private Guna.UI2.WinForms.Guna2ControlBox MinimizeButton;
+        private PictureBox TopWindowIcon;
+        private Guna.UI2.WinForms.Guna2ControlBox CloseButton;
+        private Guna.UI2.WinForms.Guna2CustomGradientPanel guna2CustomGradientPanel1;
         private Guna.UI2.WinForms.Guna2Button RestartUXbutton;
+        private Guna.UI2.WinForms.Guna2Button StartButton;
+        private Guna.UI2.WinForms.Guna2Button CloseClientsButton;
+        private Guna.UI2.WinForms.Guna2CustomGradientPanel guna2CustomGradientPanel2;
     }
 }

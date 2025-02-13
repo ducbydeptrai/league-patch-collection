@@ -3,13 +3,14 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
-	<RootNamespace>LeaguePatchCollection</RootNamespace>
+    <RootNamespace>LeaguePatchCollection</RootNamespace>
     <Nullable>enable</Nullable>
-   	<UseWindowsForms>true</UseWindowsForms>
+    <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-	<Version>5.0.8</Version>
-	<VersionPrefix>5.0.8</VersionPrefix>
-	<ApplicationIcon>Resources\LPC.ico</ApplicationIcon>
+    <Version>5.0.8</Version>
+    <VersionPrefix>5.0.8</VersionPrefix>
+    <ApplicationIcon>Resources\LPC.ico</ApplicationIcon>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>

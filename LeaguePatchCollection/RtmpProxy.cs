@@ -14,8 +14,8 @@ public class RTMPProxy
 {
     private const int Port = 29154;
     private const int RTMPPort = 2099;
-    private const string RTMPServerAddress = "feapp.na1.lol.pvp.net";
-    private CancellationTokenSource _cancellationTokenSource;
+    private const string RTMPServerAddress = "feapp.na1.lol.pvp.net"; //replace region prefix your region, for examle feapp.euw1.lol.pvp.net
+    private CancellationTokenSource? _cancellationTokenSource;
 
     public async Task RunAsync()
     {
@@ -59,7 +59,6 @@ public class RTMPProxy
             using var tcpClient = new TcpClient(RTMPServerAddress, RTMPPort);
             Stream serverStream = tcpClient.GetStream();
 
-            if (RequiresTLS())
             {
                 var sslStream = new SslStream(serverStream, false, ValidateServerCertificate);
                 var sslOptions = new SslClientAuthenticationOptions
@@ -89,7 +88,7 @@ public class RTMPProxy
         }
     }
 
-    private async Task ForwardDataAsync(Stream source, Stream destination, string direction, CancellationToken cancellationToken)
+    private static async Task ForwardDataAsync(Stream source, Stream destination, string direction, CancellationToken cancellationToken)
     {
         var buffer = new byte[128];
         int bytesRead;
@@ -110,12 +109,7 @@ public class RTMPProxy
         }
     }
 
-    private static bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
-    {
-        return sslPolicyErrors == SslPolicyErrors.None || true; // Allow self-signed certificates
-    }
-
-    private static bool RequiresTLS()
+    private static bool ValidateServerCertificate(object sender, X509Certificate? certificate, X509Chain? chain, SslPolicyErrors sslPolicyErrors)
     {
         return true;
     }

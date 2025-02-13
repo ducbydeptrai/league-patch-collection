@@ -14,6 +14,8 @@ using System.Net;
 using System.IO.Compression;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
+using static System.Net.WebRequestMethods;
+using System.Text.RegularExpressions;
 
 namespace LeaguePatchCollection;
 
@@ -21,7 +23,7 @@ class HttpProxy
 {
     internal sealed class ConfigController : WebApiController
     {
-        private static HttpClient _Client = new(new HttpClientHandler
+        private static readonly HttpClient _Client = new(new HttpClientHandler
         {
             UseCookies = false,
             UseProxy = false,
@@ -168,9 +170,7 @@ class HttpProxy
                 SetNestedKeys(configObject, "lol.client_settings.sentry_config", "isEnabled", false);
                 SetNestedKeys(configObject, "lol.client_settings.sentry_config", "sampleRate", 0);
                 SetNestedKeys(configObject, "lol.client_settings.sentry_config", "dsn", "");
-                ModifyValConfig(configObject, "keystone.products.valorant.patchlines.live");
                 //AppendLauncherArguments(configObject, "keystone.products.league_of_legends.patchlines.live");
-                //AppendLauncherArguments(configObject, "keystone.products.league_of_legends.patchlines.pbe");
 
                 content = JsonSerializer.Serialize(configObject);
             }
@@ -233,6 +233,7 @@ class HttpProxy
                     SetKey(configObject, "chat.disable_chat_restriction_muted_system_message", true);
                     SetKey(configObject, "keystone.client.feature_flags.home_page_route.enabled", false);
                     SetKey(configObject, "keystone.client.feature_flags.campaign-hub.enabled", false);
+                    SetKey(configObject, "keystone.client.feature_flags.playerReporting.enabled", false);
                 }
 
                 SetKey(configObject, "chat.allow_bad_cert.enabled", true);
@@ -261,7 +262,7 @@ class HttpProxy
 
             await SendResponse(response, content);
         }
-        private async Task<HttpResponseMessage> ClientConfig(IHttpRequest request)
+        private static async Task<HttpResponseMessage> ClientConfig(IHttpRequest request)
         {
             var url = BASE_URL + request.RawUrl;
 
@@ -315,13 +316,13 @@ class HttpProxy
                 Console.ResetColor();
             }
 
-            await HttpContext.Response.OutputStream.WriteAsync(responseBuffer, 0, responseBuffer.Length);
+            await HttpContext.Response.OutputStream.WriteAsync(responseBuffer);
             HttpContext.Response.OutputStream.Close();
         }
     }
     internal sealed class LedgeController : WebApiController
     {
-        private static HttpClient _Client = new(new HttpClientHandler
+        private readonly static HttpClient _Client = new(new HttpClientHandler
         {
             UseCookies = false,
             UseProxy = false,
@@ -416,7 +417,7 @@ class HttpProxy
             return ledgeUrl;
         }
 
-        private async Task<HttpResponseMessage> PutLedge(IHttpRequest request, string body)
+        private static async Task<HttpResponseMessage> PutLedge(IHttpRequest request, string body)
         {
             var url = LEDGE_URL + request.RawUrl;
 
@@ -448,7 +449,7 @@ class HttpProxy
             return response;
         }
 
-        private async Task<HttpResponseMessage> PostLedge(IHttpRequest request, string body)
+        private static async Task<HttpResponseMessage> PostLedge(IHttpRequest request, string body)
         {
             var url = LEDGE_URL + request.RawUrl;
 
@@ -479,7 +480,7 @@ class HttpProxy
 
             return response;
         }
-        private async Task<HttpResponseMessage> OptionsLedge(IHttpRequest request)
+        private static async Task<HttpResponseMessage> OptionsLedge(IHttpRequest request)
         {
             var url = LEDGE_URL + request.RawUrl;
 
@@ -525,7 +526,7 @@ class HttpProxy
             return response;
         }
 
-        private async Task<HttpResponseMessage> GetLedge(IHttpRequest request)
+        private static async Task<HttpResponseMessage> GetLedge(IHttpRequest request)
         {
             var url = LEDGE_URL + request.RawUrl;
 
@@ -605,13 +606,13 @@ class HttpProxy
                 Trace.WriteLine("[WARN] Ledge request returned 403 Forbidden; possibly blocked by Cloudflare.");
             }
 
-            await HttpContext.Response.OutputStream.WriteAsync(responseBuffer, 0, responseBuffer.Length);
+            await HttpContext.Response.OutputStream.WriteAsync(responseBuffer);
             HttpContext.Response.OutputStream.Close();
         }
     }
     internal sealed class GeopassController : WebApiController
     {
-        private static HttpClient _Client = new(new HttpClientHandler
+        private readonly static HttpClient _Client = new(new HttpClientHandler
         {
             UseCookies = false,
             UseProxy = false,
@@ -664,7 +665,7 @@ class HttpProxy
             {
                 Trace.WriteLine("[ERROR] Unable to send request: Geopass URL is not set.");
             }
-            return GeopassUrl;
+            return GeopassUrl ?? "";
         }
         private async Task<HttpResponseMessage> GetGeopass(IHttpRequest request)
         {
@@ -759,18 +760,18 @@ class HttpProxy
                 Console.ResetColor();
             }
 
-            await HttpContext.Response.OutputStream.WriteAsync(responseBuffer, 0, responseBuffer.Length);
+            await HttpContext.Response.OutputStream.WriteAsync(responseBuffer);
             HttpContext.Response.OutputStream.Close();
         }
     }
-    internal sealed class httpProxyServer<T> where T : WebApiController, new()
+    internal sealed class HttpProxyServer<T> where T : WebApiController, new()
     {
-        private WebServer _WebServer;
-        private int _Port;
+        private readonly WebServer _WebServer;
+        private readonly int _Port;
 
         public string Url => $"http://127.0.0.1:{_Port}";
 
-        public httpProxyServer(int port)
+        public HttpProxyServer(int port)
         {
             _Port = port;
 
@@ -872,7 +873,6 @@ class HttpProxy
             }
         }
     }
-
     private static void SetNestedKeys(JsonNode? configObject, string parentKey, string childKey, object value)
     {
         if (configObject == null) return;
@@ -1062,34 +1062,6 @@ class HttpProxy
                 {
                     var launcherArray = config?["launcher"]?["arguments"]?.AsArray();
                     launcherArray?.Add("--system-yaml-override=Config/system.yaml");
-                }
-            }
-        }
-    }
-    static void ModifyValConfig(JsonNode? configObject, string patchline)
-    {
-        if (configObject == null) return;
-
-        var productNode = configObject?[patchline];
-        if (productNode != null)
-        {
-            var configs = productNode?["platforms"]?["win"]?["configurations"]?.AsArray();
-            if (configs != null)
-            {
-                foreach (var config in configs)
-                {
-                    var launcherArray = config?["launcher"]?["arguments"]?.AsArray();
-                    if (launcherArray != null)
-                    {
-                        for (int i = 0; i < launcherArray.Count; i++)
-                        {
-                            if (launcherArray[i].ToString().StartsWith("-config-endpoint"))
-                            {
-                                launcherArray[i] = "-config-endpoint=https://shared.na.a.pvp.net";
-                                break;
-                            }
-                        }
-                    }
                 }
             }
         }

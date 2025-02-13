@@ -10,21 +10,19 @@ namespace LeaguePatchCollection;
 
 public class LeagueProxy
 {
-    private static HttpProxy.httpProxyServer<HttpProxy.ConfigController> _ConfigServer;
-    private static HttpProxy.httpProxyServer<HttpProxy.GeopassController> _GeopassServer;
-    private static HttpProxy.httpProxyServer<HttpProxy.LedgeController> _LedgeServer;
-    private static RiotClient _RiotClient;
+    private static readonly HttpProxy.HttpProxyServer<HttpProxy.ConfigController> _ConfigServer;
+    private static readonly HttpProxy.HttpProxyServer<HttpProxy.GeopassController> _GeopassServer;
+    private static readonly HttpProxy.HttpProxyServer<HttpProxy.LedgeController> _LedgeServer;
     private static CancellationTokenSource? _ServerCTS;
-    private static XMPPProxy _ChatProxy;
-    private static RTMPProxy _RtmpProxy;
-    private static RMSProxy _RmsProxy;
+    private static readonly XMPPProxy _ChatProxy;
+    private static readonly RTMPProxy _RtmpProxy;
+    private static readonly RMSProxy _RmsProxy;
 
     static LeagueProxy()
     {
-        _ConfigServer = new HttpProxy.httpProxyServer<HttpProxy.ConfigController>(29150);
-        _GeopassServer = new HttpProxy.httpProxyServer<HttpProxy.GeopassController>(29151);
-        _LedgeServer = new HttpProxy.httpProxyServer<HttpProxy.LedgeController>(29152);
-        _RiotClient = new RiotClient();
+        _ConfigServer = new HttpProxy.HttpProxyServer<HttpProxy.ConfigController>(29150);
+        _GeopassServer = new HttpProxy.HttpProxyServer<HttpProxy.GeopassController>(29151);
+        _LedgeServer = new HttpProxy.HttpProxyServer<HttpProxy.LedgeController>(29152);
         _ChatProxy = new XMPPProxy();
         _RtmpProxy = new RTMPProxy();
         _RmsProxy = new RMSProxy();
@@ -54,11 +52,14 @@ public class LeagueProxy
         geopassServerUrl = _GeopassServer.Url;
         Trace.WriteLine($"[INFO] Geopass Proxy started on {geopassServerUrl}");
 
-        var chatProxyTask = _ChatProxy.RunAsync(_ServerCTS.Token);
+        _ChatProxy?.RunAsync(_ServerCTS.Token);
         Trace.WriteLine("[INFO] Chat Proxy started.");
 
-        var rmsProxyTask = _RmsProxy.RunAsync(_ServerCTS.Token);
+        _RmsProxy?.RunAsync(_ServerCTS.Token);
         Trace.WriteLine("[INFO] RMS Proxy started.");
+
+        _RtmpProxy?.RunAsync();
+        Trace.WriteLine("[INFO] RTMP Proxy started");
     }
 
     public static void Stop()

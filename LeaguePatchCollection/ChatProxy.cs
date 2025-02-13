@@ -13,7 +13,6 @@ using System.Security.Cryptography;
 using System.Xml.Linq;
 using System.Windows.Forms;
 using System.Diagnostics;
-using static LeaguePatchCollection.LeaguePatchCollectionUX;
 
 namespace LeaguePatchCollection
 {
@@ -37,7 +36,7 @@ namespace LeaguePatchCollection
                 while (!token.IsCancellationRequested)
                 {
                     var client = await _listener.AcceptTcpClientAsync(token);
-                    _ = HandleClient(client, token); // Pass the cancellation token to HandleClient
+                    _ = HandleClient(client, token);
                 }
             }
             catch (ObjectDisposedException) { /* Listener was stopped, we can ignore this exception */ }
@@ -132,19 +131,19 @@ namespace LeaguePatchCollection
                     {
                         string status = string.Empty;
 
-                        if (SettingsManager.ChatSettings.EnableOnline)
+                        if (LeaguePatchCollectionUX.SettingsManager.ChatSettings.EnableOnline)
                             status = "chat";
-                        else if (SettingsManager.ChatSettings.EnableAway)
+                        else if (LeaguePatchCollectionUX.SettingsManager.ChatSettings.EnableAway)
                             status = "away";
-                        else if (SettingsManager.ChatSettings.EnableMobile)
+                        else if (LeaguePatchCollectionUX.SettingsManager.ChatSettings.EnableMobile)
                             status = "mobile";
-                        else if (SettingsManager.ChatSettings.EnableOffline)
+                        else if (LeaguePatchCollectionUX.SettingsManager.ChatSettings.EnableOffline)
                             status = "offline";
 
                         message = ShowMitm().Replace(message, $"<show>{status}</show>");
                         message = StMitm().Replace(message, $"<st>{status}</st>");
 
-                        if (SettingsManager.ChatSettings.EnableOffline || SettingsManager.ChatSettings.EnableMobile)
+                        if (LeaguePatchCollectionUX.SettingsManager.ChatSettings.EnableOffline || LeaguePatchCollectionUX.SettingsManager.ChatSettings.EnableMobile)
                         {
                             message = RemoveLeague().Replace(message, string.Empty);
                             message = RemoveVal().Replace(message, string.Empty);
