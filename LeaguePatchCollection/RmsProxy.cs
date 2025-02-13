@@ -157,13 +157,12 @@ namespace LeaguePatchCollection
 
                 if (HawoltBypass().IsMatch(decodedMessage))
                 {
-                    Trace.WriteLine("[RMS] Blocked message detected: " + decodedMessage);
                     continue; // hawolt ban bypass exploit
                 }
 
                 if (BlockVanguardSessionCheck().IsMatch(decodedMessage))
                 {
-                    Trace.WriteLine("[RMS] Blocked message detected: " + decodedMessage);
+                    Trace.WriteLine("[INFO] ATTEMPING TO BYPASS GAMEFLOW KICK/BLOCK: BLOCKING MESSAING " + decodedMessage);
                     continue; // Block this message so the client never sees it
                 }
 
