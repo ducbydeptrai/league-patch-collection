@@ -16,6 +16,7 @@ using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using static System.Net.WebRequestMethods;
 using System.Text.RegularExpressions;
+using Microsoft.VisualBasic.Logging;
 
 namespace LeaguePatchCollection;
 
@@ -107,10 +108,37 @@ class HttpProxy
                     SetKey(configObject, "lol.client_settings.client_navigability.info_hub_disabled", true);
                     SetKey(configObject, "lol.client_settings.remedy.is_verbal_abuse_remedy_modal_enabled", false);
                     SetKey(configObject, "keystone.rso-mobile-ui.accountCreationTosAgreement", false);
-                }
-                if (LeaguePatchCollectionUX.SettingsManager.ConfigSettings.Oldpatch)
-                {
                     SetKey(configObject, "lol.client_settings.display_legacy_patch_numbers", true);
+
+                }
+
+                if (LeaguePatchCollectionUX.SettingsManager.ConfigSettings.NoStore)
+                {
+                    SetKey(configObject, "lol.client_settings.loot.standalone_mythic_shop", false);
+                    SetKey(configObject, "lol.client_settings.navigation.enableRewardsProgram", false);
+                    SetKey(configObject, "lol.client_settings.store.lcu.enableCodesPage", false);
+                    SetKey(configObject, "lol.client_settings.store.lcu.enableFetchOffers", false);
+                    SetKey(configObject, "lol.client_settings.store.lcu.enableGifting", false);
+                    SetKey(configObject, "lol.client_settings.store.enableGiftingMessages", false);
+                    SetKey(configObject, "lol.client_settings.store.lcu.enableHextechItems", false);
+                    SetKey(configObject, "lol.client_settings.store.lcu.enableRPPurchase", false);
+                    SetKey(configObject, "lol.client_settings.store.lcu.enableTransfers", false);
+                    SetKey(configObject, "lol.client_settings.store.lcu.enabled", false);
+                    SetKey(configObject, "lol.client_settings.store.lcu.playerGiftingNotificationsEnabled", false);
+                    SetKey(configObject, "lol.client_settings.store.lcu.useRMS", false);
+                    SetKey(configObject, "lol.client_settings.store.customPageFiltersMap", false);
+                    SetKey(configObject, "lol.client_settings.store.use_local_storefront", false);
+                    SetKey(configObject, "lol.game_client_settings.starshards_purchase_enabled", false);
+                    SetKey(configObject, "lol.game_client_settings.starshards_services_enabled", false);
+                    SetKey(configObject, "lol.game_client_settings.store_enabled", false);
+
+
+
+                    SetNestedKeys(configObject, "lol.client_settings.store.essenceEmporium", "Enabled", false);
+                    SetEmptyArrayForConfig(configObject, "lol.client_settings.store.navTabs");
+                    SetEmptyArrayForConfig(configObject, "lol.client_settings.store.allowedPurchaseWidgetTypes");
+                    SetEmptyArrayForConfig(configObject, "lol.client_settings.store.bundlesUsingPaw");
+                    SetEmptyArrayForConfig(configObject, "lol.client_settings.store.customPageFiltersMap");
                 }
 
                 SetKey(configObject, "keystone.age_restriction.enabled", false);
@@ -229,11 +257,24 @@ class HttpProxy
 
                 if (LeaguePatchCollectionUX.SettingsManager.ConfigSettings.Nobloatware)
                 {
+                    SetKey(configObject, "lol.client_settings.purchase_widget.use_ledge", false);
+                    SetNestedKeys(configObject, "lol.client_settings.event_hub.activation", "hubEnabled", false);
+                    SetNestedKeys(configObject, "lol.client_settings.yourshop", "Active", false);
+                }
+
+                if (LeaguePatchCollectionUX.SettingsManager.ConfigSettings.Nobloatware)
+                {
                     SetNestedKeys(configObject, "lol.client_settings.deepLinks", "launchLorEnabled", false);
                     SetKey(configObject, "chat.disable_chat_restriction_muted_system_message", true);
                     SetKey(configObject, "keystone.client.feature_flags.home_page_route.enabled", false);
                     SetKey(configObject, "keystone.client.feature_flags.campaign-hub.enabled", false);
                     SetKey(configObject, "keystone.client.feature_flags.playerReporting.enabled", false);
+
+                    if (configObject?["lol.client_settings.nacho.active_banners"] is JsonObject activeBannersConfig &&
+                        activeBannersConfig.ContainsKey("enabled"))
+                    {
+                        activeBannersConfig["enabled"] = false;
+                    }
                 }
 
                 SetKey(configObject, "chat.allow_bad_cert.enabled", true);

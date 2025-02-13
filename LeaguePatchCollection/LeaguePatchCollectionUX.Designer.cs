@@ -76,7 +76,7 @@ namespace LeaguePatchCollection
             MiscLabel = new Guna.UI2.WinForms.Guna2HtmlLabel();
             MiscSeperatorLeft = new Guna.UI2.WinForms.Guna2Separator();
             BanReasonButton = new Guna.UI2.WinForms.Guna2Button();
-            OldPatch = new Guna.UI2.WinForms.Guna2CheckBox();
+            NoStore = new Guna.UI2.WinForms.Guna2CheckBox();
             ConfigSeperatorLeft = new Guna.UI2.WinForms.Guna2Separator();
             ArgsBox = new Guna.UI2.WinForms.Guna2TextBox();
             ArgsLabel = new Guna.UI2.WinForms.Guna2HtmlLabel();
@@ -440,26 +440,26 @@ namespace LeaguePatchCollection
             BanReasonButton.Text = "Check ban reason";
             BanReasonButton.Click += BanReasonButton_Click;
             // 
-            // OldPatch
+            // NoStore
             // 
-            OldPatch.AutoSize = true;
-            OldPatch.CheckedState.BorderColor = Color.DodgerBlue;
-            OldPatch.CheckedState.BorderRadius = 0;
-            OldPatch.CheckedState.BorderThickness = 2;
-            OldPatch.CheckedState.FillColor = Color.DodgerBlue;
-            OldPatch.Cursor = Cursors.Hand;
-            OldPatch.Font = new Font("Inter Tight SemiBold", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            OldPatch.ForeColor = Color.FromArgb(175, 175, 175);
-            OldPatch.Location = new Point(350, 88);
-            OldPatch.Name = "OldPatch";
-            OldPatch.Size = new Size(188, 27);
-            OldPatch.TabIndex = 49;
-            OldPatch.Text = "Legacy Patch Number";
-            OldPatch.UncheckedState.BorderColor = Color.FromArgb(120, 120, 120);
-            OldPatch.UncheckedState.BorderRadius = 0;
-            OldPatch.UncheckedState.BorderThickness = 2;
-            OldPatch.UncheckedState.FillColor = Color.Transparent;
-            OldPatch.CheckedChanged += OldPatch_CheckedChanged;
+            NoStore.AutoSize = true;
+            NoStore.CheckedState.BorderColor = Color.DodgerBlue;
+            NoStore.CheckedState.BorderRadius = 0;
+            NoStore.CheckedState.BorderThickness = 2;
+            NoStore.CheckedState.FillColor = Color.DodgerBlue;
+            NoStore.Cursor = Cursors.Hand;
+            NoStore.Font = new Font("Inter Tight SemiBold", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            NoStore.ForeColor = Color.FromArgb(175, 175, 175);
+            NoStore.Location = new Point(350, 88);
+            NoStore.Name = "NoStore";
+            NoStore.Size = new Size(125, 27);
+            NoStore.TabIndex = 49;
+            NoStore.Text = "Disable Store";
+            NoStore.UncheckedState.BorderColor = Color.FromArgb(120, 120, 120);
+            NoStore.UncheckedState.BorderRadius = 0;
+            NoStore.UncheckedState.BorderThickness = 2;
+            NoStore.UncheckedState.FillColor = Color.Transparent;
+            NoStore.CheckedChanged += NoStore_CheckedChanged;
             // 
             // ConfigSeperatorLeft
             // 
@@ -769,7 +769,7 @@ namespace LeaguePatchCollection
             Controls.Add(CleanLogsButton);
             Controls.Add(ArgsLabel);
             Controls.Add(ArgsBox);
-            Controls.Add(OldPatch);
+            Controls.Add(NoStore);
             Controls.Add(BanReasonButton);
             Controls.Add(MiscSeperatorLeft);
             Controls.Add(MiscSeperatorRight);
@@ -829,7 +829,7 @@ namespace LeaguePatchCollection
         private Guna.UI2.WinForms.Guna2HtmlLabel MiscLabel;
         private Guna.UI2.WinForms.Guna2Separator MiscSeperatorLeft;
         private Guna.UI2.WinForms.Guna2Button BanReasonButton;
-        private Guna.UI2.WinForms.Guna2CheckBox OldPatch;
+        private Guna.UI2.WinForms.Guna2CheckBox NoStore;
         private Guna.UI2.WinForms.Guna2Separator ConfigSeperatorLeft;
         private Guna.UI2.WinForms.Guna2TextBox ArgsBox;
         private Guna.UI2.WinForms.Guna2HtmlLabel ArgsLabel;
