@@ -157,13 +157,13 @@ namespace LeaguePatchCollection
 
                 if (HawoltBypass().IsMatch(decodedMessage))
                 {
-                    continue; // hawolt ban bypass exploit
+                    continue; // big mighty hawolt ban bypass
                 }
 
                 if (BlockVanguardSessionCheck().IsMatch(decodedMessage))
                 {
                     Trace.WriteLine("[INFO] ATTEMPING TO BYPASS GAMEFLOW KICK/BLOCK: BLOCKING MESSAING " + decodedMessage);
-                    continue; // Block this message so the client never sees it
+                    continue; // Block this message so the client doesnt know gameflow detecting no vanguard session
                 }
 
                 await destination.WriteAsync(buffer.AsMemory(0, bytesRead));
@@ -219,7 +219,7 @@ namespace LeaguePatchCollection
 
         [GeneratedRegex(@"RANKED_RESTRICTION")]
         private static partial Regex RankedRestriction();
-        [GeneratedRegex(@"SESSION_CREATED")]
+        [GeneratedRegex(@"gaps-session-service")]
         private static partial Regex HawoltBypass();
         [GeneratedRegex(@"PLAYER_LACKS_VANGUARD_SESSION")]
         private static partial Regex BlockVanguardSessionCheck();
