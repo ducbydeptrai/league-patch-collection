@@ -198,6 +198,7 @@ class HttpProxy
                 SetNestedKeys(configObject, "lol.client_settings.sentry_config", "isEnabled", false);
                 SetNestedKeys(configObject, "lol.client_settings.sentry_config", "sampleRate", 0);
                 SetNestedKeys(configObject, "lol.client_settings.sentry_config", "dsn", "");
+                //ClientVersionOverride(configObject, "keystone.products.league_of_legends.patchlines.live");
                 //AppendLauncherArguments(configObject, "keystone.products.league_of_legends.patchlines.live");
 
                 content = JsonSerializer.Serialize(configObject);
@@ -255,9 +256,8 @@ class HttpProxy
                     }
                 }
 
-                if (LeaguePatchCollectionUX.SettingsManager.ConfigSettings.Nobloatware)
+                if (LeaguePatchCollectionUX.SettingsManager.ConfigSettings.NoStore)
                 {
-                    SetKey(configObject, "lol.client_settings.purchase_widget.use_ledge", false);
                     SetNestedKeys(configObject, "lol.client_settings.event_hub.activation", "hubEnabled", false);
                     SetNestedKeys(configObject, "lol.client_settings.yourshop", "Active", false);
                 }
@@ -1087,6 +1087,37 @@ class HttpProxy
         public static void Set(string host)
         {
             _RmsHost = host;
+        }
+    }
+    static void ClientVersionOverride(JsonNode configObject, string patchline)
+    {
+        var productNode = configObject?[patchline];
+        if (productNode is not null)
+        {
+            var configs = productNode["platforms"]?["win"]?["configurations"]?.AsArray();
+            if (configs != null)
+            {
+                foreach (var config in configs)
+                {
+                    if (config["patch_url"] is not null)
+                    {
+                        config["patch_url"] = "https://lol.secure.dyn.riotcdn.net/channels/public/releases/5465E4D9A61B4F5A.manifest";
+                    }
+
+                    var patchArtifacts = config["patch_artifacts"]?.AsArray();
+                    if (patchArtifacts != null)
+                    {
+                        foreach (var artifact in patchArtifacts)
+                        {
+                            if (artifact["type"]?.ToString() == "patch_url")
+                            {
+                                artifact["patch_url"] = "https://lol.secure.dyn.riotcdn.net/channels/public/releases/5465E4D9A61B4F5A.manifest";
+                            }
+                        }
+                    }
+                    config["launchable_on_update_fail"] = true;
+                }
+            }
         }
     }
     static void AppendLauncherArguments(JsonNode? configObject, string patchline)

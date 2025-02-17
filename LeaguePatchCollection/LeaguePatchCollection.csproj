@@ -7,10 +7,11 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Version>5.1.5</Version>
-    <VersionPrefix>5.1.5</VersionPrefix>
+    <Version>5.1.6</Version>
+    <VersionPrefix>5.1.6</VersionPrefix>
     <ApplicationIcon>Resources\LPC.ico</ApplicationIcon>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>none</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
