@@ -1,7 +1,7 @@
-> [!IMPORTANT]
-> **UPDATE 2/5/2025:** As of patch 15.3, Riot has implemented a change that prevents players from entering a game after champ select unless Vanguard is running. This occurs because the RMS message instructing the client to start the game is not received, causing the client to freeze and bug out.
-> 
-> This is a disgusting and targeted move by Phillip Koskinas ("mirageofpenguins") specifically aimed at disrupting this repository and preventing users from conducting A/B tests to bypass Vanguard event kicks. I am currently working on updating this repo to bypass this new restriction.
+> [!INFO]
+> As of patch 15.3, the Vanguard Bypass feature has been fully patched. It is no longer possible to enter a game without Vanguard installed due to new server-side checks. As such, this option has been renamed to "Disable Vanguard."
+
+> You can still enable this feature to use the full client functionality without VGK. This is useful for running kbot or other client debugging tools safely without the risk of being banned.
 
 ![image](https://github.com/user-attachments/assets/93f8d790-4d25-4dac-9dc0-bf1878630d60)
 
