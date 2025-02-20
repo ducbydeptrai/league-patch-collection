@@ -1,6 +1,5 @@
-> [!INFO]
+> [!INFORMATION]
 > As of patch 15.3, the Vanguard Bypass feature has been fully patched. It is no longer possible to enter a game without Vanguard installed due to new server-side checks. As such, this option has been renamed to "Disable Vanguard."
-
 > You can still enable this feature to use the full client functionality without VGK. This is useful for running kbot or other client debugging tools safely without the risk of being banned.
 
 ![image](https://github.com/user-attachments/assets/93f8d790-4d25-4dac-9dc0-bf1878630d60)
