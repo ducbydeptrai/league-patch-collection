@@ -29,7 +29,7 @@ namespace LeaguePatchCollection
             _cts = CancellationTokenSource.CreateLinkedTokenSource(token);
             _listener = new TcpListener(IPAddress.Any, Port);
             _listener.Start();
-            Console.WriteLine($"[INFO] XMPP listener started on {Port}");
+            Trace.WriteLine($"[INFO] XMPP listener started on {Port}");
 
             try
             {
@@ -57,8 +57,7 @@ namespace LeaguePatchCollection
             try
             {
                 networkStream = client.GetStream();
-                Trace.WriteLine("[INFO] Successfully connected to XMPP proxy from RCS.");
-                var chatHost = HttpProxy.SharedChatHost.Get();
+                var chatHost = HttpProxy._chatHost;
                 if (string.IsNullOrEmpty(chatHost))
                 {
                     Console.WriteLine("[WARN] XMPP No valid chat host found. Disconnecting client.");
@@ -252,8 +251,6 @@ namespace LeaguePatchCollection
                 {
                     Trace.WriteLine("[WARN] XMPP Proxy listener is null. Cannot stop.");
                 }
-
-                Trace.WriteLine("[INFO] Shutting down XMPP proxy");
             }
             catch (Exception ex)
             {

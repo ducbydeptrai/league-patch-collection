@@ -22,6 +22,12 @@ namespace LeaguePatchCollection;
 
 class HttpProxy
 {
+    private static string _geopassUrl = string.Empty;
+    private static string _lcuNavigationUrl = string.Empty;
+    private static string _leagueEdgeUrl = string.Empty;
+    public static string _rmsHost = string.Empty;
+    public static string _chatHost = string.Empty;
+
     internal sealed class ConfigController : WebApiController
     {
         private static readonly HttpClient _Client = new(new HttpClientHandler
@@ -47,7 +53,13 @@ class HttpProxy
                 var GeopassUrlNode = configObject?["keystone.player-affinity.playerAffinityServiceURL"];
                 if (GeopassUrlNode != null)
                 {
-                    SharedGeopassUrl.Set(GeopassUrlNode.ToString());
+                    _geopassUrl = GeopassUrlNode.ToString();
+                }
+
+                var NavUrlNode = configObject?["lol.client_settings.client_navigability.base_url"];
+                if (NavUrlNode != null)
+                {
+                    _lcuNavigationUrl = NavUrlNode.ToString();
                 }
 
                 if (LeaguePatchCollectionUX.SettingsManager.ConfigSettings.Novgk)
@@ -81,6 +93,10 @@ class HttpProxy
                 }
                 if (LeaguePatchCollectionUX.SettingsManager.ConfigSettings.Nobloatware)
                 {
+                    SetKey(configObject, "lol.client_settings.loot.standalone_mythic_shop", false);
+                    SetKey(configObject, "keystone.client.feature_flags.playerReportingMailboxIntegration.enabled", false);
+                    SetKey(configObject, "keystone.client.feature_flags.playerReportingPasIntegration.enabled", false);
+                    SetKey(configObject, "keystone.client.feature_flags.playerReportingReporterFeedback.enabled", false);
                     SetKey(configObject, "keystone.client.feature_flags.arcane_event.enabled", false);
                     SetKey(configObject, "keystone.client.feature_flags.arcane_event_live.enabled", false);
                     SetKey(configObject, "keystone.client.feature_flags.arcane_event_prelaunch.enabled", false);
@@ -109,12 +125,16 @@ class HttpProxy
                     SetKey(configObject, "lol.client_settings.remedy.is_verbal_abuse_remedy_modal_enabled", false);
                     SetKey(configObject, "keystone.rso-mobile-ui.accountCreationTosAgreement", false);
                     SetKey(configObject, "lol.client_settings.display_legacy_patch_numbers", true);
+                }
 
+                if (LeaguePatchCollectionUX.SettingsManager.ConfigSettings.Nobehavior)
+                {
+                    SetKey(configObject, "keystone.client.feature_flags.penaltyNotifications.enabled", false);
+                    SetKey(configObject, "lol.client_settings.reputation_based_honor_enabled", false);
                 }
 
                 if (LeaguePatchCollectionUX.SettingsManager.ConfigSettings.NoStore)
                 {
-                    SetKey(configObject, "lol.client_settings.loot.standalone_mythic_shop", false);
                     SetKey(configObject, "lol.client_settings.navigation.enableRewardsProgram", false);
                     SetKey(configObject, "lol.client_settings.store.lcu.enableCodesPage", false);
                     SetKey(configObject, "lol.client_settings.store.lcu.enableFetchOffers", false);
@@ -131,9 +151,6 @@ class HttpProxy
                     SetKey(configObject, "lol.game_client_settings.starshards_purchase_enabled", false);
                     SetKey(configObject, "lol.game_client_settings.starshards_services_enabled", false);
                     SetKey(configObject, "lol.game_client_settings.store_enabled", false);
-
-
-
                     SetNestedKeys(configObject, "lol.client_settings.store.essenceEmporium", "Enabled", false);
                     SetEmptyArrayForConfig(configObject, "lol.client_settings.store.navTabs");
                     SetEmptyArrayForConfig(configObject, "lol.client_settings.store.allowedPurchaseWidgetTypes");
@@ -147,10 +164,6 @@ class HttpProxy
                 SetKey(configObject, "keystone.client.feature_flags.launch_on_computer_start.enabled", false);
                 SetKey(configObject, "keystone.client.feature_flags.open_telemetry_sender.enabled", false);
                 SetKey(configObject, "keystone.client.feature_flags.pcbang_vanguard_restart_bypass.disabled", true);
-                SetKey(configObject, "keystone.client.feature_flags.penaltyNotifications.enabled", false);
-                SetKey(configObject, "keystone.client.feature_flags.playerReportingMailboxIntegration.enabled", false);
-                SetKey(configObject, "keystone.client.feature_flags.playerReportingPasIntegration.enabled", false);
-                SetKey(configObject, "keystone.client.feature_flags.playerReportingReporterFeedback.enabled", false);
                 SetKey(configObject, "keystone.client.feature_flags.quick_actions.enabled", true);
                 SetKey(configObject, "keystone.client.feature_flags.self_update_in_background.enabled", false);
                 SetKey(configObject, "keystone.client_config.diagnostics_enabled", false);
@@ -169,6 +182,7 @@ class HttpProxy
                 SetKey(configObject, "keystone.telemetry.send_error_telemetry_metrics", false);
                 SetKey(configObject, "keystone.telemetry.send_product_session_start_metrics", false);
                 SetKey(configObject, "keystone.telemetry.singular_v1_enabled", false);
+                SetKey(configObject, "lol.client_settings.client_navigability.base_url", "http://127.0.0.1:29159");
                 SetKey(configObject, "lol.client_settings.startup.should_wait_for_home_hubs", false);
                 SetKey(configObject, "lol.game_client_settings.app_config.singular_enabled", false);
                 SetKey(configObject, "lol.game_client_settings.low_memory_reporting_enabled", false);
@@ -242,7 +256,7 @@ class HttpProxy
                 var leagueEdgeUrlNode = configObject?["lol.client_settings.league_edge.url"];
                 if (leagueEdgeUrlNode != null)
                 {
-                    SharedLeagueEdgeUrl.Set(leagueEdgeUrlNode.ToString());
+                    _leagueEdgeUrl = leagueEdgeUrlNode.ToString();
                 }
 
                 if (configObject?["keystone.loyalty.config"] is JsonObject loyaltyConfig)
@@ -262,8 +276,20 @@ class HttpProxy
                     SetNestedKeys(configObject, "lol.client_settings.yourshop", "Active", false);
                 }
 
+                if (LeaguePatchCollectionUX.SettingsManager.ConfigSettings.Nobehavior)
+                {
+                    SetKey(configObject, "keystone.client.feature_flags.gaWarning.enabled", false);
+                    SetKey(configObject, "chat.require_pbtoken_for_muc.enabled", false);
+                    SetKey(configObject, "chat.send_restrictions_messages_mid_chat.enabled", false);
+                    SetKey(configObject, "chat.send_restrictions_messages_on_muc_entry.enabled", false);
+                    SetKey(configObject, "keystone.client.feature_flags.playerBehaviorToken.enabled", false);
+                    SetKey(configObject, "keystone.client.feature_flags.playerReporting.enabled", false);
+                    SetKey(configObject, "keystone.client.feature_flags.restriction.enabled", false);
+                }
+
                 if (LeaguePatchCollectionUX.SettingsManager.ConfigSettings.Nobloatware)
                 {
+                    SetNestedKeys(configObject, "lol.client_settings.league_edge.enabled_services", "Missions", false);
                     SetNestedKeys(configObject, "lol.client_settings.deepLinks", "launchLorEnabled", false);
                     SetKey(configObject, "chat.disable_chat_restriction_muted_system_message", true);
                     SetKey(configObject, "keystone.client.feature_flags.home_page_route.enabled", false);
@@ -371,14 +397,18 @@ class HttpProxy
             AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
             ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
         });
-        private static string LEDGE_URL => EnsureLedgeUrlIsSet();
+        private static string LEDGE_URL => _leagueEdgeUrl;
 
         [Route(HttpVerbs.Get, "/", true)]
         public async Task GetLedge()
         {
-            if (HttpContext.Request.Url.LocalPath == "/leagues-ledge/v2/notifications")
+            if (LeaguePatchCollectionUX.SettingsManager.ConfigSettings.Nobloatware)
             {
-                return;
+                if (HttpContext.Request.Url.LocalPath == "/leagues-ledge/v2/notifications" ||
+                HttpContext.Request.Url.LocalPath.StartsWith("/catalog/v1/products/"))
+                {
+                    return;
+                }
             }
 
             string requestBody;
@@ -392,6 +422,17 @@ class HttpProxy
 
             if (LeaguePatchCollectionUX.SettingsManager.ConfigSettings.Nobehavior)
             {
+                if (HttpContext.Request.Url.LocalPath == "/honor-edge/v2/retrieveProfileInfo/")
+                {
+                    var configObject = JsonSerializer.Deserialize<JsonNode>(content);
+
+                    SetKey(configObject, "honorLevel", 5);
+                    SetKey(configObject, "checkpoint", 0);
+                    SetKey(configObject, "rewardsLocked", false);
+                    SetEmptyArrayForConfig(configObject, "redemptions");
+
+                    content = JsonSerializer.Serialize(configObject);
+                }
                 if (HttpContext.Request.Url.LocalPath == "/leaverbuster-ledge/restrictionInfo")
                 {
                     var configObject = JsonSerializer.Deserialize<JsonNode>(content);
@@ -446,18 +487,6 @@ class HttpProxy
 
             await SendResponse(response, content);
         }
-        private static string EnsureLedgeUrlIsSet()
-        {
-            var ledgeUrl = SharedLeagueEdgeUrl.Get();
-
-            if (string.IsNullOrEmpty(ledgeUrl))
-            {
-                throw new InvalidOperationException("Ledge URL is not set.");
-            }
-
-            return ledgeUrl;
-        }
-
         private static async Task<HttpResponseMessage> PutLedge(IHttpRequest request, string body)
         {
             var url = LEDGE_URL + request.RawUrl;
@@ -489,7 +518,6 @@ class HttpProxy
 
             return response;
         }
-
         private static async Task<HttpResponseMessage> PostLedge(IHttpRequest request, string body)
         {
             var url = LEDGE_URL + request.RawUrl;
@@ -541,7 +569,7 @@ class HttpProxy
 
             if (request.Headers["origin"] is not null)
             {
-                var sharedLedgeUrl = SharedLeagueEdgeUrl.Get();
+                var sharedLedgeUrl = _leagueEdgeUrl;
                 message.Headers.TryAddWithoutValidation("Origin", sharedLedgeUrl);
             }
 
@@ -566,7 +594,6 @@ class HttpProxy
 
             return response;
         }
-
         private static async Task<HttpResponseMessage> GetLedge(IHttpRequest request)
         {
             var url = LEDGE_URL + request.RawUrl;
@@ -595,7 +622,7 @@ class HttpProxy
 
             if (request.Headers["origin"] is not null)
             {
-                var sharedLedgeUrl = SharedLeagueEdgeUrl.Get();
+                var sharedLedgeUrl = _leagueEdgeUrl;
                 message.Headers.TryAddWithoutValidation("Origin", sharedLedgeUrl);
             }
 
@@ -621,7 +648,6 @@ class HttpProxy
 
             return response;
         }
-
         private async Task SendResponse(HttpResponseMessage response, string content)
         {
             var responseBuffer = Encoding.UTF8.GetBytes(content);
@@ -661,7 +687,7 @@ class HttpProxy
             AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
             ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
         });
-        private static string GEOPASS_URL => EnsureGeopassUrlIsSet();
+        private static string GEOPASS_URL => _geopassUrl;
 
         [Route(HttpVerbs.Get, "/", true)]
         public async Task GetGeopass()
@@ -672,12 +698,12 @@ class HttpProxy
 
             if (HttpContext.Request.Url.LocalPath == "/pas/v1/service/chat")
             {
-                GeopassHandler.DecodeAndStoreUserRegion(content);
+                GeopassHandlerChat.DecodeAndStoreUserRegion(content);
                 Trace.WriteLine("[INFO] Chat JWT sucessfully passed to decoder");
             }
             if (HttpContext.Request.Url.LocalPath == "/pas/v1/service/rms")
             {
-                GeopassHandlerRms.DecodeAndStoreUserRegionRms(content);
+                GeopassHandlerRms.DecodeAndStoreUserRegion(content);
                 Trace.WriteLine("[INFO] RMS JWT sucessfully passed to decoder");
             }
 
@@ -697,16 +723,6 @@ class HttpProxy
 
 
             await SendResponse(response, content);
-        }
-        private static string EnsureGeopassUrlIsSet()
-        {
-            var GeopassUrl = SharedGeopassUrl.Get();
-
-            if (string.IsNullOrEmpty(GeopassUrl))
-            {
-                Trace.WriteLine("[ERROR] Unable to send request: Geopass URL is not set.");
-            }
-            return GeopassUrl ?? "";
         }
         private async Task<HttpResponseMessage> GetGeopass(IHttpRequest request)
         {
@@ -805,6 +821,93 @@ class HttpProxy
             HttpContext.Response.OutputStream.Close();
         }
     }
+    internal sealed class LcuContentController : WebApiController
+    {
+        private readonly static HttpClient _Client = new(new HttpClientHandler
+        {
+            UseCookies = false,
+            UseProxy = false,
+            Proxy = null,
+            AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
+            ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+        });
+        private static string LCUCONTENTURL => _lcuNavigationUrl;
+
+        [Route(HttpVerbs.Get, "/", true)]
+        public async Task GetPublishingLcu()
+        {
+
+            var response = await GetLcuContent(HttpContext.Request);
+            var content = await response.Content.ReadAsStringAsync();
+
+            if (LeaguePatchCollectionUX.SettingsManager.ConfigSettings.Nobloatware)
+            {
+                if (HttpContext.Request.Url.LocalPath == "/publishing-content/v1.0/public/client-navigation/league_client_navigation/")
+                {
+                    var configObject = JsonSerializer.Deserialize<JsonNode>(content);
+
+                    if (configObject?["data"] is JsonArray dataArray)
+                    {
+                        var itemToRemove = dataArray.FirstOrDefault(item => item?["title"]?.ToString() == LeaguePatchCollectionUX._latestBloatKey);
+
+                        if (itemToRemove != null)
+                        {
+                            dataArray.Remove(itemToRemove);
+                        }
+                    }
+
+                    content = JsonSerializer.Serialize(configObject);
+                }
+            }
+
+                await SendResponse(response, content);
+        }
+        private async Task<HttpResponseMessage> GetLcuContent(IHttpRequest request)
+        {
+            var url = LCUCONTENTURL + request.RawUrl;
+
+            using var message = new HttpRequestMessage(HttpMethod.Get, url);
+
+            if (request.Headers["accept-encoding"] is not null)
+                message.Headers.TryAddWithoutValidation("Accept-Encoding", request.Headers["accept-encoding"]);
+
+            message.Headers.TryAddWithoutValidation("user-agent", HttpContext.Request.Headers["user-agent"]);
+
+            message.Headers.TryAddWithoutValidation("Content-Type", "application/json");
+
+            message.Headers.TryAddWithoutValidation("Accept", "application/json");
+
+
+            var response = await _Client.SendAsync(message);
+
+            return response;
+        }
+        private async Task SendResponse(HttpResponseMessage response, string content)
+        {
+            var responseBuffer = Encoding.UTF8.GetBytes(content);
+
+            HttpContext.Response.SendChunked = false;
+            HttpContext.Response.ContentType = "application/json";
+            HttpContext.Response.ContentLength64 = responseBuffer.Length;
+            HttpContext.Response.StatusCode = (int)response.StatusCode;
+
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                Trace.WriteLine($"[ERROR] Request to {HttpContext.Request.Url.LocalPath} returned {response.StatusCode}");
+            }
+
+            if (response.StatusCode == HttpStatusCode.Forbidden)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"[ERROR] {HttpContext.Request.Url.LocalPath} returned 403 Forbidden; possibly blocked by Cloudflare.");
+                Console.ResetColor();
+            }
+
+            await HttpContext.Response.OutputStream.WriteAsync(responseBuffer);
+            HttpContext.Response.OutputStream.Close();
+        }
+    }
+
     internal sealed class HttpProxyServer<T> where T : WebApiController, new()
     {
         private readonly WebServer _WebServer;
@@ -839,7 +942,6 @@ class HttpProxy
             return _WebServer.RunAsync(cancellationToken);
         }
     }
-
     private static void StartBackgroundTaskForRmsAffinities(JsonObject rmsAffinities)
     {
         Task.Run(() =>
@@ -849,14 +951,14 @@ class HttpProxy
             string? userRegionRms = null;
             while (string.IsNullOrEmpty(userRegionRms))
             {
-                userRegionRms = GeopassHandlerRms.GetUserRegionRms();
+                userRegionRms = GeopassHandlerRms.GetUserRegion();
                 Thread.Sleep(100);
             }
 
             if (!string.IsNullOrEmpty(userRegionRms) && rmsAffinities[userRegionRms] is JsonNode tempRmsHost)
             {
                 Trace.WriteLine($"[INFO] RMS Host for user region '{userRegionRms}': {tempRmsHost}");
-                SharedRmsHost.Set(tempRmsHost.ToString());
+                _rmsHost = tempRmsHost.ToString();
             }
         });
     }
@@ -869,13 +971,13 @@ class HttpProxy
             string? userRegion = null;
             while (string.IsNullOrEmpty(userRegion))
             {
-                userRegion = GeopassHandler.GetUserRegion();
+                userRegion = GeopassHandlerChat.GetUserRegion();
                 Thread.Sleep(100);
             }
             if (!string.IsNullOrEmpty(userRegion) && chatAffinities[userRegion] is JsonNode tempChatHost)
             {
                 Trace.WriteLine($"[INFO] Chat Host for user region '{userRegion}': {tempChatHost}");
-                SharedChatHost.Set(tempChatHost.ToString());
+                _chatHost = tempChatHost.ToString();
             }
         });
     }
@@ -938,35 +1040,34 @@ class HttpProxy
         }
     }
 
-    public static class SharedGeopassUrl
+    public static class JwtDecoder
     {
-        public static string? _GeopassUrl;
-
-        public static string? Get()
+        public static string? DecodeAndGetRegion(string jwtToken)
         {
-            return _GeopassUrl;
-        }
+            try
+            {
+                var pasJwtContent = jwtToken.Split('.')[1];
+                var validBase64 = pasJwtContent.PadRight((pasJwtContent.Length / 4 * 4) + (pasJwtContent.Length % 4 == 0 ? 0 : 4), '=');
+                var pasJwtString = Encoding.UTF8.GetString(Convert.FromBase64String(validBase64));
+                var pasJwtJson = JsonSerializer.Deserialize<JsonNode>(pasJwtString);
+                var region = pasJwtJson?["affinity"]?.GetValue<string>();
 
-        public static void Set(string url)
-        {
-            _GeopassUrl = url;
+                if (region == null)
+                {
+                    Trace.WriteLine("[ERROR] JWT payload is malformed or missing 'affinity'.");
+                }
+
+                return region ?? throw new Exception("JWT payload is malformed or missing 'affinity'.");
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex);
+                return null;
+            }
         }
     }
-    public static class SharedLeagueEdgeUrl
-    {
-        public static string? _leagueEdgeUrl;
 
-        public static string? Get()
-        {
-            return _leagueEdgeUrl;
-        }
-
-        public static void Set(string url)
-        {
-            _leagueEdgeUrl = url;
-        }
-    }
-    public static class GeopassHandler
+    public static class GeopassHandlerChat
     {
         private static string? _userRegion;
 
@@ -980,113 +1081,19 @@ class HttpProxy
             return _userRegion ?? "";
         }
     }
+
     public static class GeopassHandlerRms
     {
-        private static string? _userRegionRms;
+        private static string? _userRegion;
 
-        public static void DecodeAndStoreUserRegionRms(string content)
+        public static void DecodeAndStoreUserRegion(string content)
         {
-            _userRegionRms = JwtDecoderRms.DecodeAndGetRegionRms(content);
+            _userRegion = JwtDecoder.DecodeAndGetRegion(content);
         }
 
-        public static string GetUserRegionRms()
+        public static string GetUserRegion()
         {
-            return _userRegionRms ?? "";
-        }
-    }
-    public class JwtDecoder
-    {
-        private static string? _storedRegion;
-
-        public static string? DecodeAndGetRegion(string jwtToken)
-        {
-            try
-            {
-
-                var pasJwtContent = jwtToken.Split('.')[1];
-                var validBase64 = pasJwtContent.PadRight((pasJwtContent.Length / 4 * 4) + (pasJwtContent.Length % 4 == 0 ? 0 : 4), '=');
-                var pasJwtString = Encoding.UTF8.GetString(Convert.FromBase64String(validBase64));
-                var pasJwtJson = JsonSerializer.Deserialize<JsonNode>(pasJwtString);
-                _storedRegion = pasJwtJson?["affinity"]?.GetValue<string>();
-
-                if (_storedRegion == null)
-                {
-                    Trace.WriteLine("[ERROR] Chat JWT payload is malformed or missing 'affinity'.");
-                }
-
-                return _storedRegion ?? throw new Exception("Chat JWT payload is malformed or missing 'affinity'.");
-            }
-            catch (Exception ex)
-            {
-                Trace.WriteLine(ex);
-                return null;
-            }
-        }
-
-        public static string GetStoredRegion()
-        {
-            return _storedRegion ?? "unconfigured.chat.si.riotgames.com";
-        }
-    }
-    public class JwtDecoderRms
-    {
-        private static string? _storedRegionRms;
-
-        public static string? DecodeAndGetRegionRms(string jwtToken)
-        {
-            try
-            {
-
-                var pasJwtContent = jwtToken.Split('.')[1];
-                var validBase64 = pasJwtContent.PadRight((pasJwtContent.Length / 4 * 4) + (pasJwtContent.Length % 4 == 0 ? 0 : 4), '=');
-                var pasJwtString = Encoding.UTF8.GetString(Convert.FromBase64String(validBase64));
-                var pasJwtJson = JsonSerializer.Deserialize<JsonNode>(pasJwtString);
-                _storedRegionRms = pasJwtJson?["affinity"]?.GetValue<string>();
-
-                if (_storedRegionRms == null)
-                {
-                    Trace.WriteLine("[ERROR] RMS JWT payload is malformed or missing 'affinity'.");
-                }
-
-                return _storedRegionRms ?? throw new Exception("RMS JWT payload is malformed or missing 'affinity'.");
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
-
-        public static string GetStoredRegionRms()
-        {
-            return _storedRegionRms ?? "wss://unconfigured.edge.rms.si.riotgames.com";
-        }
-    }
-    public static class SharedChatHost
-    {
-        public static string? _chatHost;
-
-        public static string? Get()
-        {
-            return _chatHost;
-        }
-
-        public static void Set(string host)
-        {
-            _chatHost = host;
-        }
-    }
-    public static class SharedRmsHost
-    {
-        public static string? _RmsHost;
-
-        public static string? Get()
-        {
-            return _RmsHost;
-        }
-
-        public static void Set(string host)
-        {
-            _RmsHost = host;
+            return _userRegion ?? "";
         }
     }
     static void ClientVersionOverride(JsonNode configObject, string patchline)
@@ -1099,17 +1106,17 @@ class HttpProxy
             {
                 foreach (var config in configs)
                 {
-                    if (config["patch_url"] is not null)
+                    if (config?["patch_url"] is not null)
                     {
                         config["patch_url"] = "https://lol.secure.dyn.riotcdn.net/channels/public/releases/5465E4D9A61B4F5A.manifest";
                     }
 
-                    var patchArtifacts = config["patch_artifacts"]?.AsArray();
+                    var patchArtifacts = config?["patch_artifacts"]?.AsArray();
                     if (patchArtifacts != null)
                     {
                         foreach (var artifact in patchArtifacts)
                         {
-                            if (artifact["type"]?.ToString() == "patch_url")
+                            if (artifact?["type"]?.ToString() == "patch_url")
                             {
                                 artifact["patch_url"] = "https://lol.secure.dyn.riotcdn.net/channels/public/releases/5465E4D9A61B4F5A.manifest";
                             }
@@ -1125,15 +1132,18 @@ class HttpProxy
         if (configObject == null) return;
 
         var productNode = configObject?[patchline];
-        if (productNode is not null)
+        if (productNode?["platforms"] is JsonObject platforms)
         {
-            var configs = productNode?["platforms"]?["win"]?["configurations"]?.AsArray();
-            if (configs != null)
+            foreach (var platform in platforms)
             {
-                foreach (var config in configs)
+                var configs = platform.Value?["configurations"]?.AsArray();
+                if (configs != null)
                 {
-                    var launcherArray = config?["launcher"]?["arguments"]?.AsArray();
-                    launcherArray?.Add("--system-yaml-override=Config/system.yaml");
+                    foreach (var config in configs)
+                    {
+                        var launcherArray = config?["launcher"]?["arguments"]?.AsArray();
+                        launcherArray?.Add("--system-yaml-override=Config/system.yaml");
+                    }
                 }
             }
         }

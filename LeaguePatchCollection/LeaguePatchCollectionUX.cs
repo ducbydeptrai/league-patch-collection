@@ -16,6 +16,8 @@ namespace LeaguePatchCollection
 {
     public partial class LeaguePatchCollectionUX : Form
     {
+        public static string _latestBloatKey = string.Empty;
+
         [DllImport("user32.dll")]
         private static extern bool ReleaseCapture();
 
@@ -52,7 +54,9 @@ namespace LeaguePatchCollection
 
         private async void LeaguePatchCollectionUX_Shown(object? sender, EventArgs e)
         {
-            LeagueProxy.Start(out _, out _, out _);
+            await FetchLatestBloatKeyAsync();
+
+            LeagueProxy.Start(out _, out _, out _, out _);
 
             await Task.Delay(1000);
 
@@ -381,6 +385,32 @@ namespace LeaguePatchCollection
             public override void Write(string? message)
             {
                 base.Write($"[{DateTime.Now:MM-dd-yyyy hh:mm:ss tt}] {message}");
+            }
+        }
+        private static async Task FetchLatestBloatKeyAsync()
+        {
+            try
+            {
+                var githubUrl = "https://raw.githubusercontent.com/Cat1Bot/league-patch-collection/refs/heads/main/latestbloatkey"; // Replace with your URL
+
+                using (var client = new HttpClient())
+                {
+                    // Set timeout (e.g., 5 seconds)
+                    client.Timeout = TimeSpan.FromSeconds(5);
+
+                    // Attempt to fetch the bloat key
+                    var result = await client.GetStringAsync(githubUrl);
+                    _latestBloatKey = result.Trim();  // Remove any leading/trailing whitespace
+                    Trace.WriteLine($"[INFO] Latest bloat key fetched: {_latestBloatKey}");
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                Trace.WriteLine("[ERROR] Request timed out while fetching the bloat key.");
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine($"[ERROR] Failed to fetch latest bloat key: {ex.Message}");
             }
         }
 

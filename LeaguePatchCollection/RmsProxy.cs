@@ -53,7 +53,7 @@ namespace LeaguePatchCollection
         {
             try
             {
-                var rmsHost = HttpProxy.SharedRmsHost.Get();
+                var rmsHost = HttpProxy._rmsHost;
                 rmsHost = rmsHost?.Replace("wss://", "");
 
                 using var tcpClient = new TcpClient(rmsHost!, RMSPort);
@@ -93,11 +93,11 @@ namespace LeaguePatchCollection
 
                 if (header.StartsWith("Host: "))
                 {
-                    header = $"Host: {HttpProxy.SharedRmsHost.Get()!.Replace("wss://", "")}";
+                    header = $"Host: {HttpProxy._rmsHost!.Replace("wss://", "")}";
                 }
                 else if (header.StartsWith("Origin: "))
                 {
-                    header = $"Origin: {HttpProxy.SharedRmsHost.Get()!.Replace("wss://", "")}";
+                    header = $"Origin: {HttpProxy._rmsHost!.Replace("wss://", "")}";
                 }
 
                 await serverWriter.WriteLineAsync(header);

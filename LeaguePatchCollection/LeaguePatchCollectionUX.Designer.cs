@@ -123,11 +123,11 @@ namespace LeaguePatchCollection
             DisableVanguard.Cursor = Cursors.Hand;
             DisableVanguard.Font = new Font("Inter Tight SemiBold", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             DisableVanguard.ForeColor = Color.FromArgb(175, 175, 175);
-            DisableVanguard.Location = new Point(12, 58);
+            DisableVanguard.Location = new Point(12, 57);
             DisableVanguard.Name = "DisableVanguard";
-            DisableVanguard.Size = new Size(155, 27);
+            DisableVanguard.Size = new Size(156, 27);
             DisableVanguard.TabIndex = 22;
-            DisableVanguard.Text = "Vanguard Bypass";
+            DisableVanguard.Text = "Disable Vanguard";
             DisableVanguard.UncheckedState.BorderColor = Color.FromArgb(120, 120, 120);
             DisableVanguard.UncheckedState.BorderRadius = 0;
             DisableVanguard.UncheckedState.BorderThickness = 2;
@@ -165,7 +165,7 @@ namespace LeaguePatchCollection
             NameChangeBypass.Cursor = Cursors.Hand;
             NameChangeBypass.Font = new Font("Inter Tight SemiBold", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             NameChangeBypass.ForeColor = Color.FromArgb(175, 175, 175);
-            NameChangeBypass.Location = new Point(381, 58);
+            NameChangeBypass.Location = new Point(393, 57);
             NameChangeBypass.Name = "NameChangeBypass";
             NameChangeBypass.Size = new Size(187, 27);
             NameChangeBypass.TabIndex = 25;
@@ -186,11 +186,11 @@ namespace LeaguePatchCollection
             SupressBehavior.Cursor = Cursors.Hand;
             SupressBehavior.Font = new Font("Inter Tight SemiBold", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             SupressBehavior.ForeColor = Color.FromArgb(175, 175, 175);
-            SupressBehavior.Location = new Point(173, 58);
+            SupressBehavior.Location = new Point(174, 57);
             SupressBehavior.Name = "SupressBehavior";
-            SupressBehavior.Size = new Size(202, 27);
+            SupressBehavior.Size = new Size(213, 27);
             SupressBehavior.TabIndex = 26;
-            SupressBehavior.Text = "Hide Behavior Warnings";
+            SupressBehavior.Text = "No Behavior Enforcement";
             SupressBehavior.UncheckedState.BorderColor = Color.FromArgb(120, 120, 120);
             SupressBehavior.UncheckedState.BorderRadius = 0;
             SupressBehavior.UncheckedState.BorderThickness = 2;
@@ -450,7 +450,7 @@ namespace LeaguePatchCollection
             NoStore.Cursor = Cursors.Hand;
             NoStore.Font = new Font("Inter Tight SemiBold", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             NoStore.ForeColor = Color.FromArgb(175, 175, 175);
-            NoStore.Location = new Point(350, 88);
+            NoStore.Location = new Point(350, 87);
             NoStore.Name = "NoStore";
             NoStore.Size = new Size(125, 27);
             NoStore.TabIndex = 49;
@@ -662,7 +662,6 @@ namespace LeaguePatchCollection
             RestartUXbutton.BorderRadius = 2;
             RestartUXbutton.BorderThickness = 2;
             RestartUXbutton.Cursor = Cursors.Hand;
-            RestartUXbutton.CustomBorderColor = Color.FromArgb(80, 80, 80);
             RestartUXbutton.CustomizableEdges = customizableEdges15;
             RestartUXbutton.DisabledState.BorderColor = Color.DarkGray;
             RestartUXbutton.DisabledState.CustomBorderColor = Color.DarkGray;
@@ -680,7 +679,7 @@ namespace LeaguePatchCollection
             RestartUXbutton.ShadowDecoration.BorderRadius = 2;
             RestartUXbutton.ShadowDecoration.CustomizableEdges = customizableEdges16;
             RestartUXbutton.Size = new Size(129, 34);
-            RestartUXbutton.TabIndex = 49;
+            RestartUXbutton.TabIndex = 2;
             RestartUXbutton.Text = "RESTART UX";
             RestartUXbutton.Click += RestartUXbutton_Click;
             // 
@@ -707,7 +706,7 @@ namespace LeaguePatchCollection
             StartButton.ShadowDecoration.BorderRadius = 2;
             StartButton.ShadowDecoration.CustomizableEdges = customizableEdges18;
             StartButton.Size = new Size(159, 34);
-            StartButton.TabIndex = 0;
+            StartButton.TabIndex = 2;
             StartButton.Text = "INITIALIZING...";
             StartButton.Click += StartButton_Click;
             // 
@@ -746,6 +745,10 @@ namespace LeaguePatchCollection
             guna2CustomGradientPanel2.Controls.Add(guna2CustomGradientPanel1);
             guna2CustomGradientPanel2.Controls.Add(MainHeaderBackdrop);
             guna2CustomGradientPanel2.Controls.Add(MiscLabel);
+            guna2CustomGradientPanel2.Controls.Add(NoStore);
+            guna2CustomGradientPanel2.Controls.Add(SupressBehavior);
+            guna2CustomGradientPanel2.Controls.Add(NameChangeBypass);
+            guna2CustomGradientPanel2.Controls.Add(DisableVanguard);
             guna2CustomGradientPanel2.CustomizableEdges = customizableEdges23;
             guna2CustomGradientPanel2.FillColor = Color.Transparent;
             guna2CustomGradientPanel2.FillColor2 = Color.Transparent;
@@ -769,7 +772,6 @@ namespace LeaguePatchCollection
             Controls.Add(CleanLogsButton);
             Controls.Add(ArgsLabel);
             Controls.Add(ArgsBox);
-            Controls.Add(NoStore);
             Controls.Add(BanReasonButton);
             Controls.Add(MiscSeperatorLeft);
             Controls.Add(MiscSeperatorRight);
@@ -784,10 +786,7 @@ namespace LeaguePatchCollection
             Controls.Add(ChatLabel);
             Controls.Add(ChatSeperatorLeft);
             Controls.Add(ConfigSeperatorLeft);
-            Controls.Add(SupressBehavior);
-            Controls.Add(NameChangeBypass);
             Controls.Add(LegacyHonor);
-            Controls.Add(DisableVanguard);
             Controls.Add(SectionLabelConfig);
             Controls.Add(guna2CustomGradientPanel2);
             Font = new Font("Beaufort for LOL", 16F, FontStyle.Bold);

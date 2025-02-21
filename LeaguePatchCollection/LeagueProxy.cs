@@ -13,6 +13,7 @@ public class LeagueProxy
     private static readonly HttpProxy.HttpProxyServer<HttpProxy.ConfigController> _ConfigServer;
     private static readonly HttpProxy.HttpProxyServer<HttpProxy.GeopassController> _GeopassServer;
     private static readonly HttpProxy.HttpProxyServer<HttpProxy.LedgeController> _LedgeServer;
+    private static readonly HttpProxy.HttpProxyServer<HttpProxy.LcuContentController> _LcuContentServer;
     private static CancellationTokenSource? _ServerCTS;
     private static readonly XMPPProxy _ChatProxy;
     private static readonly RTMPProxy _RtmpProxy;
@@ -23,13 +24,14 @@ public class LeagueProxy
         _ConfigServer = new HttpProxy.HttpProxyServer<HttpProxy.ConfigController>(29150);
         _GeopassServer = new HttpProxy.HttpProxyServer<HttpProxy.GeopassController>(29151);
         _LedgeServer = new HttpProxy.HttpProxyServer<HttpProxy.LedgeController>(29152);
+        _LcuContentServer = new HttpProxy.HttpProxyServer<HttpProxy.LcuContentController>(29159);
         _ChatProxy = new XMPPProxy();
         _RtmpProxy = new RTMPProxy();
         _RmsProxy = new RMSProxy();
     }
 
 
-    public static void Start(out string configServerUrl, out string ledgeServerUrl, out string geopassServerUrl)
+    public static void Start(out string configServerUrl, out string ledgeServerUrl, out string geopassServerUrl, out string lcucontentServerUrl)
     {
         if (_ServerCTS is not null)
         {
@@ -51,6 +53,10 @@ public class LeagueProxy
         _GeopassServer.Start(_ServerCTS.Token);
         geopassServerUrl = _GeopassServer.Url;
         Trace.WriteLine($"[INFO] Geopass Proxy started on {geopassServerUrl}");
+
+        _LcuContentServer.Start(_ServerCTS.Token);
+        lcucontentServerUrl = _LcuContentServer.Url;
+        Trace.WriteLine($"[INFO] Geopass Proxy started on {lcucontentServerUrl}");
 
         _ChatProxy?.RunAsync(_ServerCTS.Token);
         Trace.WriteLine("[INFO] Chat Proxy started.");
