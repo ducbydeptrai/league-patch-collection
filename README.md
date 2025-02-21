@@ -3,7 +3,7 @@
 >  
 > You can still enable this feature to use the full client functionality without VGK. This is useful for running **kbot** or other client debugging tools safely without the risk of being banned.
 
-![image](https://github.com/user-attachments/assets/93f8d790-4d25-4dac-9dc0-bf1878630d60)
+![image](https://github.com/user-attachments/assets/eee29ac0-b5e0-406a-98c9-d8f2fcb17d13)
 
 # League Patch Collection – Vanguard Disabler & QOL Optimizer for League Client
 
