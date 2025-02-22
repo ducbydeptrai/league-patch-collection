@@ -36,7 +36,8 @@ class HttpProxy
             UseProxy = false,
             Proxy = null,
             AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
-            ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+            ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true,
+            CheckCertificateRevocationList = false
         });
         private const string BASE_URL = "https://clientconfig.rpg.riotgames.com";
 
@@ -395,7 +396,8 @@ class HttpProxy
             UseProxy = false,
             Proxy = null,
             AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
-            ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+            ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true,
+            CheckCertificateRevocationList = false
         });
         private static string LEDGE_URL => _leagueEdgeUrl;
 
@@ -685,7 +687,8 @@ class HttpProxy
             UseProxy = false,
             Proxy = null,
             AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
-            ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+            ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true,
+            CheckCertificateRevocationList = false
         });
         private static string GEOPASS_URL => _geopassUrl;
 
@@ -829,7 +832,8 @@ class HttpProxy
             UseProxy = false,
             Proxy = null,
             AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
-            ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+            ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true,
+            CheckCertificateRevocationList = false
         });
         private static string LCUCONTENTURL => _lcuNavigationUrl;
 
