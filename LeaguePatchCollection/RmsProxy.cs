@@ -12,68 +12,31 @@ namespace LeaguePatchCollection
 {
     public partial class RMSProxy
     {
-        private const int Port = 29155;
-        private const int RMSPort = 443;
+        private TcpListener? _listener;
+        private CancellationTokenSource? _cts;
 
-        private readonly CancellationTokenSource _cts;
-        private readonly TcpListener _listener;
-
-        public RMSProxy()
+        public async Task RunAsync(CancellationToken token)
         {
-            _cts = new CancellationTokenSource();
-            _listener = new TcpListener(IPAddress.Any, Port);
-        }
-
-        public async Task RunAsync(CancellationToken cancellationToken)
-        {
-            var listener = new TcpListener(IPAddress.Any, Port);
-            listener.Start();
-            Console.WriteLine($"[RMS] Waiting for client on port {Port}...");
+            _cts = CancellationTokenSource.CreateLinkedTokenSource(token);
+            _listener = new TcpListener(IPAddress.Any, LeagueProxy.RmsPort!);
+            _listener.Start();
 
             try
             {
-                while (!cancellationToken.IsCancellationRequested)
+                while (!token.IsCancellationRequested)
                 {
-                    var client = await listener.AcceptTcpClientAsync(cancellationToken);
-                    _ = HandleClient(client);
+                    var client = await _listener.AcceptTcpClientAsync(token);
+                    _ = HandleClient(client, token);
                 }
             }
+            catch (ObjectDisposedException) { /* Listener was stopped, we can ignore this exception */ }
             catch (Exception ex)
             {
-                Console.WriteLine($"[RMS] Proxy error: {ex.Message}");
+                Trace.WriteLine($"[ERROR] Error in RMS listener: {ex.Message}");
             }
             finally
             {
-                listener.Stop();
-                Console.WriteLine("[RMS] Proxy successfully stopped.");
-            }
-        }
-
-        private static async Task HandleClient(TcpClient client)
-        {
-            try
-            {
-                var rmsHost = HttpProxy._rmsHost;
-                rmsHost = rmsHost?.Replace("wss://", "");
-
-                using var tcpClient = new TcpClient(rmsHost!, RMSPort);
-                Stream serverStream = tcpClient.GetStream();
-
-                var sslStream = new SslStream(serverStream, false, ValidateServerCertificate);
-                await sslStream.AuthenticateAsClientAsync(rmsHost!);
-                serverStream = sslStream;
-                Console.WriteLine("[RMS] Connection to server established.");
-
-                await HandleWebSocketHandshakeAsync(client.GetStream(), serverStream);
-
-                var clientToServerTask = ForwardDataAsync(client.GetStream(), serverStream, "Client -> RMS Server");
-                var serverToClientTask = ForwardDataAsync(serverStream, client.GetStream(), "RMS Server -> Client");
-
-                await Task.WhenAny(clientToServerTask, serverToClientTask);
-            }
-            catch (Exception ex) when (ex is IOException || ex is ObjectDisposedException)
-            {
-                Console.WriteLine($"[RMS] Client disconnected or connection error: {ex.Message}");
+                Stop();
             }
         }
 
@@ -93,11 +56,11 @@ namespace LeaguePatchCollection
 
                 if (header.StartsWith("Host: "))
                 {
-                    header = $"Host: {HttpProxy._rmsHost!.Replace("wss://", "")}";
+                    header = $"Host: {ConfigProxy.RmsHost!.Replace("wss://", "")}";
                 }
                 else if (header.StartsWith("Origin: "))
                 {
-                    header = $"Origin: {HttpProxy._rmsHost!.Replace("wss://", "")}";
+                    header = $"Origin: https://{ConfigProxy.RmsHost!.Replace("wss://", "")}:443/";
                 }
 
                 await serverWriter.WriteLineAsync(header);
@@ -120,12 +83,51 @@ namespace LeaguePatchCollection
             await clientWriter.WriteLineAsync();
         }
 
-        private static async Task ForwardDataAsync(Stream source, Stream destination, string direction)
+        private static async Task HandleClient(TcpClient client, CancellationToken token)
+        {
+            try
+            {
+                var rmsHost = ConfigProxy.RmsHost?.Replace("wss://", "");
+
+                using var tcpClient = new TcpClient(rmsHost!, 443);
+                Stream serverStream = tcpClient.GetStream();
+
+                var sslStream = new SslStream(serverStream, false, (sender, certificate, chain, sslPolicyErrors) => true);
+                await sslStream.AuthenticateAsClientAsync(rmsHost!);
+                serverStream = sslStream;
+                Console.WriteLine("[RMS] Connection to server established.");
+
+                await HandleWebSocketHandshakeAsync(client.GetStream(), serverStream);
+
+                var clientToServerTask = ForwardClientToServerAsync(client.GetStream(), serverStream, token);
+                var serverToClientTask = ForwardServerToClientAsync(serverStream, client.GetStream(), token);
+
+                await Task.WhenAny(clientToServerTask, serverToClientTask);
+            }
+            catch (Exception ex) when (ex is IOException || ex is ObjectDisposedException)
+            {
+                Console.WriteLine($"[RMS] Client disconnected or connection error: {ex.Message}");
+            }
+        }
+
+        private static async Task ForwardClientToServerAsync(Stream source, Stream destination, CancellationToken token)
         {
             var buffer = new byte[8192];
             int bytesRead;
 
-            while ((bytesRead = await source.ReadAsync(buffer)) > 0)
+            while ((bytesRead = await source.ReadAsync(buffer, token)) > 0)
+            {
+                await destination.WriteAsync(buffer.AsMemory(0, bytesRead), token);
+            }
+            Console.WriteLine("[RMS] Client -> Server: Connection closed.");
+        }
+
+        private static async Task ForwardServerToClientAsync(Stream source, Stream destination, CancellationToken token)
+        {
+            var buffer = new byte[8192];
+            int bytesRead;
+
+            while ((bytesRead = await source.ReadAsync(buffer, token)) > 0)
             {
                 string decodedMessage;
 
@@ -165,10 +167,8 @@ namespace LeaguePatchCollection
                     Trace.WriteLine("[INFO] ATTEMPING TO BYPASS GAMEFLOW KICK/BLOCK: BLOCKING MESSAING " + decodedMessage);
                     continue; // Block this message so the client doesnt know gameflow detecting no vanguard session
                 }
-
-                await destination.WriteAsync(buffer.AsMemory(0, bytesRead));
+                await destination.WriteAsync(buffer.AsMemory(0, bytesRead), token);
             }
-            Console.WriteLine($"[RMS] {direction}: Connection closed.");
         }
 
         private static bool IsGzipHeader(Stream stream)
@@ -192,29 +192,10 @@ namespace LeaguePatchCollection
                 return false;
             }
         }
-
-        private static bool ValidateServerCertificate(object sender, X509Certificate? certificate, X509Chain? chain, SslPolicyErrors sslPolicyErrors)
-        {
-            if (sslPolicyErrors == SslPolicyErrors.None)
-            {
-                return true;
-            }
-            return true;
-        }
-
         public void Stop()
         {
-            if (_cts == null)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("[RMS] Proxy service is not running.");
-                Console.ResetColor();
-                return;
-            }
-
-            _cts.Cancel();
-            _listener.Stop();
-            Console.WriteLine("[RMS] Proxy has been stopped.");
+            _cts?.Cancel();
+            _listener?.Stop();
         }
 
         [GeneratedRegex(@"RANKED_RESTRICTION")]

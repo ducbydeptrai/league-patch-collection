@@ -10,13 +10,15 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Windows.Forms;
 using Newtonsoft.Json;
-using System.Reflection;
+using System.Net;
+using Newtonsoft.Json.Linq;
+using System.Text;
 
 namespace LeaguePatchCollection
 {
     public partial class LeaguePatchCollectionUX : Form
     {
-        public static string _latestBloatKey = string.Empty;
+        public static string? LatestBloatKey { get; private set; }
 
         [DllImport("user32.dll")]
         private static extern bool ReleaseCapture();
@@ -56,7 +58,7 @@ namespace LeaguePatchCollection
         {
             await FetchLatestBloatKeyAsync();
 
-            LeagueProxy.Start(out _, out _, out _, out _);
+            await LeagueProxy.Start();
 
             await Task.Delay(1000);
 
@@ -90,9 +92,9 @@ namespace LeaguePatchCollection
             }
         }
 
-        private void BanReasonButton_Click(object sender, EventArgs e)
+        private async void BanReasonButton_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Ban reason checker is not implemented yet. Coming soon!", "League Patch Collection", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Ban reason pulled from login queue endpoint: " + PlatformProxy.banReason, "League Patch Collection", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void CleanLogsButton_Click(object sender, EventArgs e)
@@ -178,7 +180,7 @@ namespace LeaguePatchCollection
 
             if (!argsArray.Contains("--allow-multiple-clients"))
             {
-                Utility.TerminateRiotServices();
+                RiotClient.TerminateRiotServices();
             }
 
             LeagueProxy.LaunchRCS(argsArray);
@@ -186,14 +188,34 @@ namespace LeaguePatchCollection
 
         private void CloseClientsButton_Click(object sender, EventArgs e)
         {
-            Utility.TerminateRiotServices();
+            RiotClient.TerminateRiotServices();
         }
-        private void RestartUXbutton_Click(object sender, EventArgs e)
+        private async void RestartUXbutton_Click(object sender, EventArgs e)
         {
-            Utility.RestartUX();
+            await LcuWatcher.SendLcuRequest("/riotclient/kill-and-restart-ux", HttpMethod.Post);
         }
-        private void DisconnectChatButton_Click(object sender, EventArgs e)
+        private async void DisconnectChatButton_Click(object sender, EventArgs e)
         {
+            var response = await RcsWatcher.SendRcsRequest("/chat/v1/session", HttpMethod.Get);
+            if (response == null || !response.IsSuccessStatusCode)
+            {
+                Trace.WriteLine("[ERROR] Failed to fetch chat session state.");
+                return;
+            }
+
+            string content = await response.Content.ReadAsStringAsync();
+
+            var sessionData = JsonConvert.DeserializeObject<JObject>(content);
+
+            if (sessionData?["state"]?.ToString() == "connected")
+            {
+                var suspendContent = new StringContent("{\"config\":\"disable\"}", Encoding.UTF8, "application/json");
+                await RcsWatcher.SendRcsRequest("/chat/v1/suspend", HttpMethod.Post, suspendContent);
+            }
+            else
+            {
+                await RcsWatcher.SendRcsRequest("/chat/v1/resume", HttpMethod.Post);
+            }
         }
 
         private void DisableVanguard_CheckedChanged(object sender, EventArgs e)
@@ -319,7 +341,6 @@ namespace LeaguePatchCollection
                     else
                     {
                         SaveSettings();
-                        Trace.WriteLine($"[INFO] Created settings.json in {settingsFilePath}");
                     }
                 }
                 catch (Exception ex)
@@ -355,7 +376,6 @@ namespace LeaguePatchCollection
                 File.WriteAllText(settingsFilePath, json);
             }
         }
-
         public class ChatSettings
         {
             public bool EnableOffline { get; set; } = false;
@@ -363,7 +383,6 @@ namespace LeaguePatchCollection
             public bool EnableAway { get; set; } = false;
             public bool EnableOnline { get; set; } = true;
         }
-
         public class ConfigSettings
         {
             public bool Novgk { get; set; } = true;
@@ -391,18 +410,20 @@ namespace LeaguePatchCollection
         {
             try
             {
-                var githubUrl = "https://raw.githubusercontent.com/Cat1Bot/league-patch-collection/refs/heads/main/latestbloatkey"; // Replace with your URL
+                var githubUrl = "https://raw.githubusercontent.com/Cat1Bot/league-patch-collection/refs/heads/main/latestbloatkey";
 
-                using (var client = new HttpClient())
+                using var client = new HttpClient(new HttpClientHandler
                 {
-                    // Set timeout (e.g., 5 seconds)
-                    client.Timeout = TimeSpan.FromSeconds(5);
+                    UseCookies = false,
+                    UseProxy = false,
+                    Proxy = null,
+                    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true,
+                    CheckCertificateRevocationList = false
+                });
+                client.Timeout = TimeSpan.FromSeconds(5);
 
-                    // Attempt to fetch the bloat key
-                    var result = await client.GetStringAsync(githubUrl);
-                    _latestBloatKey = result.Trim();  // Remove any leading/trailing whitespace
-                    Trace.WriteLine($"[INFO] Latest bloat key fetched: {_latestBloatKey}");
-                }
+                var result = await client.GetStringAsync(githubUrl);
+                LatestBloatKey = result.Trim();
             }
             catch (TaskCanceledException)
             {
@@ -413,7 +434,6 @@ namespace LeaguePatchCollection
                 Trace.WriteLine($"[ERROR] Failed to fetch latest bloat key: {ex.Message}");
             }
         }
-
         internal static class Program
         {
             [STAThread]
@@ -427,7 +447,6 @@ namespace LeaguePatchCollection
                 string logFilePath = Path.Combine(logDirectory, "debug.log");
                 Trace.Listeners.Add(new TimestampedTextWriterTraceListener(logFilePath));
                 Trace.AutoFlush = true;
-                Trace.WriteLine("[INFO] Trace listener initialized.");
                 ApplicationConfiguration.Initialize();
                 Application.Run(new LeaguePatchCollectionUX());
                 LeagueProxy.Stop();

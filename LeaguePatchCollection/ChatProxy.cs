@@ -1,25 +1,16 @@
-using System;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using System.Security.Cryptography;
-using System.Xml.Linq;
-using System.Windows.Forms;
 using System.Diagnostics;
 
 namespace LeaguePatchCollection
 {
     public partial class XMPPProxy
     {
-        private const int Port = 29153;
-        private const int XMPPPort = 5223;
         private TcpListener? _listener;
         private CancellationTokenSource? _cts;
         private bool _WelcomeMessageSent = false;
@@ -27,9 +18,8 @@ namespace LeaguePatchCollection
         public async Task RunAsync(CancellationToken token)
         {
             _cts = CancellationTokenSource.CreateLinkedTokenSource(token);
-            _listener = new TcpListener(IPAddress.Any, Port);
+            _listener = new TcpListener(IPAddress.Any, LeagueProxy.ChatPort);
             _listener.Start();
-            Trace.WriteLine($"[INFO] XMPP listener started on {Port}");
 
             try
             {
@@ -46,26 +36,21 @@ namespace LeaguePatchCollection
             }
             finally
             {
-                _listener?.Stop();
+                Stop();
             }
         }
-
-        // Handles client connection
         private async Task HandleClient(TcpClient client, CancellationToken token)
         {
             NetworkStream? networkStream = null;
             try
             {
                 networkStream = client.GetStream();
-                var chatHost = HttpProxy._chatHost;
+                var chatHost = ConfigProxy.ChatHost;
                 if (string.IsNullOrEmpty(chatHost))
-                {
-                    Console.WriteLine("[WARN] XMPP No valid chat host found. Disconnecting client.");
-                    return;
-                }
+                    throw new Exception("Chat host is not ready yet.");
 
-                using var tcpClient = new TcpClient(chatHost, XMPPPort);
-                using var sslStream = new SslStream(tcpClient.GetStream(), false, ValidateServerCertificate);
+                using var tcpClient = new TcpClient(chatHost, 5223);
+                using var sslStream = new SslStream(tcpClient.GetStream(), false, (sender, certificate, chain, sslPolicyErrors) => true);
 
                 var sslOptions = new SslClientAuthenticationOptions
                 {
@@ -74,9 +59,8 @@ namespace LeaguePatchCollection
                 };
                 await sslStream.AuthenticateAsClientAsync(sslOptions, token);
 
-                Trace.WriteLine($"[INFO] Connection to XMPP server at {chatHost} established.");
-                var clientToServerTask = ForwardDataAsync(networkStream, sslStream, "Client -> XMPP Server", token);
-                var serverToClientTask = ForwardDataAsync(sslStream, networkStream, "XMPP Server -> Client", token);
+                var clientToServerTask = ForwardClientToServerAsync(networkStream, sslStream, token);
+                var serverToClientTask = ForwardServerToClientAsync(sslStream, networkStream, token);
 
                 await Task.WhenAny(clientToServerTask, serverToClientTask);
             }
@@ -86,13 +70,12 @@ namespace LeaguePatchCollection
             }
             finally
             {
-                Trace.WriteLine("[INFO] RCS disconnected from XMPP server.");
                 client?.Close();
                 networkStream?.Dispose();
             }
         }
 
-        private async Task ForwardDataAsync(Stream source, Stream destination, string direction, CancellationToken token)
+        private static async Task ForwardClientToServerAsync(NetworkStream source, SslStream destination, CancellationToken token)
         {
             var buffer = new byte[8192];
             int bytesRead;
@@ -101,16 +84,54 @@ namespace LeaguePatchCollection
             {
                 while ((bytesRead = await source.ReadAsync(buffer, token)) > 0)
                 {
-                    if (token.IsCancellationRequested)
+                    var message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+
+                    string status = string.Empty;
+                    if (LeaguePatchCollectionUX.SettingsManager.ChatSettings.EnableOnline)
+                        status = "chat";
+                    else if (LeaguePatchCollectionUX.SettingsManager.ChatSettings.EnableAway)
+                        status = "away";
+                    else if (LeaguePatchCollectionUX.SettingsManager.ChatSettings.EnableMobile)
+                        status = "mobile";
+                    else if (LeaguePatchCollectionUX.SettingsManager.ChatSettings.EnableOffline)
+                        status = "offline";
+
+                    message = ShowMitm().Replace(message, $"<show>{status}</show>");
+                    message = StMitm().Replace(message, $"<st>{status}</st>");
+
+                    if (LeaguePatchCollectionUX.SettingsManager.ChatSettings.EnableOffline || LeaguePatchCollectionUX.SettingsManager.ChatSettings.EnableMobile)
                     {
-                        break;
+                        message = RemoveLeague().Replace(message, string.Empty);
+                        message = RemoveVal().Replace(message, string.Empty);
+                        message = RemoveBacon().Replace(message, string.Empty);
                     }
 
+                    if (FilterFakePlayer().IsMatch(message))
+                    {
+                        continue;
+                    }
+
+                    var modifiedBufferFinal = Encoding.UTF8.GetBytes(message);
+                    await destination.WriteAsync(modifiedBufferFinal, token);
+                    await destination.FlushAsync(token);
+                }
+            }
+            catch (Exception) { /* Client disconnected or server connection error */ }
+        }
+
+        private async Task ForwardServerToClientAsync(SslStream source, NetworkStream destination, CancellationToken token)
+        {
+            var buffer = new byte[8192];
+            int bytesRead;
+
+            try
+            {
+                while ((bytesRead = await source.ReadAsync(buffer, token)) > 0)
+                {
                     var message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
                     const string rosterTag = "<query xmlns='jabber:iq:riotgames:roster'>";
-
-                    if (direction == "XMPP Server -> Client" && message.Contains(rosterTag))
+                    if (message.Contains(rosterTag))
                     {
                         string fakePlayer =
                             "<item jid='00000000-0000-0000-0000-000000000000@na1.pvp.net' name='League Patch Collection' subscription='both' puuid='00000000-0000-0000-0000-000000000000'>" +
@@ -126,47 +147,15 @@ namespace LeaguePatchCollection
                         _ = Task.Run(() => SendCustomPacket(destination), token);
                     }
 
-                    if (direction == "Client -> XMPP Server")
-                    {
-                        string status = string.Empty;
-
-                        if (LeaguePatchCollectionUX.SettingsManager.ChatSettings.EnableOnline)
-                            status = "chat";
-                        else if (LeaguePatchCollectionUX.SettingsManager.ChatSettings.EnableAway)
-                            status = "away";
-                        else if (LeaguePatchCollectionUX.SettingsManager.ChatSettings.EnableMobile)
-                            status = "mobile";
-                        else if (LeaguePatchCollectionUX.SettingsManager.ChatSettings.EnableOffline)
-                            status = "offline";
-
-                        message = ShowMitm().Replace(message, $"<show>{status}</show>");
-                        message = StMitm().Replace(message, $"<st>{status}</st>");
-
-                        if (LeaguePatchCollectionUX.SettingsManager.ChatSettings.EnableOffline || LeaguePatchCollectionUX.SettingsManager.ChatSettings.EnableMobile)
-                        {
-                            message = RemoveLeague().Replace(message, string.Empty);
-                            message = RemoveVal().Replace(message, string.Empty);
-                            message = RemoveBacon().Replace(message, string.Empty);
-                        }
-                        if (FilterFakePlayer().IsMatch(message))
-                        {
-                            continue;
-                        }
-                    }
-
                     var modifiedBufferFinal = Encoding.UTF8.GetBytes(message);
                     await destination.WriteAsync(modifiedBufferFinal, token);
                     await destination.FlushAsync(token);
                 }
             }
-            catch (Exception ex)
-            {
-                if (!token.IsCancellationRequested)
-                {
-                    Trace.WriteLine($"[ERROR] Error forwarding data in XMPP Proxy ({direction}): {ex.Message}\n{ex.StackTrace}");
-                }
-            }
+            catch (Exception) { /* Server disconnected or client connection error */ }
         }
+
+
         private async Task SendCustomPacket(Stream destination)
         {
             var randomStanzaId = Guid.NewGuid();
@@ -226,36 +215,10 @@ namespace LeaguePatchCollection
             await destination.WriteAsync(SecondmessageBytes);
         }
 
-        private static bool ValidateServerCertificate(object sender, X509Certificate? certificate, X509Chain? chain, SslPolicyErrors sslPolicyErrors)
-        {
-            return true;
-        }
-
         public void Stop()
         {
-            try
-            {
-                if (_cts == null)
-                {
-                    Trace.WriteLine("[WARN] XMPP Proxy is not running. Cannot stop.");
-                    return;
-                }
-
-                _cts?.Cancel();
-
-                if (_listener != null)
-                {
-                    _listener.Stop();
-                }
-                else
-                {
-                    Trace.WriteLine("[WARN] XMPP Proxy listener is null. Cannot stop.");
-                }
-            }
-            catch (Exception ex)
-            {
-                Trace.WriteLine($"[ERROR] Error while stopping XMPP Proxy: {ex.Message}");
-            }
+            _cts?.Cancel();
+            _listener?.Stop();
         }
 
         [GeneratedRegex(@"<show>.*?</show>")]

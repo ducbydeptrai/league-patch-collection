@@ -1,6 +1,7 @@
-﻿using EmbedIO;
-using Microsoft.VisualBasic.Logging;
+﻿using Microsoft.VisualBasic.Logging;
 using System.Diagnostics;
+using System.Net.Sockets;
+using System.Net;
 using System.Runtime.InteropServices.Marshalling;
 using System.Text;
 using System.Text.Json;
@@ -10,28 +11,45 @@ namespace LeaguePatchCollection;
 
 public class LeagueProxy
 {
-    private static readonly HttpProxy.HttpProxyServer<HttpProxy.ConfigController> _ConfigServer;
-    private static readonly HttpProxy.HttpProxyServer<HttpProxy.GeopassController> _GeopassServer;
-    private static readonly HttpProxy.HttpProxyServer<HttpProxy.LedgeController> _LedgeServer;
-    private static readonly HttpProxy.HttpProxyServer<HttpProxy.LcuContentController> _LcuContentServer;
     private static CancellationTokenSource? _ServerCTS;
     private static readonly XMPPProxy _ChatProxy;
-    private static readonly RTMPProxy _RtmpProxy;
     private static readonly RMSProxy _RmsProxy;
+    private static readonly RTMPProxy _RtmpProxy;
+    private static readonly ConfigProxy _ConfigProxy;
+    private static readonly GeopassProxy _GeopassProxy;
+    private static readonly MailboxProxy _MailboxProxy;
+    private static readonly PbTokenProxy _PbTokenProxy;
+    private static readonly PlatformProxy _PlatformProxy;
+    private static readonly LedgeProxy _LedgeProxy;
+    private static readonly LcuNavProxy _LcuNavProxy;
+
+    public static int ChatPort { get; private set; }
+    public static int RtmpPort { get; private set; } //rtmp proxy shall use this port to listen on
+    public static int RmsPort { get; private set; }
+    public static int ConfigPort { get; private set; }
+    public static int GeopassPort { get; private set; }
+    public static int MailboxPort { get; private set; }
+    public static int PbTokenPort { get; private set; }
+    public static int LcuNavigationPort { get; private set; }
+    public static int LedgePort { get; private set; }
+    public static int PlatformPort { get; private set; }
 
     static LeagueProxy()
     {
-        _ConfigServer = new HttpProxy.HttpProxyServer<HttpProxy.ConfigController>(29150);
-        _GeopassServer = new HttpProxy.HttpProxyServer<HttpProxy.GeopassController>(29151);
-        _LedgeServer = new HttpProxy.HttpProxyServer<HttpProxy.LedgeController>(29152);
-        _LcuContentServer = new HttpProxy.HttpProxyServer<HttpProxy.LcuContentController>(29159);
         _ChatProxy = new XMPPProxy();
-        _RtmpProxy = new RTMPProxy();
         _RmsProxy = new RMSProxy();
+        _RtmpProxy = new RTMPProxy();
+
+        _ConfigProxy = new ConfigProxy();
+        _GeopassProxy = new GeopassProxy();
+        _MailboxProxy = new MailboxProxy();
+        _PbTokenProxy = new PbTokenProxy();
+        _PlatformProxy = new PlatformProxy();
+        _LedgeProxy = new LedgeProxy();
+        _LcuNavProxy = new LcuNavProxy();
     }
 
-
-    public static void Start(out string configServerUrl, out string ledgeServerUrl, out string geopassServerUrl, out string lcucontentServerUrl)
+    public static async Task Start()
     {
         if (_ServerCTS is not null)
         {
@@ -39,33 +57,52 @@ public class LeagueProxy
             Stop();
         }
 
+        await FindAvailablePortsAsync();
+
         SystemYamlLive.LoadProductInstallPath();
         _ServerCTS = new CancellationTokenSource();
 
-        _ConfigServer.Start(_ServerCTS.Token);
-        configServerUrl = _ConfigServer.Url;
-        Trace.WriteLine($"[INFO] Config Proxy started on {configServerUrl}");
-
-        _LedgeServer.Start(_ServerCTS.Token);
-        ledgeServerUrl = _LedgeServer.Url;
-        Trace.WriteLine($"[INFO] Ledge Proxy started on {ledgeServerUrl}");
-
-        _GeopassServer.Start(_ServerCTS.Token);
-        geopassServerUrl = _GeopassServer.Url;
-        Trace.WriteLine($"[INFO] Geopass Proxy started on {geopassServerUrl}");
-
-        _LcuContentServer.Start(_ServerCTS.Token);
-        lcucontentServerUrl = _LcuContentServer.Url;
-        Trace.WriteLine($"[INFO] Geopass Proxy started on {lcucontentServerUrl}");
-
         _ChatProxy?.RunAsync(_ServerCTS.Token);
-        Trace.WriteLine("[INFO] Chat Proxy started.");
-
         _RmsProxy?.RunAsync(_ServerCTS.Token);
-        Trace.WriteLine("[INFO] RMS Proxy started.");
 
-        _RtmpProxy?.RunAsync();
-        Trace.WriteLine("[INFO] RTMP Proxy started");
+        _RtmpProxy?.RunAsync(_ServerCTS.Token);
+
+        _ConfigProxy?.RunAsync(_ServerCTS.Token);
+        _GeopassProxy?.RunAsync(_ServerCTS.Token);
+        _MailboxProxy?.RunAsync(_ServerCTS.Token);
+        _PbTokenProxy?.RunAsync(_ServerCTS.Token);
+        _PlatformProxy?.RunAsync(_ServerCTS.Token);
+        _LedgeProxy?.RunAsync(_ServerCTS.Token);
+        _LcuNavProxy?.RunAsync(_ServerCTS.Token);
+    }
+    private static async Task FindAvailablePortsAsync()
+    {
+        int[] ports = new int[10];
+        for (int i = 0; i < ports.Length; i++)
+        {
+            ports[i] = GetFreePort();
+            await Task.Delay(10);
+        }
+
+        ChatPort = ports[0];
+        RtmpPort = ports[1];
+        RmsPort = ports[2];
+        ConfigPort = ports[3];
+        GeopassPort = ports[4];
+        MailboxPort = ports[5];
+        PbTokenPort = ports[6];
+        LcuNavigationPort = ports[7];
+        LedgePort = ports[8];
+        PlatformPort = ports[9];
+    }
+
+    private static int GetFreePort()
+    {
+        using var listener = new TcpListener(IPAddress.Loopback, 0);
+        listener.Start();
+        int port = ((IPEndPoint)listener.LocalEndpoint).Port;
+        listener.Stop();
+        return port;
     }
 
     public static void Stop()
@@ -73,6 +110,7 @@ public class LeagueProxy
         if (_ServerCTS is null)
         {
             Trace.WriteLine("[WARN] Unable to stop proxy service: Service is not running.");
+            return;
         }
 
         _ServerCTS?.Cancel();
@@ -80,9 +118,15 @@ public class LeagueProxy
         _ChatProxy.Stop();
         _RmsProxy.Stop();
 
-        _ConfigServer.Dispose();
-        _GeopassServer.Dispose();
-        _LedgeServer.Dispose();
+        _RtmpProxy.Stop();
+
+        _ConfigProxy.Stop();
+        _GeopassProxy.Stop();
+        _MailboxProxy.Stop();
+        _PbTokenProxy.Stop();
+        _PlatformProxy.Stop();
+        _LedgeProxy.Stop();
+        _LcuNavProxy.Stop();
 
         _ServerCTS?.Dispose();
         _ServerCTS = null;
@@ -96,6 +140,6 @@ public class LeagueProxy
             Console.ForegroundColor = ConsoleColor.Red;
             Trace.WriteLine("[ERROR] RCS launch failed: Proxies were not started due to an error.");
         }
-        return RiotClient.Launch(_ConfigServer.Url, args);
+        return RiotClient.Launch(args);
     }
 }

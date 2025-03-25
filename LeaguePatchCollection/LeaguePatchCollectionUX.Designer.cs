@@ -356,7 +356,7 @@ namespace LeaguePatchCollection
             // 
             // DisconnectChatButton
             // 
-            DisconnectChatButton.BorderColor = Color.FromArgb(40, 40, 40);
+            DisconnectChatButton.BorderColor = Color.FromArgb(50, 50, 50);
             DisconnectChatButton.BorderRadius = 2;
             DisconnectChatButton.BorderThickness = 2;
             DisconnectChatButton.Cursor = Cursors.Hand;
@@ -367,7 +367,7 @@ namespace LeaguePatchCollection
             DisconnectChatButton.DisabledState.CustomBorderColor = Color.DarkGray;
             DisconnectChatButton.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
             DisconnectChatButton.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
-            DisconnectChatButton.FillColor = Color.FromArgb(20, 20, 20);
+            DisconnectChatButton.FillColor = Color.FromArgb(30, 30, 30);
             DisconnectChatButton.Font = new Font("Inter Medium", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             DisconnectChatButton.ForeColor = Color.FromArgb(225, 225, 225);
             DisconnectChatButton.HoverState.BorderColor = Color.FromArgb(80, 80, 80);
@@ -378,6 +378,7 @@ namespace LeaguePatchCollection
             DisconnectChatButton.ShadowDecoration.CustomizableEdges = customizableEdges2;
             DisconnectChatButton.Size = new Size(199, 26);
             DisconnectChatButton.TabIndex = 41;
+            DisconnectChatButton.Text = "DISCONNECT / CONNECT";
             DisconnectChatButton.Click += DisconnectChatButton_Click;
             // 
             // MiscSeperatorRight

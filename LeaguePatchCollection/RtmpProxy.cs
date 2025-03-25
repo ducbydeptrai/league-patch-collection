@@ -3,119 +3,131 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Security.Authentication;
-using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
 using System.Threading;
 using System.Threading.Tasks;
+using RtmpProxyLib; // important
 
-namespace LeaguePatchCollection;
-
-public class RTMPProxy
+namespace LeaguePatchCollection
 {
-    private const int Port = 29154;
-    private const int RTMPPort = 2099;
-    private const string RTMPServerAddress = "feapp.na1.lol.pvp.net"; //replace region prefix your region, for examle feapp.euw1.lol.pvp.net
-    private CancellationTokenSource? _cancellationTokenSource;
-
-    public async Task RunAsync()
+    public class RTMPProxy
     {
-        _cancellationTokenSource = new CancellationTokenSource();
-        var listener = new TcpListener(IPAddress.Any, Port);
-        listener.Start();
-        Console.WriteLine($"[RTMP] Proxy is not implemented/available yet...");
+        private TcpListener? _listener;
+        private CancellationTokenSource? _cts;
 
-        try
+        public async Task RunAsync(CancellationToken token)
         {
-            while (!_cancellationTokenSource.Token.IsCancellationRequested)
+            _cts = CancellationTokenSource.CreateLinkedTokenSource(token);
+            _listener = new TcpListener(IPAddress.Any, LeagueProxy.RtmpPort);
+            _listener.Start();
+            Console.WriteLine("[RTMP] Proxy is listening for connections...");
+
+            try
             {
-                if (listener.Pending())
+                while (!token.IsCancellationRequested)
                 {
-                    var client = await listener.AcceptTcpClientAsync();
-                    _ = HandleClient(client, _cancellationTokenSource.Token);
+                    var client = await _listener.AcceptTcpClientAsync(token);
+                    _ = HandleClient(client, token);
                 }
-                await Task.Delay(100, _cancellationTokenSource.Token); // Small delay to prevent tight loop
+            }
+            catch (OperationCanceledException)
+            {
+                Console.WriteLine("[RTMP] Stopping proxy...");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[RTMP] Error: {ex.Message}");
+            }
+            finally
+            {
+                Stop();
+                Console.WriteLine("[RTMP] Proxy successfully stopped.");
             }
         }
-        catch (OperationCanceledException)
-        {
-            Console.WriteLine("[RTMP] Stopping proxy...");
-        }
-        finally
-        {
-            listener.Stop();
-            _cancellationTokenSource.Dispose();
-            Console.WriteLine("[RTMP] Proxy sucessfully stopped.");
-        }
-    }
 
-    private async Task HandleClient(TcpClient client, CancellationToken cancellationToken)
-    {
-        NetworkStream? networkStream = null;
-        try
+        private static async Task HandleClient(TcpClient client, CancellationToken cancellationToken)
         {
-            networkStream = client.GetStream();
-            Console.WriteLine("[RTMP] Client connected.");
-
-            using var tcpClient = new TcpClient(RTMPServerAddress, RTMPPort);
-            Stream serverStream = tcpClient.GetStream();
-
+            NetworkStream? networkStream = null;
+            try
             {
-                var sslStream = new SslStream(serverStream, false, ValidateServerCertificate);
+                networkStream = client.GetStream();
+
+                var RtmpHost = SystemYamlLive.RtmpServer;
+                if (string.IsNullOrEmpty(RtmpHost))
+                    throw new Exception("RTMP host is not ready yet.");
+
+                using var tcpClient = new TcpClient(RtmpHost, 2099);
+                Stream serverStream = tcpClient.GetStream();
+
+                using var sslStream = new SslStream(serverStream, false, (sender, certificate, chain, sslPolicyErrors) => true);
                 var sslOptions = new SslClientAuthenticationOptions
                 {
-                    TargetHost = RTMPServerAddress,
+                    TargetHost = RtmpHost,
                     EnabledSslProtocols = SslProtocols.Tls12
                 };
                 await sslStream.AuthenticateAsClientAsync(sslOptions, cancellationToken);
                 serverStream = sslStream;
                 Console.WriteLine("[RTMP] Connection to server established.");
+
+                var clientToServerTask = ClientToServerAsync(networkStream, serverStream, cancellationToken);
+                var serverToClientTask = ServerToClientAsync(serverStream, networkStream, cancellationToken);
+
+                await Task.WhenAny(clientToServerTask, serverToClientTask);
             }
-
-            var clientToServerTask = ForwardDataAsync(networkStream, serverStream, "Client -> RTMP Server", cancellationToken);
-            var serverToClientTask = ForwardDataAsync(serverStream, networkStream, "RTMP Server -> Client", cancellationToken);
-
-            await Task.WhenAny(clientToServerTask, serverToClientTask);
-        }
-        catch (Exception ex) when (ex is IOException || ex is ObjectDisposedException)
-        {
-            Console.WriteLine($"[RTMP] Client disconnected or connection error: {ex.Message}");
-        }
-        finally
-        {
-            Console.WriteLine("[RTMP] Client disconnected.");
-            client?.Close();
-            networkStream?.Dispose();
-        }
-    }
-
-    private static async Task ForwardDataAsync(Stream source, Stream destination, string direction, CancellationToken cancellationToken)
-    {
-        var buffer = new byte[128];
-        int bytesRead;
-
-        try
-        {
-            while ((bytesRead = await source.ReadAsync(buffer, 0, buffer.Length, cancellationToken)) > 0)
+            catch (Exception ex) when (ex is IOException || ex is ObjectDisposedException)
             {
-                await destination.WriteAsync(buffer, 0, bytesRead, cancellationToken);
-                await destination.FlushAsync(cancellationToken);
+                Console.WriteLine($"[RTMP] Client disconnected or connection error: {ex.Message}");
             }
-
-            Console.WriteLine($"[RTMP] {direction}: Connection closed.");
+            finally
+            {
+                Console.WriteLine("[RTMP] Client disconnected.");
+                client?.Close();
+                networkStream?.Dispose();
+            }
         }
-        catch (Exception ex)
+
+        private static async Task ClientToServerAsync(Stream clientStream, Stream serverStream, CancellationToken cancellationToken)
         {
-            Console.WriteLine($"[RTMP] Error during {direction}: {ex.Message}");
+            var buffer = new byte[4096];
+            try
+            {
+                int bytesRead;
+                while ((bytesRead = await clientStream.ReadAsync(buffer, cancellationToken)) > 0)
+                {
+                    // MITM: Modify outgoing data if needed
+                    await serverStream.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken);
+                    await serverStream.FlushAsync(cancellationToken);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[RTMP] Error forwarding Client -> Server: {ex.Message}");
+            }
         }
-    }
 
-    private static bool ValidateServerCertificate(object sender, X509Certificate? certificate, X509Chain? chain, SslPolicyErrors sslPolicyErrors)
-    {
-        return true;
-    }
+        private static async Task ServerToClientAsync(Stream serverStream, Stream clientStream, CancellationToken cancellationToken)
+        {
+            var buffer = new byte[4096];
+            try
+            {
+                int bytesRead;
+                while ((bytesRead = await serverStream.ReadAsync(buffer, cancellationToken)) > 0)
+                {
+                    // MITM: Modify incoming data if needed
+                    await clientStream.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken);
+                    await clientStream.FlushAsync(cancellationToken);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[RTMP] Error forwarding Server -> Client: {ex.Message}");
+            }
+        }
 
-    public void Stop()
-    {
-        _cancellationTokenSource?.Cancel();
+        public void Stop()
+        {
+            _cts?.Cancel();
+            _listener?.Stop();
+        }
     }
 }

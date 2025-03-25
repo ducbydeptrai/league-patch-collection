@@ -7,12 +7,30 @@ namespace LeaguePatchCollection;
 
 public sealed class RiotClient
 {
-    public RiotClient()
+    public static void TerminateRiotServices()
     {
+        string[] riotProcesses = ["RiotClientServices", "LeagueClient"];
 
+        foreach (var processName in riotProcesses)
+        {
+            try
+            {
+                var processes = Process.GetProcessesByName(processName);
+
+                foreach (var process in processes)
+                {
+                    process.Kill();
+                    process.WaitForExit();
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine($"[ERROR] Failed to stop {processName}. Reason: {ex.Message}");
+            }
+        }
     }
 
-    public static Process? Launch(string configServerUrl, IEnumerable<string>? args = null)
+    public static Process? Launch(IEnumerable<string>? args = null)
     {
         var path = GetPath();
         if (path is null)
@@ -21,9 +39,8 @@ public sealed class RiotClient
             return null;
         }
 
-        Trace.WriteLine($"[INFO] Found RCS at {path}");
 
-        IEnumerable<string> allArgs = [$"--client-config-url={configServerUrl}", .. args ?? []];
+        IEnumerable<string> allArgs = [$"--client-config-url=http://127.0.0.1:{LeagueProxy.ConfigPort}", .. args ?? []];
         Trace.WriteLine($"[INFO] Launching RCS with arguments: {string.Join(" ", allArgs)}");
 
         return Process.Start(path, allArgs);
@@ -68,64 +85,5 @@ public sealed class RiotClient
 
         Trace.WriteLine("[ERROR] Failed to locate Riot Client installation path from both fallback method and RiotClientInstalls.");
         return null;
-    }
-}
-public class Utility
-{
-    public static void TerminateRiotServices()
-    {
-        string[] riotProcesses = { "RiotClientServices", "LeagueClient" };
-
-        foreach (var processName in riotProcesses)
-        {
-            try
-            {
-                var processes = Process.GetProcessesByName(processName);
-
-                foreach (var process in processes)
-                {
-                    Trace.WriteLine($"[INFO] Attemping to stop {processName}.");
-                    process.Kill();
-                    process.WaitForExit();
-                    Trace.WriteLine($"[INFO] {processName} stopped successfully.");
-                }
-            }
-            catch (Exception ex)
-            {
-                Trace.WriteLine($"[ERROR] Failed to stop {processName}. Exception: {ex.Message}");
-            }
-        }
-    }
-    public static void RestartUX()
-    {
-        string[] riotProcesses = { "LeagueClientUxRender", };
-
-        foreach (var processName in riotProcesses)
-        {
-            try
-            {
-                var processes = Process.GetProcessesByName(processName);
-
-                foreach (var process in processes)
-                {
-                    Trace.WriteLine($"[INFO] Attemping to restart {processName}.");
-                    process.Kill();
-                    process.WaitForExit();
-                    Trace.WriteLine($"[INFO] {processName} restarted successfully.");
-                }
-            }
-            catch (Exception ex)
-            {
-                Trace.WriteLine($"[ERROR] Failed to restart {processName}. Exception: {ex.Message}");
-            }
-        }
-    }
-    private string GetCommandLine(Process process)
-    {
-        using (var searcher = new System.Management.ManagementObjectSearcher($"SELECT CommandLine FROM Win32_Process WHERE ProcessId = {process.Id}"))
-        {
-            var query = searcher.Get().Cast<System.Management.ManagementObject>().FirstOrDefault();
-            return query?["CommandLine"]?.ToString() ?? string.Empty;
-        }
     }
 }
