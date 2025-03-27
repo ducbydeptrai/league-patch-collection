@@ -98,40 +98,48 @@ public static partial class SystemYamlLive
                 yamlContent = modification.Key.Replace(yamlContent, modification.Value);
             }
 
-            var match = defaultRegion().Match(yamlContent);
-            if (match.Success)
+            string riotConfigPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Riot Games", "Riot Client", "Config");
+            string riotConfigFile = Path.Combine(riotConfigPath, "RiotClientSettings.yaml");
+
+            if (File.Exists(riotConfigFile))
             {
-                string region = match.Value.Trim().ToUpper(); // Normalize to uppercase and trim spaces
-                Trace.WriteLine($"[INFO] rtmp default region found: {region}");
+                string riotConfigContent = File.ReadAllText(riotConfigFile);
 
-                RtmpServer = region switch
+                var match = regionKey().Match(riotConfigContent);
+                if (match.Success)
                 {
-                    "BR" => "feapp.br1.lol.pvp.net",
-                    "EUNE" => "feapp.eun1.lol.pvp.net",
-                    "EUW" => "feapp.euw1.lol.pvp.net",
-                    "JP" => "feapp.jp1.lol.pvp.net",
-                    "LA1" => "feapp.la1.lol.pvp.net",
-                    "LA2" => "feapp.la2.lol.pvp.net",
-                    "ME1" => "feapp.me1.lol.pvp.net",
-                    "NA" => "feapp.na1.lol.pvp.net",
-                    "OC1" => "feapp.oc1.lol.pvp.net",
-                    "RU" => "feapp.ru.lol.pvp.net",
-                    "TR" => "tr1.chat.si.riotgames.com",
-                    _ => null,
-                };
+                    string region = match.Value.Trim().Trim('"').ToUpper(); // Remove potential quotes
+                    Trace.WriteLine($"[INFO] rtmp default region found: {region}");
 
-                if (RtmpServer != null)
-                {
-                    Trace.WriteLine($"[INFO] RtmpServer set to: {RtmpServer}");
+                    RtmpServer = region switch
+                    {
+                        "BR" => "feapp.br1.lol.pvp.net",
+                        "EUNE" => "feapp.eun1.lol.pvp.net",
+                        "EUW" => "feapp.euw1.lol.pvp.net",
+                        "JP" => "feapp.jp1.lol.pvp.net",
+                        "LA1" => "feapp.la1.lol.pvp.net",
+                        "LA2" => "feapp.la2.lol.pvp.net",
+                        "ME1" => "feapp.me1.lol.pvp.net",
+                        "NA" => "feapp.na1.lol.pvp.net",
+                        "OC1" => "feapp.oc1.lol.pvp.net",
+                        "RU" => "feapp.ru.lol.pvp.net",
+                        "TR" => "tr1.chat.si.riotgames.com",
+                        _ => null,
+                    };
+
+                    if (RtmpServer != null)
+                    {
+                        Trace.WriteLine($"[INFO] RtmpServer set to: {RtmpServer}");
+                    }
+                    else
+                    {
+                        Trace.WriteLine("[WARN] No matching RtmpServer for the found region.");
+                    }
                 }
                 else
                 {
-                    Trace.WriteLine("[WARN] No matching RtmpServer for the found region.");
+                    Trace.WriteLine("[WARN] region not found in Riot Games config yaml.");
                 }
-            }
-            else
-            {
-                Trace.WriteLine("[WARN] default_region not found in system.yaml.");
             }
 
             File.WriteAllText(configFilePath, yamlContent);
@@ -155,6 +163,7 @@ public static partial class SystemYamlLive
 
     [GeneratedRegex(@"(?<=league_edge_url\s*:\s*)\S+")]
     private static partial Regex ledgeUrl();
-    [GeneratedRegex(@"(?<=default_region\s*:\s*)\S+")]
-    private static partial Regex defaultRegion();
+    [GeneratedRegex(@"(?<=region\s*:\s*)\S+")]
+    private static partial Regex regionKey();
+
 }
