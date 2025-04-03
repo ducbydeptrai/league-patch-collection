@@ -22,13 +22,13 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Restore dependencies
-        run: dotnet restore LeaguePatchCollection/league-patch-collection.csproj
+        run: dotnet restore LeaguePatchCollection/LeaguePatchCollection.csproj
 
       - name: Build project
-        run: dotnet build LeaguePatchCollection/league-patch-collection.csproj --configuration Release --no-restore
+        run: dotnet build LeaguePatchCollection/LeaguePatchCollection.csproj --configuration Release --no-restore
 
       - name: Publish
-        run: dotnet publish LeaguePatchCollection/league-patch-collection.csproj -c Release -r win-x64 --self-contained false /p:PublishSingleFile=true
+        run: dotnet publish LeaguePatchCollection/LeaguePatchCollection.csproj -c Release -r win-x64 --self-contained false /p:PublishSingleFile=true
 
       - name: Package release
         run: |
