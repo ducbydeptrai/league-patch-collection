@@ -1,0 +1,64 @@
+name: .NET Build & Release
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore LeaguePatchCollection/league-patch-collection.csproj
+
+      - name: Build project
+        run: dotnet build LeaguePatchCollection/league-patch-collection.csproj --configuration Release --no-restore
+
+      - name: Publish
+        run: dotnet publish LeaguePatchCollection/league-patch-collection.csproj -c Release -r win-x64 --self-contained false /p:PublishSingleFile=true
+
+      - name: Package release
+        run: |
+          mkdir release
+          cp -r LeaguePatchCollection/bin/Release/net8.0/win-x64/* release/
+          powershell Compress-Archive -Path release/* -DestinationPath Release.zip
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LeaguePatchCollection
+          path: Release.zip
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: LeaguePatchCollection
+          path: release/
+
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          name: League Patch Collection v1.0.${{ github.run_number }}
+          tag: stable-release
+          body: "This release contains pre-built binaries for Windows from the original repository."
+          artifacts: "release/Release.zip"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          makeLatest: true
