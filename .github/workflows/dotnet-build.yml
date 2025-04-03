@@ -33,7 +33,7 @@ jobs:
       - name: Package release
         run: |
           mkdir release
-          cp -r LeaguePatchCollection/bin/Release/net8.0/win-x64/* release/
+          cp -r LeaguePatchCollection/bin/Release/* release/
           powershell Compress-Archive -Path release/* -DestinationPath Release.zip
 
       - name: Upload artifact
